@@ -8,7 +8,7 @@
             android:id="@+id/nav_groups"
             android:title="Gropus" />
         <item
-            android:id="@+id/nav_smth"
-            android:title="Smth" />
+            android:id="@+id/nav_settings"
+            android:title="Settings" />
     </group>
 </menu>
