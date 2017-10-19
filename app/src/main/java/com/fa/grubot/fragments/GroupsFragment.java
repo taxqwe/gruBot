@@ -15,25 +15,36 @@ import com.fa.grubot.objects.Group;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class GroupsFragment extends Fragment{
-    RecyclerView groupsView;
+    private Unbinder unbinder;
+
+    @BindView(R.id.recycler)RecyclerView groupsView;
+    @BindView(R.id.swipeRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
+
     GroupsRecyclerAdapter groupsAdapter;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
+        unbinder = ButterKnife.bind(this, v);
 
-        groupsView = (RecyclerView) v.findViewById(R.id.recycler);
         setupRecyclerView();
-
-        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             refreshItems();
         });
 
         return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     private void setupRecyclerView(){

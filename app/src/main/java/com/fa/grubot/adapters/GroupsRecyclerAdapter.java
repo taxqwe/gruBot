@@ -1,8 +1,6 @@
 package com.fa.grubot.adapters;
 
 import android.content.Context;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +13,9 @@ import com.fa.grubot.objects.Group;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAdapter.ViewHolder>{
 
@@ -24,13 +23,12 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     private final ArrayList<Group> groups;
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView groupName;
-        private ImageView groupImage;
+        @BindView(R.id.groupName) TextView groupName;
+        @BindView(R.id.groupImage) ImageView groupImage;
 
         private ViewHolder(View view) {
             super(view);
-            groupImage = (ImageView) view.findViewById(R.id.groupImage);
-            groupName = (TextView) view.findViewById(R.id.groupName);
+            ButterKnife.bind(this, view);
         }
     }
 
