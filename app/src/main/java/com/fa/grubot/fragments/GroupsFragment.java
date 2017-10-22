@@ -3,6 +3,7 @@ package com.fa.grubot.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -51,6 +52,14 @@ public class GroupsFragment extends Fragment{
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+                this.getContext(),
+                mLayoutManager.getOrientation()
+        );
+        groupsView.addItemDecoration(dividerItemDecoration);
+
+
 
         groupsAdapter = new GroupsRecyclerAdapter(getActivity(), presenter.getGroups());
         groupsView.setAdapter(groupsAdapter);
