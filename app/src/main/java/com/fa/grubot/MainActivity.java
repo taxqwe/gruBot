@@ -11,9 +11,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
+import com.fa.grubot.util.Globals;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +68,12 @@ public class MainActivity extends AppCompatActivity {
                     selectDrawerItem(menuItem);
                     return true;
                 });
+
+        ImageView userImage = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.userImage);
+        TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.userName);
+
+        userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(this, "USER"));
+        userName.setText("user");
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
