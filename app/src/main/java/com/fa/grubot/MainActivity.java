@@ -81,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content, fragment).commit();
+
+        MenuItem menuItem = navigationView.getMenu().getItem(0);
+        menuItem.setChecked(true);
+        setTitle(menuItem.getTitle());
     }
 
     // Нажатие на пункт в drawer
