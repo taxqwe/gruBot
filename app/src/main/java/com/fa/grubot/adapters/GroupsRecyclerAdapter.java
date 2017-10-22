@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fa.grubot.R;
 import com.fa.grubot.objects.Group;
@@ -51,6 +52,7 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
         holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, groups.get(position).getName()));
 
         holder.groupImage.getRootView().setOnClickListener(v -> {
+            Toast.makeText(context, "КЛИК))))", Toast.LENGTH_SHORT).show();
             //// TODO: 19.10.2017
         });
     }

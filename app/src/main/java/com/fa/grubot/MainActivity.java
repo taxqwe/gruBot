@@ -1,6 +1,7 @@
 package com.fa.grubot;
 
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,12 +9,14 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
+import com.fa.grubot.util.Globals;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupViews();
         setupDrawerContent();
+        setDefaultFragment();
     }
 
     @Override
@@ -64,10 +68,32 @@ public class MainActivity extends AppCompatActivity {
                     selectDrawerItem(menuItem);
                     return true;
                 });
+
+        ImageView userImage = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.userImage);
+        TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.userName);
+
+        userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(this, "USER"));
+        userName.setText("user");
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+    }
+
+    private void setDefaultFragment(){
+        Fragment fragment = null;
+        Class fragmentClass = DashboardFragment.class;
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content, fragment).commit();
+
+        MenuItem menuItem = navigationView.getMenu().getItem(0);
+        menuItem.setChecked(true);
+        setTitle(menuItem.getTitle());
     }
 
     // Нажатие на пункт в drawer
