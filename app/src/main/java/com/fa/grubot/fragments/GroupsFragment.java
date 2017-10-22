@@ -1,7 +1,7 @@
 package com.fa.grubot.fragments;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,23 +11,28 @@ import android.view.ViewGroup;
 
 import com.fa.grubot.R;
 import com.fa.grubot.adapters.GroupsRecyclerAdapter;
-import com.fa.grubot.objects.Group;
+import com.fa.grubot.presenters.GroupsPresenter;
 
-import java.util.ArrayList;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 public class GroupsFragment extends Fragment{
-    RecyclerView groupsView;
+    private Unbinder unbinder;
+    private GroupsPresenter presenter;
+
+    @BindView(R.id.recycler)RecyclerView groupsView;
+    @BindView(R.id.swipeRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
+
     GroupsRecyclerAdapter groupsAdapter;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
+        unbinder = ButterKnife.bind(this, v);
+        presenter = new GroupsPresenter(this);
 
-        groupsView = (RecyclerView) v.findViewById(R.id.recycler);
         setupRecyclerView();
-
-        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             refreshItems();
@@ -36,17 +41,18 @@ public class GroupsFragment extends Fragment{
         return v;
     }
 
-    private void setupRecyclerView(){
-        ArrayList<Group> groups = new ArrayList<>();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
 
-        groups.add(new Group(1, "ПИ4-1"));
-        groups.add(new Group(2, "ПИ4-2"));
-        groups.add(new Group(3, "ГРУППА НАМБА ВАН НА РУСИ"));
+    private void setupRecyclerView(){
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
 
-        groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
+        groupsAdapter = new GroupsRecyclerAdapter(getActivity(), presenter.getGroups());
         groupsView.setAdapter(groupsAdapter);
         groupsAdapter.notifyDataSetChanged();
     }

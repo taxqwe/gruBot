@@ -15,11 +15,14 @@ import android.view.MenuItem;
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity {
 
-    private DrawerLayout drawerLayout;
-    private Toolbar toolbar;
-    private NavigationView navigationView;
+    @BindView(R.id.nv_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.drawer) NavigationView navigationView;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     private ActionBarDrawerToggle drawerToggle;
 
@@ -27,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        setupToolbar();
         setupViews();
         setupDrawerContent();
     }
@@ -36,31 +39,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
         drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    // Инициализация toolbar
-    private void setupToolbar(){
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
     }
 
     // Инициализация view
     private void setupViews(){
-        drawerLayout = (DrawerLayout) findViewById(R.id.nv_layout);
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.drawer);
+        setSupportActionBar(toolbar);
     }
 
     // Инициализация drawer
