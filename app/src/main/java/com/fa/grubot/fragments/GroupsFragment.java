@@ -24,7 +24,7 @@ public class GroupsFragment extends Fragment{
     @BindView(R.id.recycler)RecyclerView groupsView;
     @BindView(R.id.swipeRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
 
-    GroupsRecyclerAdapter groupsAdapter;
+    private GroupsRecyclerAdapter groupsAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
