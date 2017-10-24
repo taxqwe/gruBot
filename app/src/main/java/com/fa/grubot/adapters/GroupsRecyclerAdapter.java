@@ -1,14 +1,16 @@
 package com.fa.grubot.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.fa.grubot.ChatActivity;
+import com.fa.grubot.GroupInfoActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.Group;
 import com.fa.grubot.util.Globals;
@@ -47,13 +49,14 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int pos) {
         final int position = holder.getAdapterPosition();
+        Group group = groups.get(position);
 
-        holder.groupName.setText(groups.get(position).getName());
-        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, groups.get(position).getName()));
+        holder.groupName.setText(group.getName());
+        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, group.getName()));
 
         holder.groupImage.getRootView().setOnClickListener(v -> {
-            Toast.makeText(context, "КЛИК))))", Toast.LENGTH_SHORT).show();
-            //// TODO: 19.10.2017
+            Intent intent = new Intent(context, GroupInfoActivity.class);
+            context.startActivity(intent);
         });
     }
 

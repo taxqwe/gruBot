@@ -8,19 +8,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fa.grubot.R;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.fa.grubot.adapters.ChatsAdapter.ViewHolder;
+import com.fa.grubot.adapters.ChatRecyclerAdapter.ViewHolder;
 import com.fa.grubot.objects.Message;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by ni.petrov on 22/10/2017.
  */
 
-public class ChatsAdapter extends RecyclerView.Adapter<ViewHolder> {
+public class ChatRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     private Context ctx;
 
@@ -37,7 +37,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ViewHolder> {
         }
     }
 
-    public ChatsAdapter(Context ctx, ArrayList<Message> messages) {
+    public ChatRecyclerAdapter(Context ctx, ArrayList<Message> messages) {
         this.ctx = ctx;
         this.messages = messages;
     }

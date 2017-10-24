@@ -10,21 +10,23 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fa.grubot.R;
+import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.adapters.DashboardRecyclerAdapter;
+import com.fa.grubot.objects.DashboardEntry;
 import com.fa.grubot.presenters.DashboardPresenter;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements DashboardFragmentBase{
     private Unbinder unbinder;
     private DashboardPresenter presenter;
 
-    @BindView(R.id.recycler)RecyclerView groupsView;
-    @BindView(R.id.swipeRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
-
-    private DashboardRecyclerAdapter dashboardAdapter;
+    @BindView(R.id.recycler) RecyclerView groupsView;
+    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -32,11 +34,7 @@ public class DashboardFragment extends Fragment {
         unbinder = ButterKnife.bind(this, v);
         presenter = new DashboardPresenter(this);
 
-        setupRecyclerView();
-
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            refreshItems();
-        });
+        presenter.notifyViewCreated();
 
         return v;
     }
@@ -45,22 +43,24 @@ public class DashboardFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        presenter.destroy();
     }
 
-    private void setupRecyclerView(){
+    public void setupSwipeRefreshLayout(){
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            presenter.updateDashboardRecyclerView();
+            onItemsLoadComplete();
+        });
+    }
+
+    public void setupRecyclerView(ArrayList<DashboardEntry> entries){
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
 
-        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), presenter.getGroups());
+        DashboardRecyclerAdapter dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), entries);
         groupsView.setAdapter(dashboardAdapter);
         dashboardAdapter.notifyDataSetChanged();
-    }
-
-
-    private void refreshItems() {
-        setupRecyclerView();
-        onItemsLoadComplete();
     }
 
     private void onItemsLoadComplete() {

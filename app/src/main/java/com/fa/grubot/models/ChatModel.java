@@ -1,22 +1,19 @@
 package com.fa.grubot.models;
 
-import android.text.TextUtils;
 import android.text.format.Time;
 
-import com.fa.grubot.objects.Chat;
 import com.fa.grubot.objects.Message;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by ni.petrov on 22/10/2017.
  */
 
-public class ChatsModel {
+public class ChatModel {
 
-    public ChatsModel() {
+    public ChatModel() {
     }
 
     public ArrayList<Message> getMessagesOfChatById(int id){
