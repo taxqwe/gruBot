@@ -6,4 +6,7 @@
     <color name="waPrimary">#128c7e</color>
     <color name="waPrimaryDark">#075e54</color>
     <color name="waAccent">#25d366</color>
+
+    <color name="colorVote">#c6dcff</color>
+    <color name="colorImportantMessage">#fcdbdb</color>
 </resources>
