@@ -47,6 +47,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(group.getName());
+        //231
     }
 
     public void setupFab(){
