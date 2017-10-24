@@ -12,7 +12,10 @@ import android.view.ViewGroup;
 
 import com.fa.grubot.R;
 import com.fa.grubot.adapters.GroupsRecyclerAdapter;
+import com.fa.grubot.objects.Group;
 import com.fa.grubot.presenters.GroupsPresenter;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,20 +28,12 @@ public class GroupsFragment extends Fragment{
     @BindView(R.id.recycler)RecyclerView groupsView;
     @BindView(R.id.swipeRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
 
-    private GroupsRecyclerAdapter groupsAdapter;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
         unbinder = ButterKnife.bind(this, v);
         presenter = new GroupsPresenter(this);
-
-        setupRecyclerView();
-
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            refreshItems();
-        });
-
+        presenter.notifyViewCreated();
         return v;
     }
 
@@ -46,9 +41,17 @@ public class GroupsFragment extends Fragment{
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        presenter.destroy();
     }
 
-    private void setupRecyclerView(){
+    public void setupSwipeRefreshLayout(){
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            presenter.updateGroupsRecyclerView();
+            onItemsLoadComplete();
+        });
+    }
+
+    public void setupRecyclerView(ArrayList<Group> groups){
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
@@ -59,17 +62,9 @@ public class GroupsFragment extends Fragment{
         );
         groupsView.addItemDecoration(dividerItemDecoration);
 
-
-
-        groupsAdapter = new GroupsRecyclerAdapter(getActivity(), presenter.getGroups());
+        GroupsRecyclerAdapter groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
         groupsView.setAdapter(groupsAdapter);
         groupsAdapter.notifyDataSetChanged();
-    }
-
-
-    private void refreshItems() {
-        setupRecyclerView();
-        onItemsLoadComplete();
     }
 
     private void onItemsLoadComplete() {

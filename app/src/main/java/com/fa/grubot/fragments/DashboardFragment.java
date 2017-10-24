@@ -11,7 +11,10 @@ import android.view.ViewGroup;
 
 import com.fa.grubot.R;
 import com.fa.grubot.adapters.DashboardRecyclerAdapter;
+import com.fa.grubot.objects.DashboardEntry;
 import com.fa.grubot.presenters.DashboardPresenter;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,18 +27,17 @@ public class DashboardFragment extends Fragment {
     @BindView(R.id.recycler)RecyclerView groupsView;
     @BindView(R.id.swipeRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
 
-    private DashboardRecyclerAdapter dashboardAdapter;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
         unbinder = ButterKnife.bind(this, v);
         presenter = new DashboardPresenter(this);
 
-        setupRecyclerView();
+        presenter.notifyViewCreated();
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            refreshItems();
+            presenter.updateDashboardRecyclerView();
+            onItemsLoadComplete();
         });
 
         return v;
@@ -45,22 +47,17 @@ public class DashboardFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        presenter.destroy();
     }
 
-    private void setupRecyclerView(){
+    public void setupRecyclerView(ArrayList<DashboardEntry> entries){
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
 
-        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), presenter.getGroups());
+        DashboardRecyclerAdapter dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), entries);
         groupsView.setAdapter(dashboardAdapter);
         dashboardAdapter.notifyDataSetChanged();
-    }
-
-
-    private void refreshItems() {
-        setupRecyclerView();
-        onItemsLoadComplete();
     }
 
     private void onItemsLoadComplete() {

@@ -8,13 +8,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fa.grubot.R;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import com.fa.grubot.adapters.ChatsAdapter.ViewHolder;
 import com.fa.grubot.objects.Message;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by ni.petrov on 22/10/2017.

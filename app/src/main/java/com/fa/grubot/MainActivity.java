@@ -1,6 +1,5 @@
 package com.fa.grubot;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -38,9 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
         setupViews();
         setupDrawerContent();
-      
-        //Intent inten = new Intent(this, ChatActivity.class);
-        startActivity(inten);
 
         setDefaultFragment();
     }
@@ -74,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 });
 
-        ImageView userImage = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.userImage);
-        TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.userName);
+        ImageView userImage = navigationView.getHeaderView(0).findViewById(R.id.userImage);
+        TextView userName = navigationView.getHeaderView(0).findViewById(R.id.userName);
 
         userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(this, "USER"));
         userName.setText("user");

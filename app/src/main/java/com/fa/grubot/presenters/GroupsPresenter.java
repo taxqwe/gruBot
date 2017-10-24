@@ -3,9 +3,6 @@ package com.fa.grubot.presenters;
 
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.models.GroupsModel;
-import com.fa.grubot.objects.Group;
-
-import java.util.ArrayList;
 
 public class GroupsPresenter {
     private GroupsFragment fragment;
@@ -16,9 +13,16 @@ public class GroupsPresenter {
         this.model = new GroupsModel();
     }
 
-    public ArrayList<Group> getGroups(){
-        ArrayList<Group> groups = model.loadGroups();
-        //какая-то логика с groups
-        return groups;
+    public void notifyViewCreated(){
+        fragment.setupRecyclerView(model.loadGroups());
+    }
+
+    public void updateGroupsRecyclerView(){
+        fragment.setupRecyclerView(model.loadGroups());
+    }
+
+    public void destroy(){
+        fragment = null;
+        model = null;
     }
 }

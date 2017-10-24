@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.FragmentBase;
 import com.fa.grubot.adapters.ChatsAdapter;
-import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.presenters.ChatsPresenter;
 
 import java.util.ArrayList;

@@ -1,7 +1,6 @@
 package com.fa.grubot.presenters;
 
 import com.fa.grubot.abstractions.FragmentBase;
-import com.fa.grubot.fragments.ChatFragment;
 import com.fa.grubot.models.ChatsModel;
 
 /**
