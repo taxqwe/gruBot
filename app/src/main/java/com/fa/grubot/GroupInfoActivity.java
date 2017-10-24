@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
+import com.fa.grubot.objects.Group;
 import com.fa.grubot.objects.GroupInfoButton;
 import com.fa.grubot.presenters.GroupInfoPresenter;
 
@@ -28,12 +29,15 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     private GroupInfoPresenter presenter;
     private Unbinder unbinder;
 
+    private Group group;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_info);
         unbinder = ButterKnife.bind(this);
 
+        group = (Group) getIntent().getExtras().getSerializable("group");
         presenter = new GroupInfoPresenter(this);
         presenter.notifyViewCreated();
     }
@@ -42,6 +46,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle(group.getName());
     }
 
     public void setupFab(){
