@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
@@ -39,12 +40,14 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
 
     public void setupToolbar(){
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     public void setupFab(){
-        /*fab.setOnClickListener(view -> {
+        fab.setOnClickListener(view -> {
             //click
-        });*/
+        });
     }
 
     public void setupRecyclerView(ArrayList<GroupInfoButton> buttons){
@@ -55,6 +58,14 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         GroupInfoRecyclerAdapter groupInfoAdapter = new GroupInfoRecyclerAdapter(this, buttons);
         buttonsView.setAdapter(groupInfoAdapter);
         groupInfoAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home)
+            onBackPressed();
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
