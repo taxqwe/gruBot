@@ -1,20 +1,22 @@
 package com.fa.grubot.presenters;
 
 
+import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.models.GroupsModel;
 
 public class GroupsPresenter {
-    private GroupsFragment fragment;
+    private GroupsFragmentBase fragment;
     private GroupsModel model;
 
-    public GroupsPresenter(GroupsFragment fragment){
+    public GroupsPresenter(GroupsFragmentBase fragment){
         this.fragment = fragment;
         this.model = new GroupsModel();
     }
 
     public void notifyViewCreated(){
         fragment.setupRecyclerView(model.loadGroups());
+        fragment.setupSwipeRefreshLayout();
     }
 
     public void updateGroupsRecyclerView(){

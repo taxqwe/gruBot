@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fa.grubot.R;
+import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.adapters.DashboardRecyclerAdapter;
 import com.fa.grubot.objects.DashboardEntry;
 import com.fa.grubot.presenters.DashboardPresenter;
@@ -20,7 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements DashboardFragmentBase{
     private Unbinder unbinder;
     private DashboardPresenter presenter;
 
@@ -35,11 +36,6 @@ public class DashboardFragment extends Fragment {
 
         presenter.notifyViewCreated();
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateDashboardRecyclerView();
-            onItemsLoadComplete();
-        });
-
         return v;
     }
 
@@ -48,6 +44,13 @@ public class DashboardFragment extends Fragment {
         super.onDestroyView();
         unbinder.unbind();
         presenter.destroy();
+    }
+
+    public void setupSwipeRefreshLayout(){
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            presenter.updateDashboardRecyclerView();
+            onItemsLoadComplete();
+        });
     }
 
     public void setupRecyclerView(ArrayList<DashboardEntry> entries){

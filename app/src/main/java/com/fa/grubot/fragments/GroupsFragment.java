@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fa.grubot.R;
+import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.Group;
 import com.fa.grubot.presenters.GroupsPresenter;
@@ -21,7 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class GroupsFragment extends Fragment{
+public class GroupsFragment extends Fragment implements GroupsFragmentBase{
     private Unbinder unbinder;
     private GroupsPresenter presenter;
 

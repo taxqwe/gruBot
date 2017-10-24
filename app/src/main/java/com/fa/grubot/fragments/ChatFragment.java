@@ -60,6 +60,8 @@ public class ChatFragment extends Fragment implements FragmentBase {
         adapter.notifyDataSetChanged();
     }
 
+    public void smth(){}
+
     @Override
     public void onDestroy() {
         super.onDestroy();
