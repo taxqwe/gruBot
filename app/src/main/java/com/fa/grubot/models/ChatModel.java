@@ -11,9 +11,9 @@ import java.util.Random;
  * Created by ni.petrov on 22/10/2017.
  */
 
-public class ChatsModel {
+public class ChatModel {
 
-    public ChatsModel() {
+    public ChatModel() {
     }
 
     public ArrayList<Message> getMessagesOfChatById(int id){

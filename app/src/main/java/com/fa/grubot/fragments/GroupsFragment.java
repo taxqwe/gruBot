@@ -26,8 +26,8 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
     private Unbinder unbinder;
     private GroupsPresenter presenter;
 
-    @BindView(R.id.recycler)RecyclerView groupsView;
-    @BindView(R.id.swipeRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.recycler) RecyclerView groupsView;
+    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

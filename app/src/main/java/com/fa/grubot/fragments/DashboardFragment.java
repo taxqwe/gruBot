@@ -25,8 +25,8 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     private Unbinder unbinder;
     private DashboardPresenter presenter;
 
-    @BindView(R.id.recycler)RecyclerView groupsView;
-    @BindView(R.id.swipeRefreshLayout)SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.recycler) RecyclerView groupsView;
+    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

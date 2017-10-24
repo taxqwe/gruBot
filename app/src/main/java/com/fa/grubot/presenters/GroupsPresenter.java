@@ -2,7 +2,6 @@ package com.fa.grubot.presenters;
 
 
 import com.fa.grubot.abstractions.GroupsFragmentBase;
-import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.models.GroupsModel;
 
 public class GroupsPresenter {

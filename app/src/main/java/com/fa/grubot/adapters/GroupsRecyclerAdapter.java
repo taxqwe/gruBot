@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fa.grubot.ChatActivity;
+import com.fa.grubot.GroupInfoActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.Group;
 import com.fa.grubot.util.Globals;
@@ -48,12 +49,13 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int pos) {
         final int position = holder.getAdapterPosition();
+        Group group = groups.get(position);
 
-        holder.groupName.setText(groups.get(position).getName());
-        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, groups.get(position).getName()));
+        holder.groupName.setText(group.getName());
+        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, group.getName()));
 
         holder.groupImage.getRootView().setOnClickListener(v -> {
-            Intent intent = new Intent(context, ChatActivity.class);
+            Intent intent = new Intent(context, GroupInfoActivity.class);
             context.startActivity(intent);
         });
     }

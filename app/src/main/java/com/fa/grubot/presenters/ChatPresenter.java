@@ -1,21 +1,21 @@
 package com.fa.grubot.presenters;
 
-import com.fa.grubot.abstractions.FragmentBase;
-import com.fa.grubot.models.ChatsModel;
+import com.fa.grubot.abstractions.ChatFragmentBase;
+import com.fa.grubot.models.ChatModel;
 
 /**
  * Created by ni.petrov on 22/10/2017.
  */
 
-public class ChatsPresenter {
+public class ChatPresenter {
 
-    FragmentBase chatFragment;
-    ChatsModel model;
+    ChatFragmentBase chatFragment;
+    ChatModel model;
 
 
-    public ChatsPresenter(FragmentBase chatFragment) {
+    public ChatPresenter(ChatFragmentBase chatFragment) {
         this.chatFragment = chatFragment;
-        model = new ChatsModel();
+        model = new ChatModel();
     }
 
 

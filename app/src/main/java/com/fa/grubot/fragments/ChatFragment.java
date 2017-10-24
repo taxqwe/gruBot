@@ -10,9 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fa.grubot.R;
-import com.fa.grubot.abstractions.FragmentBase;
-import com.fa.grubot.adapters.ChatsAdapter;
-import com.fa.grubot.presenters.ChatsPresenter;
+import com.fa.grubot.abstractions.ChatFragmentBase;
+import com.fa.grubot.adapters.ChatRecyclerAdapter;
+import com.fa.grubot.presenters.ChatPresenter;
 
 import java.util.ArrayList;
 
@@ -24,11 +24,11 @@ import butterknife.Unbinder;
  * Created by ni.petrov on 22/10/2017.
  */
 
-public class ChatFragment extends Fragment implements FragmentBase {
+public class ChatFragment extends Fragment implements ChatFragmentBase {
 
-    private ChatsPresenter presenter;
+    private ChatPresenter presenter;
 
-    private ChatsAdapter adapter;
+    private ChatRecyclerAdapter adapter;
 
     private LinearLayoutManager mLayoutManager;
 
@@ -43,7 +43,7 @@ public class ChatFragment extends Fragment implements FragmentBase {
         unbinder = ButterKnife.bind(this, v);
         mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-        presenter = new ChatsPresenter(this);
+        presenter = new ChatPresenter(this);
         presenter.notifyViewCreated();
 
         return v;
@@ -55,7 +55,7 @@ public class ChatFragment extends Fragment implements FragmentBase {
         chatRecycler.setLayoutManager(mLayoutManager);
         chatRecycler.setHasFixedSize(false);
 
-        adapter = new ChatsAdapter(getActivity(), data);
+        adapter = new ChatRecyclerAdapter(getActivity(), data);
         chatRecycler.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }

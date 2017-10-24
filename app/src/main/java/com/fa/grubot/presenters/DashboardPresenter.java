@@ -2,7 +2,6 @@ package com.fa.grubot.presenters;
 
 
 import com.fa.grubot.abstractions.DashboardFragmentBase;
-import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.models.DashboardModel;
 
 public class DashboardPresenter {
