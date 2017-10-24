@@ -15,6 +15,7 @@ import com.fa.grubot.R;
 import com.fa.grubot.objects.Group;
 import com.fa.grubot.util.Globals;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -56,6 +57,7 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
 
         holder.groupImage.getRootView().setOnClickListener(v -> {
             Intent intent = new Intent(context, GroupInfoActivity.class);
+            intent.putExtra("group", (Serializable) group);
             context.startActivity(intent);
         });
     }

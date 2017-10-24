@@ -1,6 +1,8 @@
 package com.fa.grubot.objects;
 
-public class Group {
+import java.io.Serializable;
+
+public class Group implements Serializable {
     private int id;
     private String name;
     private String imgURL;
