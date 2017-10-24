@@ -1,5 +1,6 @@
 package com.fa.grubot;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -37,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
         setupViews();
         setupDrawerContent();
+      
+        //Intent inten = new Intent(this, ChatActivity.class);
+        startActivity(inten);
+
         setDefaultFragment();
     }
 
