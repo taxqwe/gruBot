@@ -1,8 +1,7 @@
 package com.fa.grubot.adapters;
 
 import android.content.Context;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.FragmentManager;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,13 +9,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fa.grubot.ChatActivity;
+import com.fa.grubot.GroupInfoActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.Group;
 import com.fa.grubot.util.Globals;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAdapter.ViewHolder>{
 
@@ -24,13 +27,12 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     private final ArrayList<Group> groups;
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView groupName;
-        private ImageView groupImage;
+        @BindView(R.id.groupName) TextView groupName;
+        @BindView(R.id.groupImage) ImageView groupImage;
 
         private ViewHolder(View view) {
             super(view);
-            groupImage = (ImageView) view.findViewById(R.id.groupImage);
-            groupName = (TextView) view.findViewById(R.id.groupName);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -48,12 +50,15 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int pos) {
         final int position = holder.getAdapterPosition();
+        Group group = groups.get(position);
 
-        holder.groupName.setText(groups.get(position).getName());
-        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, groups.get(position).getName()));
+        holder.groupName.setText(group.getName());
+        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, group.getName()));
 
         holder.groupImage.getRootView().setOnClickListener(v -> {
-            //// TODO: 19.10.2017
+            Intent intent = new Intent(context, GroupInfoActivity.class);
+            intent.putExtra("group", (Serializable) group);
+            context.startActivity(intent);
         });
     }
 
