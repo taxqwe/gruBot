@@ -12,7 +12,6 @@ import com.fa.grubot.ChatActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.GroupInfoButton;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
