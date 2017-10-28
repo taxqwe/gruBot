@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 26
@@ -40,7 +39,7 @@ dependencies {
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
 
     //butterknife
-    compile 'com.jakewharton:butterknife:8.8.1'
+    compile 'com.jakewharton:butterknife:9.0.0-SNAPSHOT'
 
     //dagger
     compile 'com.google.dagger:dagger:2.12'
