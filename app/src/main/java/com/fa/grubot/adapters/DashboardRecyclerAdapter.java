@@ -21,7 +21,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.fa.grubot.objects.DashboardEntry.TYPE_IMPORTANT_MESSAGE;
+import static com.fa.grubot.objects.DashboardEntry.TYPE_ANNOUNCEMENT;
 import static com.fa.grubot.objects.DashboardEntry.TYPE_VOTE;
 
 public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecyclerAdapter.ViewHolder>{
@@ -81,7 +81,7 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
     private int getColorFromDashboardEntry(DashboardEntry entry){
         Map<Integer, Integer> colorsPairList = new HashMap<>();
 
-        colorsPairList.put(TYPE_IMPORTANT_MESSAGE, ResourcesCompat.getColor(context.getResources(), R.color.colorImportantMessage, null));
+        colorsPairList.put(TYPE_ANNOUNCEMENT, ResourcesCompat.getColor(context.getResources(), R.color.colorAnnouncement, null));
         colorsPairList.put(TYPE_VOTE, ResourcesCompat.getColor(context.getResources(), R.color.colorVote, null));
 
         return colorsPairList.get(entry.getType());
