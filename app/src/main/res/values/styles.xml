@@ -13,6 +13,7 @@
     </style>
 
     <style name="AppTheme.Launcher" parent="AppTheme.NoActionBar">
+        <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
 </resources>
