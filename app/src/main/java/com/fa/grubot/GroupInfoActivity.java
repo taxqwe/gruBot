@@ -14,6 +14,7 @@ import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.objects.Group;
 import com.fa.grubot.objects.GroupInfoButton;
 import com.fa.grubot.presenters.GroupInfoPresenter;
+import com.r0adkll.slidr.Slidr;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_info);
+        Slidr.attach(this);
         unbinder = ButterKnife.bind(this);
 
         group = (Group) getIntent().getExtras().getSerializable("group");
