@@ -1,9 +1,7 @@
 package com.fa.grubot.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +19,6 @@ import com.fa.grubot.presenters.DashboardPresenter;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
@@ -52,26 +49,35 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         return v;
     }
 
-    public void setupLayouts(boolean isNetworkAvailable){
-        if (isNetworkAvailable)
-            layout = R.layout.fragment_dashboard;
+    public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
+        if (isNetworkAvailable) {
+            if (isHasData)
+                layout = R.layout.fragment_dashboard;
+            else
+                layout = R.layout.fragment_no_data;
+        }
         else
             layout = R.layout.fragment_no_internet_connection;
     }
 
     public void setupViews(int layout, View v){
-        if (layout == R.layout.fragment_dashboard){
-            groupsView = v.findViewById(R.id.recycler);
-            swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
-        } else {
-            retryBtn = v.findViewById(R.id.retryBtn);
+        switch (layout) {
+            case R.layout.fragment_dashboard:
+                groupsView = v.findViewById(R.id.recycler);
+                swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
+                break;
+            case R.layout.fragment_no_internet_connection:
+                retryBtn = v.findViewById(R.id.retryBtn);
+                break;
+            case R.layout.fragment_no_data:
+                swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
+                break;
         }
-
     }
 
-    public void setupSwipeRefreshLayout(){
+    public void setupSwipeRefreshLayout(int layout){
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateDashboardRecyclerView(getActivity());
+            presenter.updateView(layout, getActivity());
             onItemsLoadComplete();
         });
     }
@@ -103,8 +109,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     }
 
     public static DashboardFragment newInstance() {
-        DashboardFragment f = new DashboardFragment();
-        return f;
+        return new DashboardFragment();
     }
 
     @Override
