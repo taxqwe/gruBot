@@ -22,6 +22,7 @@ import com.fa.grubot.util.Globals;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.Icepick;
 
 public class MainActivity extends AppCompatActivity implements MainActivityBase{
 
@@ -35,17 +36,27 @@ public class MainActivity extends AppCompatActivity implements MainActivityBase{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
         presenter = new MainActivityPresenter(this);
-        presenter.notifyViewCreated();
+        presenter.notifyViewCreated(savedInstanceState);
+        if (savedInstanceState != null)
+            setTitle(savedInstanceState.getString("title"));
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("title", String.valueOf(getTitle()));
+        Icepick.saveInstanceState(this, outState);
     }
 
     @Override
@@ -82,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityBase{
         return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
-    public void setDefaultFragment(){
+    public void setDefaultFragment() {
         Fragment fragment = null;
         Class fragmentClass = DashboardFragment.class;
         try {
