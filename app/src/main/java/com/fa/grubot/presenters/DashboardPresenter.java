@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class DashboardPresenter {
     private DashboardFragmentBase fragment;
     private DashboardModel model;
-    private ArrayList<DashboardEntry> entries;
+    private ArrayList<DashboardEntry> entries = new ArrayList<>();
 
     public DashboardPresenter(DashboardFragmentBase fragment){
         this.fragment = fragment;
@@ -26,7 +26,7 @@ public class DashboardPresenter {
 
         switch (layout) {
             case R.layout.fragment_dashboard:
-                fragment.setupRecyclerView(model.loadDashboard());
+                fragment.setupRecyclerView(entries);
                 fragment.setupSwipeRefreshLayout(layout);
                 break;
             case R.layout.fragment_no_internet_connection:
@@ -58,6 +58,7 @@ public class DashboardPresenter {
         boolean isHasData = false;
         if (isNetworkAvailable)
             entries = model.loadDashboard();
+
         if (entries.size() > 0)
             isHasData = true;
 
