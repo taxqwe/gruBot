@@ -16,9 +16,19 @@ public class DashboardModel {
     }
     public ArrayList<DashboardEntry> loadDashboard(){
         ArrayList<DashboardEntry> entries = new ArrayList<>();
-        entries.add(new DashboardEntry(1, DashboardEntry.TYPE_IMPORTANT_MESSAGE, new Group(1, "ПИ4-1", null), "Комлев Антон", "Важное сообщение", new Date()));
-        entries.add(new DashboardEntry(2, DashboardEntry.TYPE_VOTE, new Group(2, "ПИ4-2", null), "Махин Семен", "Голосование", new Date()));
-        entries.add(new DashboardEntry(3, DashboardEntry.TYPE_IMPORTANT_MESSAGE, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "АЗАЗЗАЗА ЗАТРАЛЕЛ", new Date()));
+        entries.add(new DashboardEntry(1, DashboardEntry.TYPE_ANNOUNCEMENT, new Group(1, "ПИ4-1", null), "Комлев Антон", "Собрание", new Date()));
+        entries.add(new DashboardEntry(1, DashboardEntry.TYPE_ANNOUNCEMENT, new Group(1, "ПИ4-1", null), "Комлев Антон", "Выходные дни", new Date()));
+        entries.add(new DashboardEntry(1, DashboardEntry.TYPE_VOTE, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date()));
+
+        entries.add(new DashboardEntry(2, DashboardEntry.TYPE_VOTE, new Group(2, "ПИ4-2", null), "Махин Семен", "Сбор денег", new Date()));
+        entries.add(new DashboardEntry(2, DashboardEntry.TYPE_VOTE, new Group(2, "ПИ4-2", null), "Махин Семен", "Удовлетворенность чем-то", new Date()));
+        entries.add(new DashboardEntry(2, DashboardEntry.TYPE_VOTE, new Group(2, "ПИ4-2", null), "Махин Семен", "Активность", new Date()));
+
+
+        entries.add(new DashboardEntry(3, DashboardEntry.TYPE_ANNOUNCEMENT, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Поездка", new Date()));
+        entries.add(new DashboardEntry(3, DashboardEntry.TYPE_ANNOUNCEMENT, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Объявление", new Date()));
+        entries.add(new DashboardEntry(3, DashboardEntry.TYPE_ANNOUNCEMENT, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Собрание", new Date()));
+
         return entries;
     }
 

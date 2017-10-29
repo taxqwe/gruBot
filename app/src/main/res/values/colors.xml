@@ -8,5 +8,5 @@
     <color name="waAccent">#25d366</color>
 
     <color name="colorVote">#c6dcff</color>
-    <color name="colorImportantMessage">#fcdbdb</color>
+    <color name="colorAnnouncement">#fcdbdb</color>
 </resources>
