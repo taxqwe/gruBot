@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.objects.Group;
-import com.fa.grubot.objects.GroupInfoButton;
 import com.fa.grubot.presenters.GroupInfoPresenter;
+import com.fa.grubot.util.Globals;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 import com.r0adkll.slidr.Slidr;
 
@@ -37,7 +37,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_info);
-        Slidr.attach(this);
+        Slidr.attach(this, Globals.Config.getSlidrConfig());
         unbinder = ButterKnife.bind(this);
 
         group = (Group) getIntent().getExtras().getSerializable("group");
