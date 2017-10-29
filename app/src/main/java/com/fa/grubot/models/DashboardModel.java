@@ -16,6 +16,7 @@ public class DashboardModel {
     }
     public ArrayList<DashboardEntry> loadDashboard(){
         ArrayList<DashboardEntry> entries = new ArrayList<>();
+      
         entries.add(new DashboardEntry(1, DashboardEntry.TYPE_ANNOUNCEMENT, new Group(1, "ПИ4-1", null), "Комлев Антон", "Собрание", new Date()));
         entries.add(new DashboardEntry(1, DashboardEntry.TYPE_ANNOUNCEMENT, new Group(1, "ПИ4-1", null), "Комлев Антон", "Выходные дни", new Date()));
         entries.add(new DashboardEntry(1, DashboardEntry.TYPE_VOTE, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date()));

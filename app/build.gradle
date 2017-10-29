@@ -57,7 +57,7 @@ dependencies {
 
     //Expandable RecyclerView
     compile 'com.github.grennis:ExpandableRecyclerView:0.9.3'
-
+    
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.12'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
