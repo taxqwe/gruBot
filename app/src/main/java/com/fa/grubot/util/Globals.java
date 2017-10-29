@@ -46,7 +46,7 @@ public class Globals {
         public static SlidrConfig getSlidrConfig() {
             return new SlidrConfig.Builder()
                 .position(SlidrPosition.LEFT)
-                .sensitivity(0.25f)
+                .sensitivity(0.7f)
                 .scrimColor(Color.BLACK)
                 .scrimStartAlpha(0.8f)
                 .scrimEndAlpha(0f)
