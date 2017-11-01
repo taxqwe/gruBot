@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import icepick.Icepick;
 
 public class GroupInfoActivity extends AppCompatActivity implements GroupInfoActivityBase {
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -37,6 +38,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_info);
         Slidr.attach(this);
+        Icepick.restoreInstanceState(this, savedInstanceState);
         unbinder = ButterKnife.bind(this);
 
         group = (Group) getIntent().getExtras().getSerializable("group");
@@ -49,7 +51,6 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(group.getName());
-        //231
     }
 
     public void setupFab(){

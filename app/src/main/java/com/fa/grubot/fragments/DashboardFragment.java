@@ -24,10 +24,6 @@ import butterknife.Unbinder;
 
 public class DashboardFragment extends Fragment implements DashboardFragmentBase{
 
-    //@Nullable @BindView(R.id.recycler) RecyclerView groupsView;
-    //@Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
-    //@Nullable @BindView(R.id.retryBtn) Button retryBtn;
-
     private RecyclerView groupsView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Button retryBtn;

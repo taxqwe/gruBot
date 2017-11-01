@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.fa.grubot.fragments.ChatFragment;
 import com.r0adkll.slidr.Slidr;
 
+import icepick.Icepick;
+
 /**
  * Created by ni.petrov on 22/10/2017.
  */
@@ -24,5 +26,11 @@ public class ChatActivity extends AppCompatActivity {
 
         ChatFragment fragment = new ChatFragment();
         fragmentTransaction.replace(R.id.content, fragment).commit();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 }

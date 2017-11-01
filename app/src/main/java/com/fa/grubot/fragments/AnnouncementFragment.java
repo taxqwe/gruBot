@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class GroupsFragment extends Fragment implements GroupsFragmentBase{
+public class AnnouncementFragment extends Fragment implements GroupsFragmentBase {
 
-    private RecyclerView groupsView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Button retryBtn;
 
@@ -48,19 +47,15 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
-        if (isNetworkAvailable) {
-            if (isHasData)
-                layout = R.layout.fragment_groups;
-            else
-                layout = R.layout.fragment_no_data;
-        }
+        if (isNetworkAvailable)
+            layout = R.layout.fragment_announcement;
         else
             layout = R.layout.fragment_no_internet_connection;
     }
 
     public void setupViews(int layout, View v){
         switch (layout) {
-            case R.layout.fragment_groups:
+            case R.layout.fragment_announcement:
                 groupsView = v.findViewById(R.id.recycler);
                 swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
                 break;
@@ -112,8 +107,8 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    public static GroupsFragment newInstance() {
-        return new GroupsFragment();
+    public static AnnouncementFragment newInstance() {
+        return new AnnouncementFragment();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.fa.grubot.objects;
 
+import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -7,7 +8,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class DashboardEntry {
+public class DashboardEntry implements Serializable {
     public static final int TYPE_ANNOUNCEMENT = 34;
     public static final int TYPE_VOTE = 36;
 

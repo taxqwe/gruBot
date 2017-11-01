@@ -38,6 +38,11 @@
             android:screenOrientation="sensor"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".GroupActionActivity"
+            android:screenOrientation="sensor"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
