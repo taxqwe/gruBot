@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fa.grubot.fragments.ChatFragment;
+import com.fa.grubot.util.Globals;
 import com.r0adkll.slidr.Slidr;
 
 import icepick.Icepick;
@@ -20,7 +21,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        Slidr.attach(this);
+        Slidr.attach(this, Globals.Config.getSlidrConfig());
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 

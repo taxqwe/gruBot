@@ -12,8 +12,9 @@ import android.view.MenuItem;
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.objects.Group;
-import com.fa.grubot.objects.GroupInfoButton;
 import com.fa.grubot.presenters.GroupInfoPresenter;
+import com.fa.grubot.util.Globals;
+import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 import com.r0adkll.slidr.Slidr;
 
 import java.util.ArrayList;
@@ -37,13 +38,17 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_info);
+<<<<<<< HEAD
         Slidr.attach(this);
         Icepick.restoreInstanceState(this, savedInstanceState);
+=======
+        Slidr.attach(this, Globals.Config.getSlidrConfig());
+>>>>>>> origin/dev
         unbinder = ButterKnife.bind(this);
 
         group = (Group) getIntent().getExtras().getSerializable("group");
         presenter = new GroupInfoPresenter(this);
-        presenter.notifyViewCreated();
+        presenter.notifyViewCreated(group);
     }
 
     public void setupToolbar(){
@@ -59,12 +64,13 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         });
     }
 
-    public void setupRecyclerView(ArrayList<GroupInfoButton> buttons){
+    public void setupRecyclerView(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> buttons){
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         buttonsView.setLayoutManager(mLayoutManager);
         buttonsView.setHasFixedSize(false);
 
         GroupInfoRecyclerAdapter groupInfoAdapter = new GroupInfoRecyclerAdapter(this, buttons);
+        groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);
         groupInfoAdapter.notifyDataSetChanged();
     }
