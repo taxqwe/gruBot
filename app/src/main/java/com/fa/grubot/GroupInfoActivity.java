@@ -38,12 +38,9 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_info);
-<<<<<<< HEAD
-        Slidr.attach(this);
-        Icepick.restoreInstanceState(this, savedInstanceState);
-=======
         Slidr.attach(this, Globals.Config.getSlidrConfig());
->>>>>>> origin/dev
+        Icepick.restoreInstanceState(this, savedInstanceState);
+
         unbinder = ButterKnife.bind(this);
 
         group = (Group) getIntent().getExtras().getSerializable("group");

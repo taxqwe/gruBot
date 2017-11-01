@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.fa.grubot.R;
+import com.fa.grubot.abstractions.AnnouncementFragmentBase;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.Group;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class AnnouncementFragment extends Fragment implements GroupsFragmentBase {
+public class AnnouncementFragment extends Fragment implements AnnouncementFragmentBase {
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private Button retryBtn;
@@ -34,7 +35,7 @@ public class AnnouncementFragment extends Fragment implements GroupsFragmentBase
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new GroupsPresenter(this);
+        //presenter = new GroupsPresenter(this);
         presenter.notifyFragmentStarted(getActivity());
 
         View v = inflater.inflate(layout, container, false);
@@ -56,7 +57,7 @@ public class AnnouncementFragment extends Fragment implements GroupsFragmentBase
     public void setupViews(int layout, View v){
         switch (layout) {
             case R.layout.fragment_announcement:
-                groupsView = v.findViewById(R.id.recycler);
+                //groupsView = v.findViewById(R.id.recycler);
                 swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
                 break;
             case R.layout.fragment_no_internet_connection:
@@ -75,21 +76,6 @@ public class AnnouncementFragment extends Fragment implements GroupsFragmentBase
         });
     }
 
-    public void setupRecyclerView(ArrayList<Group> groups){
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        groupsView.setLayoutManager(mLayoutManager);
-        groupsView.setHasFixedSize(false);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-                this.getContext(),
-                mLayoutManager.getOrientation()
-        );
-        groupsView.addItemDecoration(dividerItemDecoration);
-
-        GroupsRecyclerAdapter groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
-        groupsView.setAdapter(groupsAdapter);
-        groupsAdapter.notifyDataSetChanged();
-    }
 
     public void setupRetryButton(){
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
