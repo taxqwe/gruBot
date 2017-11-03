@@ -21,7 +21,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.fa.grubot.objects.DashboardEntry.TYPE_IMPORTANT_MESSAGE;
+import static com.fa.grubot.objects.DashboardEntry.TYPE_ANNOUNCEMENT;
 import static com.fa.grubot.objects.DashboardEntry.TYPE_VOTE;
 
 public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecyclerAdapter.ViewHolder>{
@@ -30,9 +30,9 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
     private final ArrayList<DashboardEntry> entries;
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.groupImage) ImageView groupImage;
         @BindView(R.id.entryTypeText) TextView entryTypeText;
         @BindView(R.id.entryDate) TextView entryDate;
+        @BindView(R.id.entryGroup) TextView entryGroup;
         @BindView(R.id.entryAuthor) TextView entryAuthor;
         @BindView(R.id.entryDesc) TextView entryDesc;
         @BindView(R.id.card_view) View cardView;
@@ -64,10 +64,10 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
         holder.entryDate.setText(entry.getDate());
         holder.entryAuthor.setText(entry.getAuthor());
         holder.entryDesc.setText(entry.getDesc());
-        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, entry.getGroup().getName()));
+        holder.entryGroup.setText(entry.getGroup().getName());
         holder.cardView.setBackgroundColor(getColorFromDashboardEntry(entry));
 
-        holder.groupImage.getRootView().setOnClickListener(v -> {
+        holder.cardView.setOnClickListener(v -> {
             Toast.makeText(context, "КЛИК))))", Toast.LENGTH_SHORT).show();
             //// TODO: 19.10.2017
         });
@@ -81,7 +81,7 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
     private int getColorFromDashboardEntry(DashboardEntry entry){
         Map<Integer, Integer> colorsPairList = new HashMap<>();
 
-        colorsPairList.put(TYPE_IMPORTANT_MESSAGE, ResourcesCompat.getColor(context.getResources(), R.color.colorImportantMessage, null));
+        colorsPairList.put(TYPE_ANNOUNCEMENT, ResourcesCompat.getColor(context.getResources(), R.color.colorAnnouncement, null));
         colorsPairList.put(TYPE_VOTE, ResourcesCompat.getColor(context.getResources(), R.color.colorVote, null));
 
         return colorsPairList.get(entry.getType());

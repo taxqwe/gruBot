@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class DashboardEntry {
-    public static final int TYPE_IMPORTANT_MESSAGE = 34;
+    public static final int TYPE_ANNOUNCEMENT = 34;
     public static final int TYPE_VOTE = 36;
 
     private Map<Integer, String> typesPairList = new HashMap<>();
@@ -28,7 +28,7 @@ public class DashboardEntry {
         this.desc = desc;
         this.date = date;
 
-        typesPairList.put(TYPE_IMPORTANT_MESSAGE, "Важное сообщение");
+        typesPairList.put(TYPE_ANNOUNCEMENT, "Объявление");
         typesPairList.put(TYPE_VOTE, "Голосование");
     }
 

@@ -2,6 +2,8 @@ package com.fa.grubot.util;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -26,6 +28,14 @@ public class Globals {
                     .endConfig()
                     .buildRound(String.valueOf(name.charAt(0)).toUpperCase(), color);
             return drawable;
+        }
+    }
+
+    public static class InternetMethods {
+        public static boolean isNetworkAvailable(Context context) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            return (networkInfo != null && networkInfo.isConnected());
         }
     }
 }

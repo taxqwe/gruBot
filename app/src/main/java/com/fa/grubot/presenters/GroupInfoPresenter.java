@@ -3,6 +3,7 @@ package com.fa.grubot.presenters;
 
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.models.GroupInfoModel;
+import com.fa.grubot.objects.Group;
 
 public class GroupInfoPresenter {
     private GroupInfoActivityBase activity;
@@ -13,10 +14,10 @@ public class GroupInfoPresenter {
         this.model = new GroupInfoModel();
     }
 
-    public void notifyViewCreated(){
+    public void notifyViewCreated(Group group){
         activity.setupToolbar();
         activity.setupFab();
-        activity.setupRecyclerView(model.loadButtons());
+        activity.setupRecyclerView(model.loadButtons(group));
     }
 
     public void destroy(){

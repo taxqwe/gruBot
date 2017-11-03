@@ -14,31 +14,36 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fa.grubot.abstractions.MainActivityBase;
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
+import com.fa.grubot.presenters.MainActivityPresenter;
 import com.fa.grubot.util.Globals;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import icepick.Icepick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainActivityBase{
 
     @BindView(R.id.nv_layout) DrawerLayout drawerLayout;
     @BindView(R.id.drawer) NavigationView navigationView;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
     private ActionBarDrawerToggle drawerToggle;
+    private MainActivityPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setupViews();
-        setupDrawerContent();
-
-        setDefaultFragment();
+        presenter = new MainActivityPresenter(this);
+        presenter.notifyViewCreated(savedInstanceState);
+        if (savedInstanceState != null)
+            setTitle(savedInstanceState.getString("title"));
     }
 
     @Override
@@ -48,13 +53,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("title", String.valueOf(getTitle()));
+        Icepick.saveInstanceState(this, outState);
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
     // Инициализация view
-    private void setupViews(){
+    public void setupViews(){
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
@@ -63,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Инициализация drawer
-    private void setupDrawerContent() {
+    public void setupDrawerContent() {
         navigationView.setNavigationItemSelectedListener(
                 menuItem -> {
                     selectDrawerItem(menuItem);
@@ -81,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
-    private void setDefaultFragment(){
+    public void setDefaultFragment() {
         Fragment fragment = null;
         Class fragmentClass = DashboardFragment.class;
         try {
@@ -101,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     public void selectDrawerItem(MenuItem menuItem) {
         Fragment fragment = null;
         Class fragmentClass;
-        switch(menuItem.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.nav_dashboard:
                 fragmentClass = DashboardFragment.class;
                 break;
@@ -148,5 +160,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.destroy();
     }
 }

@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fa.grubot.ChatActivity;
 import com.fa.grubot.GroupInfoActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.Group;

@@ -8,9 +8,12 @@
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.Launcher" parent="AppTheme.NoActionBar">
+        <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
 </resources>

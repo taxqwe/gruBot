@@ -1,14 +1,16 @@
 package com.fa.grubot.objects;
 
+import java.util.ArrayList;
+
 public class GroupInfoButton {
     private int id;
     private String text;
-    private int notificationsCount;
+    private ArrayList<DashboardEntry> childList;
 
-    public GroupInfoButton(int id, String text, int notificationsCount) {
+    public GroupInfoButton(int id, String text, ArrayList<DashboardEntry> childList) {
         this.id = id;
         this.text = text;
-        this.notificationsCount = notificationsCount;
+        this.childList = childList;
     }
 
     public int getId() {
@@ -19,7 +21,7 @@ public class GroupInfoButton {
         return text;
     }
 
-    public int getNotificationsCount() {
-        return notificationsCount;
+    public int getChildCount() {
+        return childList.size();
     }
 }
