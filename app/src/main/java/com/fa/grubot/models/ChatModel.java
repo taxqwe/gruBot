@@ -1,11 +1,14 @@
 package com.fa.grubot.models;
 
-import android.text.format.Time;
+import com.fa.grubot.objects.ChatMessage;
+import com.fa.grubot.objects.ChatUser;
 
-import com.fa.grubot.objects.Message;
-
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by ni.petrov on 22/10/2017.
@@ -14,21 +17,6 @@ import java.util.Random;
 public class ChatModel {
 
     public ChatModel() {
-    }
-
-    public ArrayList<Message> getMessagesOfChatById(int id){
-        ArrayList<Message> messages = new ArrayList<>();
-
-        int randomNumberOfMessages = new Random().nextInt(25 - 10 + 1) + 10;
-
-        Time time = new Time();
-        time.setToNow();
-
-        for (int i = 0; i < randomNumberOfMessages; i++) {
-            messages.add(new Message(i, time, generateRandomString(10,35), generateRandomString(3,10)));
-        }
-
-        return messages;
     }
 
     private String generateRandomString(int min, int max){
@@ -42,5 +30,25 @@ public class ChatModel {
             sb.append(c);
         }
         return sb.toString();
+    }
+
+
+    public Observable<ChatMessage> getMessagesObservable() {
+        return PublishSubject
+                .interval(3, TimeUnit.SECONDS)
+                .map(interval -> {
+                            ChatMessage message = new ChatMessage(String.valueOf(interval),
+                                    generateRandomString(15, 150),
+                                    new ChatUser("2",
+                                            "Комлев Антон",
+                                            "https://img00.deviantart.net/fc89/i/2014/245/a/5/stalin_the_cat_23_by_kurogn-d7xngqa.jpg"),
+                                    new Date(37, 12, 12));
+                            return message;
+                        }
+                );
+    }
+
+    public void sendMessage(ChatMessage message) {
+        // message goes to server
     }
 }

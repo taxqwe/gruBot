@@ -6,15 +6,15 @@ import java.util.ArrayList;
  * Created by ni.petrov on 22/10/2017.
  */
 
-public class Chat {
+public class ToDoRemove {
 
     private int id;
 
-    private ArrayList<Message> messages;
+    private ArrayList<ChatMessage> messages;
 
     private String name;
 
-    public Chat(int id, String name, ArrayList<Message> messages) {
+    public ToDoRemove(int id, String name, ArrayList<ChatMessage> messages) {
         this.id = id;
         this.name = name;
         this.messages = messages;
@@ -34,7 +34,7 @@ public class Chat {
     }
 
     public String getLastMessageDate() {
-        return messages.get(messages.size()).getTime().toString();
+        return null;
     }
 
 }

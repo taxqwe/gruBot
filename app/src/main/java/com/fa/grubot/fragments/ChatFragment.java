@@ -3,22 +3,30 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatFragmentBase;
-import com.fa.grubot.adapters.ChatRecyclerAdapter;
+import com.fa.grubot.objects.ChatMessage;
 import com.fa.grubot.presenters.ChatPresenter;
+import com.fa.grubot.util.Globals;
+import com.stfalcon.chatkit.commons.ImageLoader;
+import com.stfalcon.chatkit.messages.MessageInput;
+import com.stfalcon.chatkit.messages.MessagesList;
+import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
-import java.util.ArrayList;
+import java.util.Date;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by ni.petrov on 22/10/2017.
@@ -28,44 +36,94 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
 
     private ChatPresenter presenter;
 
-    private ChatRecyclerAdapter adapter;
+    private MessagesListAdapter<ChatMessage> messageAdapter;
 
-    private LinearLayoutManager mLayoutManager;
+    private String senderId;
 
-    @BindView(R.id.chatRecycler) RecyclerView chatRecycler;
+    private MessagesList messagesListView;
 
-    private Unbinder unbinder;
+    private MessageInput inputView;
+
+    private Toolbar chatToolbar;
+
+    private int myId;
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
-        unbinder = ButterKnife.bind(this, v);
-        mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-        presenter = new ChatPresenter(this);
-        presenter.notifyViewCreated();
+        init(v);
 
         return v;
     }
 
+    private void init(View view) {
+        presenter = new ChatPresenter(this);
 
-    @Override
-    public void setupRecyclerView(ArrayList data) {
-        chatRecycler.setLayoutManager(mLayoutManager);
-        chatRecycler.setHasFixedSize(false);
+        messagesListView = view.findViewById(R.id.messagesList);
+        inputView = view.findViewById(R.id.input);
 
-        adapter = new ChatRecyclerAdapter(getActivity(), data);
-        chatRecycler.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        chatToolbar = view.findViewById(R.id.chat_toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(chatToolbar);
+
+        ImageLoader imageLoader = new com.fa.grubot.util.ImageLoader(this);
+
+        messageAdapter = new MessagesListAdapter<>(Globals.getMe().getId(), imageLoader); // sender id must be equals id of loggined user
+        messagesListView.setAdapter(messageAdapter);
+
+        inputView.setInputListener(input -> {
+            // validate and send message here
+            ChatMessage message = new ChatMessage("2",
+                    inputView.getInputEditText().getText().toString(),
+                    Globals.getMe(), new Date());
+            messageAdapter.addToStart(message, true);
+            presenter.sendMessage(message);
+            return true;
+        });
+
+        presenter.onNotifyViewCreated();
     }
-
-    public void smth(){}
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unbinder.unbind();
         presenter.destroy();
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_chat, menu);
+    }
+
+    @Override
+    public void subscribeOnNewMessages(Observable<ChatMessage> messagesObservable) {
+        messagesObservable
+                .subscribeOn(AndroidSchedulers.mainThread())
+
+                .observeOn(AndroidSchedulers.mainThread())
+
+                .subscribe(message -> {
+                    messageAdapter.addToStart(message,
+                            !messagesListView.canScrollVertically(1));
+                });
+    }
+
+    @Override
+    public void setUserId(int id) {
+        myId = id;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.enable_smart:
+                Toast.makeText(getActivity(), "Smart Chat enabled", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
