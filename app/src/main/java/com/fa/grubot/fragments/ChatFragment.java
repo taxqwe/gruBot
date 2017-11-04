@@ -53,7 +53,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
-
+        setHasOptionsMenu(true);
         init(v);
 
         return v;
@@ -65,7 +65,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
         messagesListView = view.findViewById(R.id.messagesList);
         inputView = view.findViewById(R.id.input);
 
-        chatToolbar = view.findViewById(R.id.chat_toolbar);
+        chatToolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(chatToolbar);
 
         ImageLoader imageLoader = new com.fa.grubot.util.ImageLoader(this);
