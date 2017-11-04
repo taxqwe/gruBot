@@ -2,6 +2,7 @@ package com.fa.grubot.presenters;
 
 import com.fa.grubot.abstractions.ChatFragmentBase;
 import com.fa.grubot.models.ChatModel;
+import com.fa.grubot.objects.ChatMessage;
 
 /**
  * Created by ni.petrov on 22/10/2017.
@@ -19,12 +20,19 @@ public class ChatPresenter {
     }
 
 
-    public void notifyViewCreated(){
-        chatFragment.setupRecyclerView(model.getMessagesOfChatById(1488));
+    public void onNotifyViewCreated() {
+        chatFragment.subscribeOnNewMessages(model.getMessagesObservable());
+
+        //todo get real id
+        chatFragment.setUserId(1);
     }
 
     public void destroy(){
         chatFragment = null;
         model = null;
+    }
+
+    public void sendMessage(ChatMessage message) {
+        model.sendMessage(message);
     }
 }
