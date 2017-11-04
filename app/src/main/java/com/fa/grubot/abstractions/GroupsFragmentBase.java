@@ -1,7 +1,5 @@
 package com.fa.grubot.abstractions;
 
-import android.view.View;
-
 import com.fa.grubot.objects.Group;
 
 import java.util.ArrayList;

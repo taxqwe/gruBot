@@ -6,9 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.DashboardEntry;
 
@@ -27,13 +28,15 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
     private Context context;
     private final ArrayList<DashboardEntry> entries;
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.entryTypeText) TextView entryTypeText;
         @BindView(R.id.entryDate) TextView entryDate;
         @BindView(R.id.entryGroup) TextView entryGroup;
         @BindView(R.id.entryAuthor) TextView entryAuthor;
         @BindView(R.id.entryDesc) TextView entryDesc;
-        @BindView(R.id.card_view) View cardView;
+
+        @BindView(R.id.view_background) RelativeLayout viewBackground;
+        public @BindView(R.id.view_foreground) RelativeLayout viewForeground;
 
 
         private ViewHolder(View view) {
@@ -63,12 +66,26 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
         holder.entryAuthor.setText(entry.getAuthor());
         holder.entryDesc.setText(entry.getDesc());
         holder.entryGroup.setText(entry.getGroup().getName());
-        holder.cardView.setBackgroundColor(getColorFromDashboardEntry(entry));
+        holder.viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
 
-        holder.cardView.setOnClickListener(v -> {
-            Toast.makeText(context, "КЛИК))))", Toast.LENGTH_SHORT).show();
-            //// TODO: 19.10.2017
+        holder.viewForeground.setOnClickListener(v -> {
+            if (entry.getType() == DashboardEntry.TYPE_ANNOUNCEMENT)
+                new MaterialDialog.Builder(context)
+                        .title(entry.getGroup().getName() + ": " + entry.getDesc())
+                        .content(entry.getText())
+                        .positiveText(android.R.string.ok)
+                        .show();
         });
+    }
+
+    public void removeItem(int position) {
+        entries.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(DashboardEntry entry, int position) {
+        entries.add(position, entry);
+        notifyItemInserted(position);
     }
 
     @Override

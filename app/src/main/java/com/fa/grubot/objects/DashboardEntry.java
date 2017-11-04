@@ -19,14 +19,16 @@ public class DashboardEntry implements Serializable {
     private Group group;
     private String author;
     private String desc;
+    private String text;
     private Date date;
 
-    public DashboardEntry(int id, int type, Group group, String author, String desc, Date date) {
+    public DashboardEntry(int id, int type, Group group, String author, String desc, String text, Date date) {
         this.id = id;
         this.type = type;
         this.group = group;
         this.author = author;
         this.desc = desc;
+        this.text = text;
         this.date = date;
 
         typesPairList.put(TYPE_ANNOUNCEMENT, "Объявление");
@@ -51,6 +53,10 @@ public class DashboardEntry implements Serializable {
 
     public String getDesc() {
         return desc;
+    }
+
+    public String getText() {
+        return text;
     }
 
     public String getTypeText(){

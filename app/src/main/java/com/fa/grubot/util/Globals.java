@@ -47,6 +47,8 @@ public class Globals {
         return new ChatUser("1",
                 "The First One",
                 "http://www.netlore.ru/upload/files/1307/3_321.jpg");
+    }
+
     public static class Config {
         public static SlidrConfig getSlidrConfig() {
             return new SlidrConfig.Builder()

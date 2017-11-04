@@ -1,11 +1,16 @@
 package com.fa.grubot.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +21,7 @@ import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.adapters.DashboardRecyclerAdapter;
 import com.fa.grubot.objects.DashboardEntry;
 import com.fa.grubot.presenters.DashboardPresenter;
+import com.fa.grubot.util.RecyclerItemTouchHelper;
 
 import java.util.ArrayList;
 
@@ -24,7 +30,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class DashboardFragment extends Fragment implements DashboardFragmentBase{
+public class DashboardFragment extends Fragment implements DashboardFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener{
 
     @Nullable @BindView(R.id.recycler) RecyclerView entriesView;
     @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
@@ -32,6 +38,8 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
     private Unbinder unbinder;
     private DashboardPresenter presenter;
+    private ArrayList<DashboardEntry> entries;
+    private DashboardRecyclerAdapter dashboardAdapter;
     private int layout;
 
     @Override
@@ -69,9 +77,14 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     public void setupRecyclerView(ArrayList<DashboardEntry> entries){
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         entriesView.setLayoutManager(mLayoutManager);
+        entriesView.setItemAnimator(new DefaultItemAnimator());
         entriesView.setHasFixedSize(false);
 
-        DashboardRecyclerAdapter dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), entries);
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(entriesView);
+
+        this.entries = entries;
+        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), entries);
         entriesView.setAdapter(dashboardAdapter);
         dashboardAdapter.notifyDataSetChanged();
     }
@@ -94,6 +107,24 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
     public static DashboardFragment newInstance() {
         return new DashboardFragment();
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof DashboardRecyclerAdapter.ViewHolder) {
+            Log.e("myTag", String.valueOf(viewHolder.getAdapterPosition()));
+            final DashboardEntry deletedItem = entries.get(viewHolder.getAdapterPosition());
+            final int deletedIndex = viewHolder.getAdapterPosition();
+
+            dashboardAdapter.removeItem(viewHolder.getAdapterPosition());
+
+            Snackbar snackbar = Snackbar.make(swipeRefreshLayout, deletedItem.getTypeText() + " отправлено в архив", Snackbar.LENGTH_LONG);
+            snackbar.setAction(android.R.string.cancel, view -> {
+                dashboardAdapter.restoreItem(deletedItem, deletedIndex);
+            });
+            snackbar.setActionTextColor(Color.YELLOW);
+            snackbar.show();
+        }
     }
 
     @Override

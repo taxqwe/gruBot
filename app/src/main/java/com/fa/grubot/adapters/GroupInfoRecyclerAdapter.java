@@ -6,8 +6,8 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.ChatActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.DashboardEntry;
@@ -90,8 +90,12 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             cardView.setBackgroundColor(getColorFromDashboardEntry(entry));
 
             cardView.setOnClickListener(v -> {
-                Toast.makeText(context, "КЛИК))))", Toast.LENGTH_SHORT).show();
-                //// TODO: 19.10.2017
+                if (entry.getType() == DashboardEntry.TYPE_ANNOUNCEMENT)
+                    new MaterialDialog.Builder(context)
+                            .title(entry.getGroup().getName() + ": " + entry.getDesc())
+                            .content(entry.getText())
+                            .positiveText(android.R.string.ok)
+                            .show();
             });
         }
     }
