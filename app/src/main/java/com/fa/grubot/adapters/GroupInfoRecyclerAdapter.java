@@ -96,6 +96,19 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                             .content(entry.getText())
                             .positiveText(android.R.string.ok)
                             .show();
+                else
+                    new MaterialDialog.Builder(context)
+                            .title(entry.getGroup().getName() + ": " + entry.getDesc())
+                            .items(new String[] {"1", "2", "3"})
+                            .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
+                                /**
+                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                                 * returning false here won't allow the newly selected radio button to actually be selected.
+                                 **/
+                                return true;
+                            })
+                            .positiveText(android.R.string.ok)
+                            .show();
             });
         }
     }
