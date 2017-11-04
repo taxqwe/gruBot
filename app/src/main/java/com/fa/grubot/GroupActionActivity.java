@@ -45,7 +45,6 @@ public class GroupActionActivity extends AppCompatActivity {
             default:
                 fragmentClass = null;
                 break;
-
         }
 
         try {

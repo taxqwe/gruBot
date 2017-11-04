@@ -57,10 +57,6 @@ dependencies {
 
     //Expandable RecyclerView
     compile 'com.github.grennis:ExpandableRecyclerView:0.9.3'
-    
-    annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.12'
-    annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 
     //chat
     compile 'com.github.stfalcon:chatkit:0.2.2'
@@ -69,4 +65,7 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:4.3.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
 
+    annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.12'
+    annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 }
