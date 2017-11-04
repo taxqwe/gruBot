@@ -1,21 +1,12 @@
 package com.fa.grubot;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 
-import com.fa.grubot.fragments.ChatFragment;
 import com.fa.grubot.objects.DashboardEntry;
-import com.fa.grubot.objects.Group;
-import com.fa.grubot.presenters.MainActivityPresenter;
 import com.r0adkll.slidr.Slidr;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.Icepick;
 

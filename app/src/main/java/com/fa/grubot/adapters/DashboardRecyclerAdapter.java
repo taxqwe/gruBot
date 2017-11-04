@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.R;
@@ -35,9 +34,8 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
         @BindView(R.id.entryGroup) TextView entryGroup;
         @BindView(R.id.entryAuthor) TextView entryAuthor;
         @BindView(R.id.entryDesc) TextView entryDesc;
-        @BindView(R.id.card_view) View cardView;
 
-        public @BindView(R.id.view_background) RelativeLayout viewBackground;
+        @BindView(R.id.view_background) RelativeLayout viewBackground;
         public @BindView(R.id.view_foreground) RelativeLayout viewForeground;
 
 
@@ -68,9 +66,9 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
         holder.entryAuthor.setText(entry.getAuthor());
         holder.entryDesc.setText(entry.getDesc());
         holder.entryGroup.setText(entry.getGroup().getName());
-        holder.cardView.setBackgroundColor(getColorFromDashboardEntry(entry));
+        holder.viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
 
-        holder.cardView.setOnClickListener(v -> {
+        holder.viewForeground.setOnClickListener(v -> {
             if (entry.getType() == DashboardEntry.TYPE_ANNOUNCEMENT)
                 new MaterialDialog.Builder(context)
                         .title(entry.getGroup().getName() + ": " + entry.getDesc())

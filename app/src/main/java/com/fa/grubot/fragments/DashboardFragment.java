@@ -2,7 +2,6 @@ package com.fa.grubot.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -11,6 +10,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,21 +112,14 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof DashboardRecyclerAdapter.ViewHolder) {
-            // get the removed item name to display it in snack bar
-            String name = entries.get(viewHolder.getAdapterPosition()).getDesc();
-
-            // backup of removed item for undo purpose
+            Log.e("myTag", String.valueOf(viewHolder.getAdapterPosition()));
             final DashboardEntry deletedItem = entries.get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
-            // remove the item from recycler view
             dashboardAdapter.removeItem(viewHolder.getAdapterPosition());
 
-            // showing snack bar with Undo option
-            Snackbar snackbar = Snackbar.make(swipeRefreshLayout, name + " removed from cart!", Snackbar.LENGTH_LONG);
-            snackbar.setAction("UNDO", view -> {
-
-                // undo is selected, restore the deleted item
+            Snackbar snackbar = Snackbar.make(swipeRefreshLayout, deletedItem.getTypeText() + " отправлено в архив", Snackbar.LENGTH_LONG);
+            snackbar.setAction(android.R.string.cancel, view -> {
                 dashboardAdapter.restoreItem(deletedItem, deletedIndex);
             });
             snackbar.setActionTextColor(Color.YELLOW);
