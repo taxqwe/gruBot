@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.fa.grubot.objects.ChatUser;
 
 public class Globals {
     public static class ImageMethods {
@@ -37,5 +38,11 @@ public class Globals {
             NetworkInfo networkInfo = cm.getActiveNetworkInfo();
             return (networkInfo != null && networkInfo.isConnected());
         }
+    }
+
+    public static ChatUser getMe() {
+        return new ChatUser("1",
+                "The First One",
+                "http://www.netlore.ru/upload/files/1307/3_321.jpg");
     }
 }
