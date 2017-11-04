@@ -10,7 +10,6 @@ public interface DashboardFragmentBase {
     void setupRecyclerView(ArrayList<DashboardEntry> entries);
     void setupSwipeRefreshLayout(int layout);
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
-    void setupViews(int layout, View v);
     void setupRetryButton();
     void reloadFragment();
 }

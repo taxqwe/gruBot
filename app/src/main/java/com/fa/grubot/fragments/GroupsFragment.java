@@ -20,14 +20,17 @@ import com.fa.grubot.presenters.GroupsPresenter;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.annotations.Nullable;
 
 public class GroupsFragment extends Fragment implements GroupsFragmentBase{
 
-    private RecyclerView groupsView;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private Button retryBtn;
+    @Nullable
+    @BindView(R.id.recycler) RecyclerView groupsView;
+    @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
     private Unbinder unbinder;
     private GroupsPresenter presenter;
@@ -56,21 +59,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         }
         else
             layout = R.layout.fragment_no_internet_connection;
-    }
-
-    public void setupViews(int layout, View v){
-        switch (layout) {
-            case R.layout.fragment_groups:
-                groupsView = v.findViewById(R.id.recycler);
-                swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
-                break;
-            case R.layout.fragment_no_internet_connection:
-                retryBtn = v.findViewById(R.id.retryBtn);
-                break;
-            case R.layout.fragment_no_data:
-                swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
-                break;
-        }
     }
 
     public void setupSwipeRefreshLayout(int layout){

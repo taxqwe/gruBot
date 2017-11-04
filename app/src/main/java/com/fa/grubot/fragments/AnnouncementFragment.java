@@ -57,7 +57,7 @@ public class AnnouncementFragment extends Fragment implements AnnouncementFragme
     public void setupViews(int layout, View v){
         switch (layout) {
             case R.layout.fragment_announcement:
-                //groupsView = v.findViewById(R.id.recycler);
+                //entriesView = v.findViewById(R.id.recycler);
                 swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
                 break;
             case R.layout.fragment_no_internet_connection:

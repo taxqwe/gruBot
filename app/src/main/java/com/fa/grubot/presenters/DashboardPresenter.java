@@ -22,8 +22,6 @@ public class DashboardPresenter {
     }
 
     public void notifyViewCreated(int layout, View v){
-        fragment.setupViews(layout, v);
-
         switch (layout) {
             case R.layout.fragment_dashboard:
                 fragment.setupRecyclerView(entries);
