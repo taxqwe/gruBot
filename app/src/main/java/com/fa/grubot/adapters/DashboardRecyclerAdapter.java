@@ -6,13 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fa.grubot.R;
 import com.fa.grubot.objects.DashboardEntry;
-import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
 import java.util.HashMap;

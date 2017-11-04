@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.fa.grubot.R;
+import com.fa.grubot.abstractions.AnnouncementFragmentBase;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.Group;
@@ -20,17 +21,13 @@ import com.fa.grubot.presenters.GroupsPresenter;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.reactivex.annotations.Nullable;
 
-public class GroupsFragment extends Fragment implements GroupsFragmentBase{
+public class AnnouncementFragment extends Fragment implements AnnouncementFragmentBase {
 
-    @Nullable
-    @BindView(R.id.recycler) RecyclerView groupsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
-    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Button retryBtn;
 
     private Unbinder unbinder;
     private GroupsPresenter presenter;
@@ -38,7 +35,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new GroupsPresenter(this);
+        //presenter = new GroupsPresenter(this);
         presenter.notifyFragmentStarted(getActivity());
 
         View v = inflater.inflate(layout, container, false);
@@ -51,14 +48,25 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
-        if (isNetworkAvailable) {
-            if (isHasData)
-                layout = R.layout.fragment_groups;
-            else
-                layout = R.layout.fragment_no_data;
-        }
+        if (isNetworkAvailable)
+            layout = R.layout.fragment_announcement;
         else
             layout = R.layout.fragment_no_internet_connection;
+    }
+
+    public void setupViews(int layout, View v){
+        switch (layout) {
+            case R.layout.fragment_announcement:
+                //entriesView = v.findViewById(R.id.recycler);
+                swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
+                break;
+            case R.layout.fragment_no_internet_connection:
+                retryBtn = v.findViewById(R.id.retryBtn);
+                break;
+            case R.layout.fragment_no_data:
+                swipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
+                break;
+        }
     }
 
     public void setupSwipeRefreshLayout(int layout){
@@ -68,21 +76,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         });
     }
 
-    public void setupRecyclerView(ArrayList<Group> groups){
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        groupsView.setLayoutManager(mLayoutManager);
-        groupsView.setHasFixedSize(false);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-                this.getContext(),
-                mLayoutManager.getOrientation()
-        );
-        groupsView.addItemDecoration(dividerItemDecoration);
-
-        GroupsRecyclerAdapter groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
-        groupsView.setAdapter(groupsAdapter);
-        groupsAdapter.notifyDataSetChanged();
-    }
 
     public void setupRetryButton(){
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
@@ -100,8 +93,8 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    public static GroupsFragment newInstance() {
-        return new GroupsFragment();
+    public static AnnouncementFragment newInstance() {
+        return new AnnouncementFragment();
     }
 
     @Override

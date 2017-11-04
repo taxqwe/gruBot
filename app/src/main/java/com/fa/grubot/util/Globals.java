@@ -1,6 +1,7 @@
 package com.fa.grubot.util;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -8,6 +9,8 @@ import android.net.NetworkInfo;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.fa.grubot.objects.ChatUser;
+import com.r0adkll.slidr.model.SlidrConfig;
+import com.r0adkll.slidr.model.SlidrPosition;
 
 public class Globals {
     public static class ImageMethods {
@@ -44,5 +47,18 @@ public class Globals {
         return new ChatUser("1",
                 "The First One",
                 "http://www.netlore.ru/upload/files/1307/3_321.jpg");
+    public static class Config {
+        public static SlidrConfig getSlidrConfig() {
+            return new SlidrConfig.Builder()
+                .position(SlidrPosition.LEFT)
+                .sensitivity(0.7f)
+                .scrimColor(Color.BLACK)
+                .scrimStartAlpha(0.8f)
+                .scrimEndAlpha(0f)
+                .velocityThreshold(2400)
+                .distanceThreshold(0.5f)
+                .edge(false)
+                .build();
+        }
     }
 }
