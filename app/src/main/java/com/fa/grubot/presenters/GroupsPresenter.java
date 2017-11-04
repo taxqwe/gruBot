@@ -24,8 +24,6 @@ public class GroupsPresenter {
     }
 
     public void notifyViewCreated(int layout, View v){
-        fragment.setupViews(layout, v);
-
         switch (layout) {
             case R.layout.fragment_groups:
                 fragment.setupRecyclerView(groups);

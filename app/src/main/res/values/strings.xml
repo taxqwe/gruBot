@@ -2,4 +2,6 @@
     <string name="app_name">gruBot</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="hint_enter_a_message">Сообщение</string>
+    <string name="enable_smart">Включить умный чат</string>
 </resources>
