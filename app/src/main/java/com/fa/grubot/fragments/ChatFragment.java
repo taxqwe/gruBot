@@ -18,6 +18,7 @@ import com.fa.grubot.abstractions.ChatFragmentBase;
 import com.fa.grubot.objects.ChatMessage;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.PreferencesStorage;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
@@ -25,6 +26,9 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import java.util.Date;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -40,13 +44,24 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
 
     private String senderId;
 
-    private MessagesList messagesListView;
-
-    private MessageInput inputView;
-
-    private Toolbar chatToolbar;
-
     private int myId;
+
+    private Unbinder unbinder;
+
+    private boolean isSmartEnabled;
+
+    private PreferencesStorage preferences;
+
+    private Menu menu;
+
+    @BindView(R.id.messagesList)
+    MessagesList messagesListView;
+
+    @BindView(R.id.input)
+    MessageInput inputView;
+
+    @BindView(R.id.toolbar)
+    Toolbar chatToolbar;
 
 
     @Nullable
@@ -54,18 +69,23 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
         setHasOptionsMenu(true);
+
+        unbinder = ButterKnife.bind(this, v);
+
         init(v);
+
+        setRetainInstance(true);
 
         return v;
     }
 
     private void init(View view) {
+        preferences = new PreferencesStorage(view.getContext());
+
         presenter = new ChatPresenter(this);
 
-        messagesListView = view.findViewById(R.id.messagesList);
-        inputView = view.findViewById(R.id.input);
+        chatToolbar.bringToFront();
 
-        chatToolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(chatToolbar);
 
         ImageLoader imageLoader = new com.fa.grubot.util.ImageLoader(this);
@@ -87,14 +107,15 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        presenter.destroy();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_chat, menu);
+        this.menu = menu;
+        refreshMenuItems();
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_chat, menu);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -105,8 +126,11 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
                 .observeOn(AndroidSchedulers.mainThread())
 
                 .subscribe(message -> {
-                    messageAdapter.addToStart(message,
-                            !messagesListView.canScrollVertically(1));
+                    //todo hardcode
+                    if (messagesListView != null) {
+                        messageAdapter.addToStart(message,
+                                !messagesListView.canScrollVertically(1));
+                    }
                 });
     }
 
@@ -119,11 +143,40 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.enable_smart:
-                Toast.makeText(getActivity(), "Smart Chat enabled", Toast.LENGTH_SHORT).show();
+            case R.id.smart_chat_menu_item:
+                refreshMenuItems();
+                isSmartEnabled = !isSmartEnabled;
+                preferences.putBoolean("isSmartEnabled", isSmartEnabled);
+                refreshMenuItems();
+                Toast.makeText(getActivity(),
+                        isSmartEnabled ? "Умный фильтр включен" : "Умный фильтр выключен", Toast.LENGTH_SHORT).show();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+        presenter.destroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    private void refreshMenuItems() {
+        isSmartEnabled = preferences.getBoolean("isSmartEnabled", false);
+
+        menu.getItem(0).setIcon(isSmartEnabled ? R.drawable.brain_enabled : R.drawable.brain_disabled);
+    }
 }

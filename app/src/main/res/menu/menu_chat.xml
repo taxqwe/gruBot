@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/enable_smart"
-        android:icon="@drawable/brain"
+        android:id="@+id/smart_chat_menu_item"
+        android:icon="@drawable/brain_disabled"
         android:title="@string/enable_smart"
         app:showAsAction="ifRoom" />
 </menu>
