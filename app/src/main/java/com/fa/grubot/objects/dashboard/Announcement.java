@@ -1,4 +1,6 @@
-package com.fa.grubot.objects;
+package com.fa.grubot.objects.dashboard;
+
+import com.fa.grubot.objects.group.Group;
 
 import java.util.Date;
 

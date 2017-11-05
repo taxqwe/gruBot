@@ -1,6 +1,6 @@
 package com.fa.grubot.abstractions;
 
-import com.fa.grubot.objects.Group;
+import com.fa.grubot.objects.group.Group;
 
 import java.util.ArrayList;
 

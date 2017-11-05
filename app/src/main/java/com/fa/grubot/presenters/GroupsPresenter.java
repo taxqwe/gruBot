@@ -7,7 +7,7 @@ import android.view.View;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.models.GroupsModel;
-import com.fa.grubot.objects.Group;
+import com.fa.grubot.objects.group.Group;
 
 import java.util.ArrayList;
 

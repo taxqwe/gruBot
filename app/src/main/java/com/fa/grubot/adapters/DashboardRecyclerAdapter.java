@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.R;
-import com.fa.grubot.objects.Announcement;
-import com.fa.grubot.objects.DashboardEntry;
+import com.fa.grubot.objects.dashboard.Announcement;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
 
 import java.util.ArrayList;
 

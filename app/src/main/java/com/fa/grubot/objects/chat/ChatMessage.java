@@ -1,4 +1,4 @@
-package com.fa.grubot.objects;
+package com.fa.grubot.objects.chat;
 
 
 import com.stfalcon.chatkit.commons.models.IMessage;

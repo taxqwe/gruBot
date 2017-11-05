@@ -1,4 +1,6 @@
-package com.fa.grubot.objects;
+package com.fa.grubot.objects.group;
+
+import com.fa.grubot.objects.dashboard.DashboardEntry;
 
 import java.util.ArrayList;
 

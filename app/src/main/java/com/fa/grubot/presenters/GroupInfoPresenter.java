@@ -3,7 +3,7 @@ package com.fa.grubot.presenters;
 
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.models.GroupInfoModel;
-import com.fa.grubot.objects.Group;
+import com.fa.grubot.objects.group.Group;
 
 public class GroupInfoPresenter {
     private GroupInfoActivityBase activity;

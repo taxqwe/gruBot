@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
-import com.fa.grubot.objects.Group;
+import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.GroupInfoPresenter;
 import com.fa.grubot.util.Globals;
 import com.github.clans.fab.FloatingActionMenu;

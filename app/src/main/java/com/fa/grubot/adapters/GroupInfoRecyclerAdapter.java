@@ -10,9 +10,9 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.ChatActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.objects.Announcement;
-import com.fa.grubot.objects.DashboardEntry;
-import com.fa.grubot.objects.GroupInfoButton;
+import com.fa.grubot.objects.dashboard.Announcement;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
+import com.fa.grubot.objects.group.GroupInfoButton;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.util.ArrayList;

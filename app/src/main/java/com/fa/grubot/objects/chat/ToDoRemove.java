@@ -1,4 +1,4 @@
-package com.fa.grubot.objects;
+package com.fa.grubot.objects.chat;
 
 import java.util.ArrayList;
 

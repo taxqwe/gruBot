@@ -1,6 +1,6 @@
 package com.fa.grubot.abstractions;
 
-import com.fa.grubot.objects.DashboardEntry;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
 
 import java.util.ArrayList;
 
