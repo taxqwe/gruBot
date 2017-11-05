@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.ChatActivity;
 import com.fa.grubot.R;
+import com.fa.grubot.objects.Announcement;
 import com.fa.grubot.objects.DashboardEntry;
 import com.fa.grubot.objects.GroupInfoButton;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
@@ -21,9 +22,6 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.fa.grubot.objects.DashboardEntry.TYPE_ANNOUNCEMENT;
-import static com.fa.grubot.objects.DashboardEntry.TYPE_VOTE;
 
 public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem>{
     private static final int TYPE_ENTRY = 1001;
@@ -83,21 +81,24 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
         private void bind(int position) {
             DashboardEntry entry = visibleItems.get(position).entry;
 
-            entryTypeText.setText(entry.getTypeText());
             entryDate.setText(entry.getDate());
             entryAuthor.setText(entry.getAuthor());
             entryDesc.setText(entry.getDesc());
             entryGroup.setText(entry.getGroup().getName());
             viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
 
-            viewForeground.setOnClickListener(v -> {
-                if (entry.getType() == DashboardEntry.TYPE_ANNOUNCEMENT)
+            if (entry instanceof Announcement) {
+                entryTypeText.setText("Объявление");
+                viewForeground.setOnClickListener(v -> {
                     new MaterialDialog.Builder(context)
                             .title(entry.getGroup().getName() + ": " + entry.getDesc())
-                            .content(entry.getText())
+                            .content(((Announcement) entry).getText())
                             .positiveText(android.R.string.ok)
                             .show();
-                else
+                });
+            } else {
+                entryTypeText.setText("Голосование");
+                viewForeground.setOnClickListener(v -> {
                     new MaterialDialog.Builder(context)
                             .title(entry.getGroup().getName() + ": " + entry.getDesc())
                             .items(new String[] {"1", "2", "3"})
@@ -110,7 +111,8 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                             })
                             .positiveText(android.R.string.ok)
                             .show();
-            });
+                });
+            }
         }
     }
 
@@ -155,11 +157,9 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
     }
 
     private int getColorFromDashboardEntry(DashboardEntry entry){
-        Map<Integer, Integer> colorsPairList = new HashMap<>();
-
-        colorsPairList.put(TYPE_ANNOUNCEMENT, ResourcesCompat.getColor(context.getResources(), R.color.colorAnnouncement, null));
-        colorsPairList.put(TYPE_VOTE, ResourcesCompat.getColor(context.getResources(), R.color.colorVote, null));
-
-        return colorsPairList.get(entry.getType());
+        if (entry instanceof Announcement)
+            return context.getResources().getColor(R.color.colorAnnouncement);
+        else
+            return context.getResources().getColor(R.color.colorVote);
     }
 }

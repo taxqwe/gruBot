@@ -19,6 +19,7 @@ import android.widget.Button;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.adapters.DashboardRecyclerAdapter;
+import com.fa.grubot.objects.Announcement;
 import com.fa.grubot.objects.DashboardEntry;
 import com.fa.grubot.presenters.DashboardPresenter;
 import com.fa.grubot.util.RecyclerItemTouchHelper;
@@ -118,12 +119,18 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
             dashboardAdapter.removeItem(viewHolder.getAdapterPosition());
 
-            Snackbar snackbar = Snackbar.make(swipeRefreshLayout, deletedItem.getTypeText() + " отправлено в архив", Snackbar.LENGTH_LONG);
+            Snackbar snackbar = null;
+            if (deletedItem instanceof Announcement) {
+                snackbar = Snackbar.make(swipeRefreshLayout, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
+            } else {
+                snackbar = Snackbar.make(swipeRefreshLayout, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
+            }
             snackbar.setAction(android.R.string.cancel, view -> {
                 dashboardAdapter.restoreItem(deletedItem, deletedIndex);
             });
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();
+
         }
     }
 
