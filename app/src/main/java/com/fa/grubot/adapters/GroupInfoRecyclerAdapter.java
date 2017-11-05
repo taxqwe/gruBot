@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -71,7 +72,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
         @BindView(R.id.entryGroup) TextView entryGroup;
         @BindView(R.id.entryAuthor) TextView entryAuthor;
         @BindView(R.id.entryDesc) TextView entryDesc;
-        @BindView(R.id.card_view) View cardView;
+        @BindView(R.id.view_foreground) RelativeLayout viewForeground;
 
 
         private DashboardEntryViewHolder(View view) {
@@ -87,9 +88,9 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             entryAuthor.setText(entry.getAuthor());
             entryDesc.setText(entry.getDesc());
             entryGroup.setText(entry.getGroup().getName());
-            cardView.setBackgroundColor(getColorFromDashboardEntry(entry));
+            viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
 
-            cardView.setOnClickListener(v -> {
+            viewForeground.setOnClickListener(v -> {
                 if (entry.getType() == DashboardEntry.TYPE_ANNOUNCEMENT)
                     new MaterialDialog.Builder(context)
                             .title(entry.getGroup().getName() + ": " + entry.getDesc())
