@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -13,6 +14,8 @@ import com.fa.grubot.R;
 import com.fa.grubot.objects.dashboard.Announcement;
 import com.fa.grubot.objects.dashboard.DashboardEntry;
 import com.fa.grubot.objects.group.GroupInfoButton;
+import com.fa.grubot.objects.group.User;
+import com.fa.grubot.util.Globals;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ import butterknife.ButterKnife;
 
 public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem>{
     private static final int TYPE_ENTRY = 1001;
+    private static final int TYPE_USER = 1002;
 
     private Context context;
     private ArrayList<GroupInfoRecyclerItem> buttons;
@@ -115,9 +119,29 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
         }
     }
 
+    class UserViewHolder extends GroupInfoRecyclerAdapter.ViewHolder {
+        @BindView(R.id.userImage) ImageView userImage;
+        @BindView(R.id.userName) TextView userName;
+        @BindView(R.id.userPhone) TextView userPhone;
+
+        private UserViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+
+        private void bind(int position) {
+            User user = visibleItems.get(position).user;
+
+            userName.setText(user.getFullname());
+            userPhone.setText(user.getPhoneNumber());
+            userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, user.getFullname()));
+        }
+    }
+
     public static class GroupInfoRecyclerItem extends ExpandableRecyclerAdapter.ListItem {
         private GroupInfoButton button;
         private DashboardEntry entry;
+        private User user;
 
         public GroupInfoRecyclerItem(GroupInfoButton button) {
             super(TYPE_HEADER);
@@ -131,6 +155,12 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             this.entry = entry;
         }
 
+        public GroupInfoRecyclerItem(User user) {
+            super(TYPE_USER);
+
+            this.user = user;
+        }
+
         public boolean isHeader() {
             return (button != null);
         }
@@ -141,8 +171,12 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
         switch (viewType) {
             case TYPE_HEADER:
                 return new HeaderViewHolder(inflate(R.layout.item_group_info_button, parent));
-            default:
+            case TYPE_ENTRY:
                 return new DashboardEntryViewHolder(inflate(R.layout.item_dashboard_entry, parent));
+            case TYPE_USER:
+                return new UserViewHolder(inflate(R.layout.item_user, parent));
+            default:
+                return null;
         }
     }
 
@@ -153,8 +187,10 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 ((HeaderViewHolder) holder).bind(position);
                 break;
             case TYPE_ENTRY:
-            default:
                 ((DashboardEntryViewHolder) holder).bind(position);
+                break;
+            case TYPE_USER:
+                ((UserViewHolder) holder).bind(position);
                 break;
         }
     }

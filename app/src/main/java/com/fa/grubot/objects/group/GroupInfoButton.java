@@ -1,15 +1,16 @@
 package com.fa.grubot.objects.group;
 
+import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.DashboardEntry;
 
 import java.util.ArrayList;
 
-public class GroupInfoButton {
+public class GroupInfoButton<T> {
     private int id;
     private String text;
-    private ArrayList<DashboardEntry> childList;
+    private ArrayList<Class<T>> childList;
 
-    public GroupInfoButton(int id, String text, ArrayList<DashboardEntry> childList) {
+    public GroupInfoButton(int id, String text, ArrayList<Class<T>> childList) {
         this.id = id;
         this.text = text;
         this.childList = childList;
@@ -23,8 +24,8 @@ public class GroupInfoButton {
         return text;
     }
 
-    public void addChild(DashboardEntry entry) {
-        childList.add(entry);
+    public <S> void addChild(S entry) {
+        childList.add((Class<T>) entry);
     }
     public int getChildCount() {
         return childList.size();

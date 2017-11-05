@@ -6,6 +6,7 @@ import com.fa.grubot.objects.dashboard.DashboardEntry;
 import com.fa.grubot.objects.dashboard.Vote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
+import com.fa.grubot.objects.group.User;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +21,7 @@ public class GroupInfoModel {
     public GroupInfoModel(){
 
     }
+
     public ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> loadButtons(Group group){
         ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> groupInfoRecyclerItems = new ArrayList<>();
 
@@ -37,7 +39,11 @@ public class GroupInfoModel {
             groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
 
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Список участников", new ArrayList<>())));
+        ArrayList<User> users = getUsersByGroup(group);
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Список участников", users)));
+        for (User user : users) {
+            groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
+        }
 
         return groupInfoRecyclerItems;
     }
@@ -76,5 +82,25 @@ public class GroupInfoModel {
                 break;
         }
         return entries;
+    }
+
+    private ArrayList<User> getUsersByGroup(Group group) {
+        ArrayList<User> users = new ArrayList<>();
+        switch (group.getId()) {
+            case 1:
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
+                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH"));
+                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123"));
+                break;
+            case 2:
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
+                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH"));
+                break;
+            case 3:
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
+                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123"));
+                break;
+        }
+        return users;
     }
 }
