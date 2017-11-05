@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_material_light"
+    android:id="@+id/root"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
@@ -35,7 +36,7 @@
     <include layout="@layout/content_group_info" />
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/menu_yellow"
+        android:id="@+id/fam"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/fab_margin"
@@ -51,16 +52,16 @@
             android:id="@+id/fab12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_archive_white_24dp"
-            fab:fab_label="Menu item 1"
+            android:src="@drawable/ic_thumbs_up_down_white_24dp"
+            fab:fab_label="Голосование"
             style="@style/MenuButtonsStyle" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab22"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_archive_white_24dp"
-            fab:fab_label="Menu item 2"
+            android:src="@drawable/ic_announcement_white_24dp"
+            fab:fab_label="Объявление"
             style="@style/MenuButtonsStyle" />
 
     </com.github.clans.fab.FloatingActionMenu>
