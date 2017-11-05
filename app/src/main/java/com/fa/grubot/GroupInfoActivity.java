@@ -26,7 +26,7 @@ import icepick.Icepick;
 
 public class GroupInfoActivity extends AppCompatActivity implements GroupInfoActivityBase {
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.fab) FloatingActionButton fab;
+    //@BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.recycler) RecyclerView buttonsView;
 
     private GroupInfoPresenter presenter;
@@ -56,9 +56,9 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     }
 
     public void setupFab(){
-        fab.setOnClickListener(view -> {
+        //fab.setOnClickListener(view -> {
             //click
-        });
+        //});
     }
 
     public void setupRecyclerView(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> buttons){

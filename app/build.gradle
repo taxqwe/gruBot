@@ -55,6 +55,8 @@ dependencies {
     //icepick
     compile 'frankiesardo:icepick:3.2.0'
 
+    compile 'com.github.clans:fab:1.6.4'
+
     //Expandable RecyclerView
     compile 'com.github.grennis:ExpandableRecyclerView:0.9.3'
 
@@ -63,8 +65,8 @@ dependencies {
 
     //work with images
     compile 'com.github.bumptech.glide:glide:4.3.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
 
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.12'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
