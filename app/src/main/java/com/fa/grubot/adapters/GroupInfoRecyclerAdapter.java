@@ -212,7 +212,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
         for (GroupInfoRecyclerItem item : buttons) {
             if (item.isHeader() && item.button.getText().equals(type)) {
                 buttons.add(buttons.indexOf(item) + 1, new GroupInfoRecyclerItem(entry));
-                item.button.addChild(entry);
+                item.button.addChild(new GroupInfoRecyclerItem(entry));
                 setItems(buttons);
                 break;
             }

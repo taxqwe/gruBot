@@ -7,6 +7,7 @@ import com.fa.grubot.objects.dashboard.Vote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
+import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,23 +28,32 @@ public class GroupInfoModel {
 
         groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(1, "Чат", new ArrayList<>())));
 
+        //Объявления
         ArrayList<DashboardEntry> entries = getAnnouncementsByGroup(group);
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Объявления", entries)));
+        ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
         for (DashboardEntry entry : entries) {
-            groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
+            items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Объявления", items)));
+        groupInfoRecyclerItems.addAll(items);
 
+        //Голосования
         entries = getVotesByGroup(group);
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Голосования", entries)));
+        items = new ArrayList<>();
         for (DashboardEntry entry : entries) {
-            groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
+            items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Голосования", items)));
+        groupInfoRecyclerItems.addAll(items);
 
+        //Пользователи
         ArrayList<User> users = getUsersByGroup(group);
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Список участников", users)));
+        items = new ArrayList<>();
         for (User user : users) {
-            groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
+            items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
         }
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Список участников", items)));
+        groupInfoRecyclerItems.addAll(items);
 
         return groupInfoRecyclerItems;
     }

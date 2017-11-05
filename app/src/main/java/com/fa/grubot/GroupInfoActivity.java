@@ -68,6 +68,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     public void setupFab(){
         fam.setClosedOnTouchOutside(true);
         announcementFab.setOnClickListener(view -> {
+            groupInfoAdapter.collapseAll(); //TODO не баг, а фича. Если убрать все сломается и мне сейчас лень это фиксить, когда можно просто написать эту строку. Если кто-то это прочитает, то ёбните меня.
             new MaterialDialog.Builder(this)
                     .title("Объявление")
                     .customView(R.layout.dialog_add_announcement, false)
@@ -82,7 +83,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
                             groupInfoAdapter.insertItem(announcement);
                         }
 
-                        fam.hideMenu(true);
+                        fam.close(true);
                     })
                     .show();
         });

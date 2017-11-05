@@ -10,7 +10,6 @@ import java.util.Locale;
 
 public class DashboardEntry implements Serializable {
     private int id;
-    private int type;
     private Group group;
     private String author;
     private String desc;
@@ -30,10 +29,6 @@ public class DashboardEntry implements Serializable {
 
     public int getId() {
         return id;
-    }
-
-    public int getType() {
-        return type;
     }
 
     public Group getGroup() {
