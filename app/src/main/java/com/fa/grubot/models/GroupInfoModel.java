@@ -1,9 +1,11 @@
 package com.fa.grubot.models;
 
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
+import com.fa.grubot.objects.Announcement;
 import com.fa.grubot.objects.DashboardEntry;
 import com.fa.grubot.objects.Group;
 import com.fa.grubot.objects.GroupInfoButton;
+import com.fa.grubot.objects.Vote;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,15 +47,15 @@ public class GroupInfoModel {
 
         switch (group.getId()) {
             case 1:
-                entries.add(new DashboardEntry(1, DashboardEntry.TYPE_ANNOUNCEMENT, group, "Комлев Антон", "Собрание", placeholder, new Date()));
-                entries.add(new DashboardEntry(1, DashboardEntry.TYPE_ANNOUNCEMENT, group, "Комлев Антон", "Выходные дни", placeholder, new Date()));
+                entries.add(new Announcement(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Собрание", new Date(),  placeholder));
+                entries.add(new Announcement(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Выходные дни", new Date(), placeholder));
                 break;
             case 2:
                 break;
             case 3:
-                entries.add(new DashboardEntry(3, DashboardEntry.TYPE_ANNOUNCEMENT, group, "Чехов А. П.", "Поездка", placeholder, new Date()));
-                entries.add(new DashboardEntry(3, DashboardEntry.TYPE_ANNOUNCEMENT, group, "Чехов А. П.", "Объявление", placeholder, new Date()));
-                entries.add(new DashboardEntry(3, DashboardEntry.TYPE_ANNOUNCEMENT, group, "Чехов А. П.", "Собрание", placeholder, new Date()));
+                entries.add(new Announcement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Поездка", new Date(), placeholder));
+                entries.add(new Announcement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Объявление", new Date(), placeholder));
+                entries.add(new Announcement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Собрание", new Date(), placeholder));
                 break;
         }
         return entries;
@@ -63,12 +65,12 @@ public class GroupInfoModel {
         ArrayList<DashboardEntry> entries = new ArrayList<>();
         switch (group.getId()) {
             case 1:
-                entries.add(new DashboardEntry(1, DashboardEntry.TYPE_VOTE, group, "Комлев Антон", "Новый год", placeholder, new Date()));
+                entries.add(new Vote(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date(), new ArrayList<String>()));
                 break;
             case 2:
-                entries.add(new DashboardEntry(2, DashboardEntry.TYPE_VOTE, group, "Махин Семен", "Сбор денег", placeholder, new Date()));
-                entries.add(new DashboardEntry(2, DashboardEntry.TYPE_VOTE, group, "Махин Семен", "Удовлетворенность чем-то", placeholder, new Date()));
-                entries.add(new DashboardEntry(2, DashboardEntry.TYPE_VOTE, group, "Махин Семен", "Активность", placeholder, new Date()));
+                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Сбор денег", new Date(), new ArrayList<String>()));
+                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Удовлетворенность чем-то", new Date(), new ArrayList<String>()));
+                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Активность", new Date(), new ArrayList<String>()));
                 break;
             case 3:
                 break;

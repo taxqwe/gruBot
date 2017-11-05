@@ -9,30 +9,23 @@ import java.util.Locale;
 import java.util.Map;
 
 public class DashboardEntry implements Serializable {
-    public static final int TYPE_ANNOUNCEMENT = 34;
-    public static final int TYPE_VOTE = 36;
-
-    private Map<Integer, String> typesPairList = new HashMap<>();
-
     private int id;
     private int type;
     private Group group;
     private String author;
     private String desc;
-    private String text;
     private Date date;
 
-    public DashboardEntry(int id, int type, Group group, String author, String desc, String text, Date date) {
+    public DashboardEntry() {
+
+    }
+
+    public DashboardEntry(int id, Group group, String author, String desc, Date date) {
         this.id = id;
-        this.type = type;
         this.group = group;
         this.author = author;
         this.desc = desc;
-        this.text = text;
         this.date = date;
-
-        typesPairList.put(TYPE_ANNOUNCEMENT, "Объявление");
-        typesPairList.put(TYPE_VOTE, "Голосование");
     }
 
     public int getId() {
@@ -53,14 +46,6 @@ public class DashboardEntry implements Serializable {
 
     public String getDesc() {
         return desc;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public String getTypeText(){
-        return typesPairList.get(this.type);
     }
 
     public String getDate() {

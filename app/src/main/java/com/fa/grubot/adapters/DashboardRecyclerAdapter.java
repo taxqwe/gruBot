@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.R;
+import com.fa.grubot.objects.Announcement;
 import com.fa.grubot.objects.DashboardEntry;
 
 import java.util.ArrayList;
@@ -19,9 +20,6 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.fa.grubot.objects.DashboardEntry.TYPE_ANNOUNCEMENT;
-import static com.fa.grubot.objects.DashboardEntry.TYPE_VOTE;
 
 public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecyclerAdapter.ViewHolder>{
 
@@ -61,21 +59,38 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
         final int position = holder.getAdapterPosition();
         DashboardEntry entry = entries.get(position);
 
-        holder.entryTypeText.setText(entry.getTypeText());
         holder.entryDate.setText(entry.getDate());
         holder.entryAuthor.setText(entry.getAuthor());
         holder.entryDesc.setText(entry.getDesc());
         holder.entryGroup.setText(entry.getGroup().getName());
         holder.viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
 
-        holder.viewForeground.setOnClickListener(v -> {
-            if (entry.getType() == DashboardEntry.TYPE_ANNOUNCEMENT)
+        if (entry instanceof Announcement) {
+            holder.entryTypeText.setText("Объявление");
+            holder.viewForeground.setOnClickListener(v -> {
                 new MaterialDialog.Builder(context)
                         .title(entry.getGroup().getName() + ": " + entry.getDesc())
-                        .content(entry.getText())
+                        .content(((Announcement) entry).getText())
                         .positiveText(android.R.string.ok)
                         .show();
-        });
+            });
+        } else {
+            holder.entryTypeText.setText("Голосование");
+            holder.viewForeground.setOnClickListener(v -> {
+                new MaterialDialog.Builder(context)
+                        .title(entry.getGroup().getName() + ": " + entry.getDesc())
+                        .items(new String[] {"1", "2", "3"})
+                        .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
+                            /**
+                             * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                             * returning false here won't allow the newly selected radio button to actually be selected.
+                             **/
+                            return true;
+                        })
+                        .positiveText(android.R.string.ok)
+                        .show();
+            });
+        }
     }
 
     public void removeItem(int position) {
@@ -94,11 +109,9 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecy
     }
 
     private int getColorFromDashboardEntry(DashboardEntry entry){
-        Map<Integer, Integer> colorsPairList = new HashMap<>();
-
-        colorsPairList.put(TYPE_ANNOUNCEMENT, ResourcesCompat.getColor(context.getResources(), R.color.colorAnnouncement, null));
-        colorsPairList.put(TYPE_VOTE, ResourcesCompat.getColor(context.getResources(), R.color.colorVote, null));
-
-        return colorsPairList.get(entry.getType());
+        if (entry instanceof Announcement)
+            return context.getResources().getColor(R.color.colorAnnouncement);
+        else
+            return context.getResources().getColor(R.color.colorVote);
     }
 }

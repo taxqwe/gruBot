@@ -2,18 +2,21 @@ package com.fa.grubot;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.objects.Group;
 import com.fa.grubot.presenters.GroupInfoPresenter;
 import com.fa.grubot.util.Globals;
+import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 import com.r0adkll.slidr.Slidr;
 
@@ -25,9 +28,11 @@ import butterknife.Unbinder;
 import icepick.Icepick;
 
 public class GroupInfoActivity extends AppCompatActivity implements GroupInfoActivityBase {
+    @BindView(R.id.root) CoordinatorLayout rootView;
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.fam) FloatingActionMenu fam;
     @BindView(R.id.recycler) RecyclerView buttonsView;
+
 
     private GroupInfoPresenter presenter;
     private Unbinder unbinder;
@@ -56,9 +61,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     }
 
     public void setupFab(){
-        fab.setOnClickListener(view -> {
-            //click
-        });
+        fam.setClosedOnTouchOutside(true);
     }
 
     public void setupRecyclerView(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> buttons){
