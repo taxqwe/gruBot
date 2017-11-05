@@ -20,6 +20,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_chat);
         Slidr.attach(this, Globals.Config.getSlidrConfig());
         FragmentManager fragmentManager = getFragmentManager();
