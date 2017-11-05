@@ -15,6 +15,7 @@ public class GroupInfoPresenter {
     }
 
     public void notifyViewCreated(Group group){
+
         activity.setupToolbar();
         activity.setupFab();
         activity.setupRecyclerView(model.loadButtons(group));

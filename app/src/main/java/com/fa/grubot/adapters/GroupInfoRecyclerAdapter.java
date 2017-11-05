@@ -24,10 +24,12 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
     private static final int TYPE_ENTRY = 1001;
 
     private Context context;
+    private ArrayList<GroupInfoRecyclerItem> buttons;
 
     public GroupInfoRecyclerAdapter(Context context, ArrayList<GroupInfoRecyclerItem> buttons) {
         super(context);
         this.context = context;
+        this.buttons = buttons;
 
         setItems(buttons);
     }
@@ -88,7 +90,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 entryTypeText.setText("Объявление");
                 viewForeground.setOnClickListener(v -> {
                     new MaterialDialog.Builder(context)
-                            .title(entry.getGroup().getName() + ": " + entry.getDesc())
+                            .title(entry.getDesc())
                             .content(((Announcement) entry).getText())
                             .positiveText(android.R.string.ok)
                             .show();
@@ -128,6 +130,10 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
 
             this.entry = entry;
         }
+
+        public boolean isHeader() {
+            return (button != null);
+        }
     }
 
     @Override
@@ -158,5 +164,22 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             return context.getResources().getColor(R.color.colorAnnouncement);
         else
             return context.getResources().getColor(R.color.colorVote);
+    }
+
+    public void insertItem(DashboardEntry entry) {
+        String type;
+        if (entry instanceof Announcement)
+            type = "Объявления";
+        else
+            type = "Голосования";
+
+        for (GroupInfoRecyclerItem item : buttons) {
+            if (item.isHeader() && item.button.getText().equals(type)) {
+                buttons.add(buttons.indexOf(item) + 1, new GroupInfoRecyclerItem(entry));
+                item.button.addChild(entry);
+                setItems(buttons);
+                break;
+            }
+        }
     }
 }

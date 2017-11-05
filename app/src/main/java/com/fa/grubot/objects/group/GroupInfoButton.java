@@ -23,6 +23,9 @@ public class GroupInfoButton {
         return text;
     }
 
+    public void addChild(DashboardEntry entry) {
+        childList.add(entry);
+    }
     public int getChildCount() {
         return childList.size();
     }

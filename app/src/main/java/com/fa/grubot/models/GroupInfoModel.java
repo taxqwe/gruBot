@@ -3,9 +3,9 @@ package com.fa.grubot.models;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.Announcement;
 import com.fa.grubot.objects.dashboard.DashboardEntry;
+import com.fa.grubot.objects.dashboard.Vote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
-import com.fa.grubot.objects.dashboard.Vote;
 
 import java.util.ArrayList;
 import java.util.Date;

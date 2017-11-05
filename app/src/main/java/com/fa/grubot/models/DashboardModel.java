@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.fa.grubot.objects.dashboard.Announcement;
 import com.fa.grubot.objects.dashboard.DashboardEntry;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.dashboard.Vote;
+import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
