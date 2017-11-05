@@ -55,9 +55,10 @@ dependencies {
     //icepick
     compile 'frankiesardo:icepick:3.2.0'
 
+    //floatingActionMenu
     compile 'com.github.clans:fab:1.6.4'
 
-    //Expandable RecyclerView
+    //ExpandableRecyclerView
     compile 'com.github.grennis:ExpandableRecyclerView:0.9.3'
 
     //chat

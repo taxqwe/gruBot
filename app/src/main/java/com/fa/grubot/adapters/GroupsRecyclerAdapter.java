@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.fa.grubot.GroupInfoActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.objects.Group;
+import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 
 import java.io.Serializable;

@@ -1,6 +1,7 @@
-package com.fa.grubot.objects;
+package com.fa.grubot.objects.dashboard;
 
-import java.util.ArrayList;
+import com.fa.grubot.objects.group.Group;
+
 import java.util.Date;
 
 public class Announcement extends DashboardEntry {

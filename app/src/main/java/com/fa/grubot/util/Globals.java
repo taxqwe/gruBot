@@ -8,7 +8,7 @@ import android.net.NetworkInfo;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.fa.grubot.objects.ChatUser;
+import com.fa.grubot.objects.chat.ChatUser;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 

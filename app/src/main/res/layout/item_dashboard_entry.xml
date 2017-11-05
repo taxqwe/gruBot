@@ -53,8 +53,7 @@
             android:id="@+id/top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/entryTypeText"
@@ -66,8 +65,7 @@
                 android:maxLines="1"
                 android:textSize="20sp"
                 android:textColor="#3d3d3d"
-                android:text="Голосование"
-                />
+                android:text="Голосование" />
 
             <TextView
                 android:id="@+id/entryDate"
@@ -80,12 +78,9 @@
                 android:layout_alignParentRight="true"
                 android:gravity="top|center_horizontal"
                 android:paddingTop="2dp"
-                android:paddingLeft="10dp"
-                />
+                android:paddingLeft="10dp" />
 
         </LinearLayout>
-
-
 
         <LinearLayout
             android:layout_below="@+id/top"

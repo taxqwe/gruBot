@@ -1,16 +1,15 @@
-package com.fa.grubot.objects;
+package com.fa.grubot.objects.dashboard;
+
+import com.fa.grubot.objects.group.Group;
 
 import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 public class DashboardEntry implements Serializable {
     private int id;
-    private int type;
     private Group group;
     private String author;
     private String desc;
@@ -30,10 +29,6 @@ public class DashboardEntry implements Serializable {
 
     public int getId() {
         return id;
-    }
-
-    public int getType() {
-        return type;
     }
 
     public Group getGroup() {

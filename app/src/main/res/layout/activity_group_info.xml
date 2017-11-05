@@ -49,7 +49,7 @@
         fab:menu_colorRipple="@color/waPrimaryDark">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab12"
+            android:id="@+id/fab_add_vote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_thumbs_up_down_white_24dp"
@@ -57,7 +57,7 @@
             style="@style/MenuButtonsStyle" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab22"
+            android:id="@+id/fab_add_announcement"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_announcement_white_24dp"

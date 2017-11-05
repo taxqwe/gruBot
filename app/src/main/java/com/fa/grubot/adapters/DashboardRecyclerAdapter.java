@@ -1,7 +1,6 @@
 package com.fa.grubot.adapters;
 
 import android.content.Context;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +10,10 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.R;
-import com.fa.grubot.objects.Announcement;
-import com.fa.grubot.objects.DashboardEntry;
+import com.fa.grubot.objects.dashboard.Announcement;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

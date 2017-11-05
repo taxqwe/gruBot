@@ -1,11 +1,13 @@
 package com.fa.grubot.models;
 
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
-import com.fa.grubot.objects.Announcement;
-import com.fa.grubot.objects.DashboardEntry;
-import com.fa.grubot.objects.Group;
-import com.fa.grubot.objects.GroupInfoButton;
-import com.fa.grubot.objects.Vote;
+import com.fa.grubot.objects.dashboard.Announcement;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
+import com.fa.grubot.objects.dashboard.Vote;
+import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.objects.group.GroupInfoButton;
+import com.fa.grubot.objects.group.User;
+import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,24 +22,38 @@ public class GroupInfoModel {
     public GroupInfoModel(){
 
     }
+
     public ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> loadButtons(Group group){
         ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> groupInfoRecyclerItems = new ArrayList<>();
 
         groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(1, "Чат", new ArrayList<>())));
 
+        //Объявления
         ArrayList<DashboardEntry> entries = getAnnouncementsByGroup(group);
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Объявления", entries)));
+        ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
         for (DashboardEntry entry : entries) {
-            groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
+            items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Объявления", items)));
+        groupInfoRecyclerItems.addAll(items);
 
+        //Голосования
         entries = getVotesByGroup(group);
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Голосования", entries)));
+        items = new ArrayList<>();
         for (DashboardEntry entry : entries) {
-            groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
+            items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Голосования", items)));
+        groupInfoRecyclerItems.addAll(items);
 
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Список участников", new ArrayList<>())));
+        //Пользователи
+        ArrayList<User> users = getUsersByGroup(group);
+        items = new ArrayList<>();
+        for (User user : users) {
+            items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
+        }
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Список участников", items)));
+        groupInfoRecyclerItems.addAll(items);
 
         return groupInfoRecyclerItems;
     }
@@ -76,5 +92,25 @@ public class GroupInfoModel {
                 break;
         }
         return entries;
+    }
+
+    private ArrayList<User> getUsersByGroup(Group group) {
+        ArrayList<User> users = new ArrayList<>();
+        switch (group.getId()) {
+            case 1:
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
+                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH"));
+                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123"));
+                break;
+            case 2:
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
+                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH"));
+                break;
+            case 3:
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
+                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123"));
+                break;
+        }
+        return users;
     }
 }

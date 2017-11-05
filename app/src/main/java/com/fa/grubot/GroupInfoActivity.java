@@ -8,19 +8,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.EditText;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
-import com.fa.grubot.objects.Group;
+import com.fa.grubot.objects.dashboard.Announcement;
+import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.GroupInfoPresenter;
 import com.fa.grubot.util.Globals;
+import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 import com.r0adkll.slidr.Slidr;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,9 +34,11 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     @BindView(R.id.root) CoordinatorLayout rootView;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fam) FloatingActionMenu fam;
+    @BindView(R.id.fab_add_announcement) FloatingActionButton announcementFab;
     @BindView(R.id.recycler) RecyclerView buttonsView;
 
 
+    private GroupInfoRecyclerAdapter groupInfoAdapter;
     private GroupInfoPresenter presenter;
     private Unbinder unbinder;
 
@@ -62,6 +67,26 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
 
     public void setupFab(){
         fam.setClosedOnTouchOutside(true);
+        announcementFab.setOnClickListener(view -> {
+            groupInfoAdapter.collapseAll(); //TODO не баг, а фича. Если убрать все сломается и мне сейчас лень это фиксить, когда можно просто написать эту строку. Если кто-то это прочитает, то ёбните меня.
+            new MaterialDialog.Builder(this)
+                    .title("Объявление")
+                    .customView(R.layout.dialog_add_announcement, false)
+                    .positiveText(android.R.string.ok)
+                    .negativeText(android.R.string.cancel)
+                    .onPositive((dialog, which) -> {
+                        EditText desc = (EditText) dialog.findViewById(R.id.announcementDesc);
+                        EditText text = (EditText) dialog.findViewById(R.id.announcementText);
+
+                        if (!desc.toString().isEmpty() && !text.toString().isEmpty()){
+                            Announcement announcement = new Announcement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
+                            groupInfoAdapter.insertItem(announcement);
+                        }
+
+                        fam.close(true);
+                    })
+                    .show();
+        });
     }
 
     public void setupRecyclerView(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> buttons){
@@ -69,7 +94,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         buttonsView.setLayoutManager(mLayoutManager);
         buttonsView.setHasFixedSize(false);
 
-        GroupInfoRecyclerAdapter groupInfoAdapter = new GroupInfoRecyclerAdapter(this, buttons);
+        groupInfoAdapter = new GroupInfoRecyclerAdapter(this, buttons);
         groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);
         groupInfoAdapter.notifyDataSetChanged();

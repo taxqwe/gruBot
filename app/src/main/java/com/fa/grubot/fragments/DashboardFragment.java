@@ -19,8 +19,8 @@ import android.widget.Button;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.adapters.DashboardRecyclerAdapter;
-import com.fa.grubot.objects.Announcement;
-import com.fa.grubot.objects.DashboardEntry;
+import com.fa.grubot.objects.dashboard.Announcement;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
 import com.fa.grubot.presenters.DashboardPresenter;
 import com.fa.grubot.util.RecyclerItemTouchHelper;
 
