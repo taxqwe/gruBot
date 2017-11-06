@@ -25,6 +25,6 @@
         android:paddingTop="25dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:src="@drawable/ic_remove_circle_outline_black_36dp" />
+        android:src="@drawable/ic_close_black_36dp" />
 
 </LinearLayout>
