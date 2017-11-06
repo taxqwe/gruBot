@@ -33,6 +33,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:27.0.0'
     compile 'com.android.support:recyclerview-v7:27.0.0'
 
+    //text drawable
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
     //material dialogs
@@ -61,10 +62,10 @@ dependencies {
     //ExpandableRecyclerView
     compile 'com.github.grennis:ExpandableRecyclerView:0.9.3'
 
-    //chat
+    //chatkit
     compile 'com.github.stfalcon:chatkit:0.2.2'
 
-    //work with images
+    //glide
     compile 'com.github.bumptech.glide:glide:4.3.0'
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'

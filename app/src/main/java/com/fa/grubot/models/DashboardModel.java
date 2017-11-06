@@ -6,6 +6,7 @@ import com.fa.grubot.objects.dashboard.Announcement;
 import com.fa.grubot.objects.dashboard.DashboardEntry;
 import com.fa.grubot.objects.dashboard.Vote;
 import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
@@ -27,11 +28,11 @@ public class DashboardModel {
 
         entries.add(new Announcement(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Собрание", new Date(),  placeholder));
         entries.add(new Announcement(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Выходные дни", new Date(), placeholder));
-        entries.add(new Vote(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date(), new ArrayList<String>()));
+        entries.add(new Vote(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date(), new ArrayList<VoteOption>()));
 
-        entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Сбор денег", new Date(), new ArrayList<String>()));
-        entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Удовлетворенность чем-то", new Date(), new ArrayList<String>()));
-        entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Активность", new Date(), new ArrayList<String>()));
+        entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Сбор денег", new Date(), new ArrayList<VoteOption>()));
+        entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Удовлетворенность чем-то", new Date(), new ArrayList<VoteOption>()));
+        entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Активность", new Date(), new ArrayList<VoteOption>()));
 
 
         entries.add(new Announcement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Поездка", new Date(), placeholder));

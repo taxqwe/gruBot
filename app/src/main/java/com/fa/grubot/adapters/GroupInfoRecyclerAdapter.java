@@ -13,6 +13,7 @@ import com.fa.grubot.ChatActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.dashboard.Announcement;
 import com.fa.grubot.objects.dashboard.DashboardEntry;
+import com.fa.grubot.objects.dashboard.Vote;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.util.Globals;
@@ -104,7 +105,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 viewForeground.setOnClickListener(v -> {
                     new MaterialDialog.Builder(context)
                             .title(entry.getGroup().getName() + ": " + entry.getDesc())
-                            .items(new String[] {"1", "2", "3"})
+                            .items(((Vote) entry).getOptions())
                             .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
                                 /**
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
