@@ -33,6 +33,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:27.0.0'
     compile 'com.android.support:recyclerview-v7:27.0.0'
 
+    //text drawable
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
     //material dialogs
@@ -55,18 +56,20 @@ dependencies {
     //icepick
     compile 'frankiesardo:icepick:3.2.0'
 
-    //Expandable RecyclerView
+    //floatingActionMenu
+    compile 'com.github.clans:fab:1.6.4'
+
+    //ExpandableRecyclerView
     compile 'com.github.grennis:ExpandableRecyclerView:0.9.3'
-    
+
+    //chatkit
+    compile 'com.github.stfalcon:chatkit:0.2.2'
+
+    //glide
+    compile 'com.github.bumptech.glide:glide:4.3.0'
+
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.12'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
-
-    //chat
-    compile 'com.github.stfalcon:chatkit:0.2.2'
-
-    //work with images
-    compile 'com.github.bumptech.glide:glide:4.3.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
-
 }

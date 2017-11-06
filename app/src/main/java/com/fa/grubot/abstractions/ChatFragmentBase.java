@@ -1,6 +1,6 @@
 package com.fa.grubot.abstractions;
 
-import com.fa.grubot.objects.ChatMessage;
+import com.fa.grubot.objects.chat.ChatMessage;
 
 import io.reactivex.Observable;
 

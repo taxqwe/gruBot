@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatFragmentBase;
-import com.fa.grubot.objects.ChatMessage;
+import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.PreferencesStorage;

@@ -1,7 +1,7 @@
 package com.fa.grubot.models;
 
-import com.fa.grubot.objects.ChatMessage;
-import com.fa.grubot.objects.ChatUser;
+import com.fa.grubot.objects.chat.ChatMessage;
+import com.fa.grubot.objects.chat.ChatUser;
 
 import java.util.Date;
 import java.util.Random;

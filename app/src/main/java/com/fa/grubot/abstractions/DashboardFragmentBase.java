@@ -1,8 +1,6 @@
 package com.fa.grubot.abstractions;
 
-import android.view.View;
-
-import com.fa.grubot.objects.DashboardEntry;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
 
 import java.util.ArrayList;
 

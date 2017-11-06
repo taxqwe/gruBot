@@ -7,7 +7,7 @@ import android.view.View;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.models.DashboardModel;
-import com.fa.grubot.objects.DashboardEntry;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
 
 import java.util.ArrayList;
 
