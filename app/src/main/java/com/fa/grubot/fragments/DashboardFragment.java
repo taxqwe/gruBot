@@ -1,46 +1,40 @@
 package com.fa.grubot.fragments;
 
-import android.graphics.Color;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.fa.grubot.ListActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.DashboardFragmentBase;
-import com.fa.grubot.adapters.DashboardRecyclerAdapter;
-import com.fa.grubot.objects.dashboard.Announcement;
-import com.fa.grubot.objects.dashboard.DashboardEntry;
 import com.fa.grubot.presenters.DashboardPresenter;
-import com.fa.grubot.util.RecyclerItemTouchHelper;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class DashboardFragment extends Fragment implements DashboardFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener{
+public class DashboardFragment extends Fragment implements DashboardFragmentBase {
 
-    @Nullable @BindView(R.id.recycler) RecyclerView entriesView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+
+    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+
+    @Nullable @BindView(R.id.announcementsView) CardView announcementsView;
+    @Nullable @BindView(R.id.votesView) CardView votesView;
+    @Nullable @BindView(R.id.chatsView) CardView chatsView;
+    @Nullable @BindView(R.id.settingsView) CardView settingsView;
 
     private Unbinder unbinder;
     private DashboardPresenter presenter;
-    private ArrayList<DashboardEntry> entries;
-    private DashboardRecyclerAdapter dashboardAdapter;
     private int layout;
 
     @Override
@@ -57,82 +51,46 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         return v;
     }
 
-    public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
-        if (isNetworkAvailable) {
-            if (isHasData)
-                layout = R.layout.fragment_dashboard;
-            else
-                layout = R.layout.fragment_no_data;
-        }
+    public void setupLayouts(boolean isNetworkAvailable) {
+        if (isNetworkAvailable)
+            layout = R.layout.fragment_dashboard;
         else
             layout = R.layout.fragment_no_internet_connection;
     }
 
-    public void setupSwipeRefreshLayout(int layout){
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateView(layout, getActivity());
-            onItemsLoadComplete();
+    public void setupViews() {
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Главная страница");
+
+        votesView.setOnClickListener(view -> {
+            Intent intent = new Intent(this.getActivity(), ListActivity.class);
+            intent.putExtra("type", DashboardSpecificFragment.TYPE_VOTES);
+            startActivity(intent);
+        });
+
+        announcementsView.setOnClickListener(view -> {
+            Intent intent = new Intent(this.getActivity(), ListActivity.class);
+            intent.putExtra("type", DashboardSpecificFragment.TYPE_ANNOUNCEMENTS);
+            startActivity(intent);
+        });
+
+        chatsView.setOnClickListener(view -> {
+            Intent intent = new Intent(this.getActivity(), ListActivity.class);
+            intent.putExtra("type", 0);
+            startActivity(intent);
         });
     }
 
-    public void setupRecyclerView(ArrayList<DashboardEntry> entries){
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        entriesView.setLayoutManager(mLayoutManager);
-        entriesView.setItemAnimator(new DefaultItemAnimator());
-        entriesView.setHasFixedSize(false);
-
-        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(entriesView);
-
-        this.entries = entries;
-        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), entries);
-        entriesView.setAdapter(dashboardAdapter);
-        dashboardAdapter.notifyDataSetChanged();
-    }
-
-    public void setupRetryButton(){
+    public void setupRetryButton() {
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void reloadFragment(){
+    public void reloadFragment() {
         Fragment currentFragment = this;
         FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
         fragTransaction.detach(currentFragment);
         fragTransaction.attach(currentFragment);
         fragTransaction.commit();
-    }
-
-    private void onItemsLoadComplete() {
-        swipeRefreshLayout.setRefreshing(false);
-    }
-
-    public static DashboardFragment newInstance() {
-        return new DashboardFragment();
-    }
-
-    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof DashboardRecyclerAdapter.ViewHolder) {
-            Log.e("myTag", String.valueOf(viewHolder.getAdapterPosition()));
-            final DashboardEntry deletedItem = entries.get(viewHolder.getAdapterPosition());
-            final int deletedIndex = viewHolder.getAdapterPosition();
-
-            dashboardAdapter.removeItem(viewHolder.getAdapterPosition());
-
-            Snackbar snackbar;
-            if (deletedItem instanceof Announcement) {
-                snackbar = Snackbar.make(swipeRefreshLayout, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
-            } else {
-                snackbar = Snackbar.make(swipeRefreshLayout, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
-            }
-            snackbar.setAction(android.R.string.cancel, view -> {
-                dashboardAdapter.restoreItem(deletedItem, deletedIndex);
-                entriesView.smoothScrollToPosition(deletedIndex);
-            });
-            snackbar.setActionTextColor(Color.YELLOW);
-            snackbar.show();
-
-        }
     }
 
     @Override

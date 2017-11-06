@@ -1,13 +1,8 @@
 package com.fa.grubot.abstractions;
 
-import com.fa.grubot.objects.dashboard.DashboardEntry;
-
-import java.util.ArrayList;
-
 public interface DashboardFragmentBase {
-    void setupRecyclerView(ArrayList<DashboardEntry> entries);
-    void setupSwipeRefreshLayout(int layout);
-    void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
+    void setupLayouts(boolean isNetworkAvailable);
+    void setupViews();
     void setupRetryButton();
     void reloadFragment();
 }

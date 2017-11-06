@@ -5,8 +5,6 @@ import com.fa.grubot.objects.misc.VoteOption;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Vote extends DashboardEntry {
     private ArrayList<String> options = new ArrayList<>();

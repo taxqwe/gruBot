@@ -1,8 +1,6 @@
 package com.fa.grubot;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +11,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
@@ -29,7 +26,6 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 import com.r0adkll.slidr.Slidr;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -82,7 +78,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
             new MaterialDialog.Builder(this)
                     .title("Объявление")
                     .customView(R.layout.dialog_add_announcement, false)
-                    .cancelable(false)
+                    .canceledOnTouchOutside(false)
                     .positiveText(android.R.string.ok)
                     .negativeText(android.R.string.cancel)
                     .onPositive((dialog, which) -> {
@@ -105,7 +101,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
             MaterialDialog materialDialog = new MaterialDialog.Builder(this)
                     .title("Голосование")
                     .customView(R.layout.dialog_add_vote, false)
-                    .cancelable(false)
+                    .canceledOnTouchOutside(false)
                     .positiveText(android.R.string.ok)
                     .negativeText(android.R.string.cancel)
                     .autoDismiss(false)

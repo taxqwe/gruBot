@@ -1,33 +1,48 @@
 package com.fa.grubot;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.fa.grubot.fragments.ChatFragment;
+import com.fa.grubot.fragments.DashboardSpecificFragment;
+import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.util.Globals;
 import com.r0adkll.slidr.Slidr;
 
 import icepick.Icepick;
 
-/**
- * Created by ni.petrov on 22/10/2017.
- */
+public class ListActivity extends AppCompatActivity {
 
-public class ChatActivity extends AppCompatActivity {
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_dashboard);
         Slidr.attach(this, Globals.Config.getSlidrConfig());
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        ChatFragment fragment = new ChatFragment();
+        int type = getIntent().getExtras().getInt("type");
+
+        Fragment fragment;
+        switch (type) {
+            case 0:
+                fragment = new GroupsFragment();
+                break;
+            default:
+                fragment = new DashboardSpecificFragment();
+                Bundle args = new Bundle();
+                args.putInt("type", type);
+                fragment.setArguments(args);
+                break;
+        }
+
+
         fragmentTransaction.replace(R.id.content, fragment).commit();
     }
 

@@ -1,11 +1,11 @@
 package com.fa.grubot.abstractions;
 
-import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.objects.dashboard.DashboardEntry;
 
 import java.util.ArrayList;
 
-public interface GroupsFragmentBase {
-    void setupRecyclerView(ArrayList<Group> groups);
+public interface DashboardSpecificFragmentBase {
+    void setupRecyclerView(ArrayList<DashboardEntry> entries);
     void setupSwipeRefreshLayout(int layout);
     void setupToolbar();
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
