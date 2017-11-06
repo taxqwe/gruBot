@@ -119,7 +119,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
             dashboardAdapter.removeItem(viewHolder.getAdapterPosition());
 
-            Snackbar snackbar = null;
+            Snackbar snackbar;
             if (deletedItem instanceof Announcement) {
                 snackbar = Snackbar.make(swipeRefreshLayout, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
             } else {
@@ -127,6 +127,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
             }
             snackbar.setAction(android.R.string.cancel, view -> {
                 dashboardAdapter.restoreItem(deletedItem, deletedIndex);
+                entriesView.smoothScrollToPosition(deletedIndex);
             });
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();

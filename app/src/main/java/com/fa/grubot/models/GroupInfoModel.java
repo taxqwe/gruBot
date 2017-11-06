@@ -7,6 +7,7 @@ import com.fa.grubot.objects.dashboard.Vote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
+import com.fa.grubot.objects.misc.VoteOption;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.util.ArrayList;
@@ -81,12 +82,12 @@ public class GroupInfoModel {
         ArrayList<DashboardEntry> entries = new ArrayList<>();
         switch (group.getId()) {
             case 1:
-                entries.add(new Vote(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date(), new ArrayList<String>()));
+                entries.add(new Vote(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date(), new ArrayList<VoteOption>()));
                 break;
             case 2:
-                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Сбор денег", new Date(), new ArrayList<String>()));
-                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Удовлетворенность чем-то", new Date(), new ArrayList<String>()));
-                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Активность", new Date(), new ArrayList<String>()));
+                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Сбор денег", new Date(), new ArrayList<VoteOption>()));
+                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Удовлетворенность чем-то", new Date(), new ArrayList<VoteOption>()));
+                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Активность", new Date(), new ArrayList<VoteOption>()));
                 break;
             case 3:
                 break;
