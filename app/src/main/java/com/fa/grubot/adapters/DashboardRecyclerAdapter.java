@@ -32,7 +32,7 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     private static final int TYPE_SETTINGS = 819;
 
     private Context context;
-    ArrayList<DashboardItem> items;
+    private ArrayList<DashboardItem> items;
 
     public DashboardRecyclerAdapter(Context context, ArrayList<DashboardItem> items) {
         this.context = context;
@@ -173,6 +173,9 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
                 SettingsViewHolder settingsViewHolder = (SettingsViewHolder) holder;
                 DashboardSettings settings = (DashboardSettings) item;
                 settingsViewHolder.totalSettingsCount.setText("Доступно настроек: " + settings.getTotalSettingsCount());
+                settingsViewHolder.settingsView.setOnClickListener(view -> {
+                    //TODO
+                });
                 break;
         }
     }
