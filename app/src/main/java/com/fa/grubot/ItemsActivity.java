@@ -6,14 +6,14 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.fa.grubot.fragments.DashboardSpecificFragment;
+import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.util.Globals;
 import com.r0adkll.slidr.Slidr;
 
 import icepick.Icepick;
 
-public class ListActivity extends AppCompatActivity {
+public class ItemsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class ListActivity extends AppCompatActivity {
                 fragment = new GroupsFragment();
                 break;
             default:
-                fragment = new DashboardSpecificFragment();
+                fragment = new ActionsFragment();
                 Bundle args = new Bundle();
                 args.putInt("type", type);
                 fragment.setArguments(args);

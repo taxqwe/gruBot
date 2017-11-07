@@ -15,8 +15,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.adapters.VoteRecyclerAdapter;
-import com.fa.grubot.objects.dashboard.Announcement;
-import com.fa.grubot.objects.dashboard.Vote;
+import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
@@ -86,8 +86,8 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
                         EditText text = (EditText) dialog.findViewById(R.id.announcementText);
 
                         if (!desc.toString().isEmpty() && !text.toString().isEmpty()){
-                            Announcement announcement = new Announcement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
-                            groupInfoAdapter.insertItem(announcement);
+                            ActionAnnouncement actionAnnouncement = new ActionAnnouncement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
+                            groupInfoAdapter.insertItem(actionAnnouncement);
                         }
 
                         fam.close(true);
@@ -145,8 +145,8 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
                         if (hasEmpty)
                             Toast.makeText(this, "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
                         else {
-                            Vote vote = new Vote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
-                            groupInfoAdapter.insertItem(vote);
+                            ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
+                            groupInfoAdapter.insertItem(actionVote);
                             dialog.dismiss();
                             fam.close(true);
                         }

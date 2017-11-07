@@ -39,7 +39,7 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".ListActivity"
+        <activity android:name=".ItemsActivity"
             android:screenOrientation="sensor"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"/>

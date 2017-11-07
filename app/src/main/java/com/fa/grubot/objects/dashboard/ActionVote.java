@@ -6,10 +6,10 @@ import com.fa.grubot.objects.misc.VoteOption;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Vote extends DashboardEntry {
+public class ActionVote extends Action {
     private ArrayList<String> options = new ArrayList<>();
 
-    public Vote(int id, Group group, String author, String desc, Date date, ArrayList<VoteOption> options) {
+    public ActionVote(int id, Group group, String author, String desc, Date date, ArrayList<VoteOption> options) {
         super(id, group, author, desc,date);
 
         for (VoteOption option : options){

@@ -4,10 +4,10 @@ import com.fa.grubot.objects.group.Group;
 
 import java.util.Date;
 
-public class Announcement extends DashboardEntry {
+public class ActionAnnouncement extends Action {
     private String text;
 
-    public Announcement(int id, Group group, String author, String desc, Date date, String text) {
+    public ActionAnnouncement(int id, Group group, String author, String desc, Date date, String text) {
         super(id, group, author, desc, date);
 
         this.text = text;

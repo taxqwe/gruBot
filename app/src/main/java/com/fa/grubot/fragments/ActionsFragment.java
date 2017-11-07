@@ -8,11 +8,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +20,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.fa.grubot.R;
-import com.fa.grubot.abstractions.DashboardSpecificFragmentBase;
-import com.fa.grubot.adapters.DashboardRecyclerAdapter;
-import com.fa.grubot.objects.dashboard.Announcement;
-import com.fa.grubot.objects.dashboard.DashboardEntry;
-import com.fa.grubot.presenters.DashboardSpecificPresenter;
+import com.fa.grubot.abstractions.ActionsFragmentBase;
+import com.fa.grubot.adapters.ActionsRecyclerAdapter;
+import com.fa.grubot.objects.dashboard.Action;
+import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.presenters.ActionsPresenter;
 import com.fa.grubot.util.RecyclerItemTouchHelper;
 
 import java.util.ArrayList;
@@ -34,25 +34,25 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class DashboardSpecificFragment extends Fragment implements DashboardSpecificFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener{
+public class ActionsFragment extends Fragment implements ActionsFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener{
     public static final int TYPE_ANNOUNCEMENTS = 389;
     public static final int TYPE_VOTES = 827;
 
     @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
-    @Nullable @BindView(R.id.recycler) RecyclerView entriesView;
+    @Nullable @BindView(R.id.recycler) RecyclerView actionsView;
     @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
     private Unbinder unbinder;
-    private DashboardSpecificPresenter presenter;
-    private ArrayList<DashboardEntry> entries;
-    private DashboardRecyclerAdapter dashboardAdapter;
+    private ActionsPresenter presenter;
+    private ArrayList<Action> actions;
+    private ActionsRecyclerAdapter actionsAdapter;
     private int layout;
     private int type;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new DashboardSpecificPresenter(this);
+        presenter = new ActionsPresenter(this);
         type = this.getArguments().getInt("type");
         setHasOptionsMenu(true);
         presenter.notifyFragmentStarted(getActivity(), type);
@@ -67,7 +67,7 @@ public class DashboardSpecificFragment extends Fragment implements DashboardSpec
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
         if (isNetworkAvailable) {
             if (isHasData)
-                layout = R.layout.fragment_dashboard_specific;
+                layout = R.layout.fragment_actions;
             else
                 layout = R.layout.fragment_no_data;
         }
@@ -95,19 +95,25 @@ public class DashboardSpecificFragment extends Fragment implements DashboardSpec
         });
     }
 
-    public void setupRecyclerView(ArrayList<DashboardEntry> entries){
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        entriesView.setLayoutManager(mLayoutManager);
-        entriesView.setItemAnimator(new DefaultItemAnimator());
-        entriesView.setHasFixedSize(false);
+    public void setupRecyclerView(ArrayList<Action> actions){
+        int spanCount = 1;
+
+        if (getActivity().getResources().getConfiguration().orientation == 2)
+            spanCount = 2;
+
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), spanCount);
+
+        actionsView.setLayoutManager(layoutManager);
+        actionsView.setItemAnimator(new DefaultItemAnimator());
+        actionsView.setHasFixedSize(false);
 
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(entriesView);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(actionsView);
 
-        this.entries = entries;
-        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), entries);
-        entriesView.setAdapter(dashboardAdapter);
-        dashboardAdapter.notifyDataSetChanged();
+        this.actions = actions;
+        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), actions);
+        actionsView.setAdapter(actionsAdapter);
+        actionsAdapter.notifyDataSetChanged();
     }
 
     public void setupRetryButton(){
@@ -116,9 +122,6 @@ public class DashboardSpecificFragment extends Fragment implements DashboardSpec
 
     public void reloadFragment(){
         Fragment currentFragment = this;
-        Bundle args = new Bundle();
-        args.putInt("type", type);
-        currentFragment.setArguments(args);
         FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
         fragTransaction.detach(currentFragment);
         fragTransaction.attach(currentFragment);
@@ -131,23 +134,22 @@ public class DashboardSpecificFragment extends Fragment implements DashboardSpec
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
-        if (viewHolder instanceof DashboardRecyclerAdapter.ViewHolder) {
-            Log.e("myTag", String.valueOf(viewHolder.getAdapterPosition()));
-            final DashboardEntry deletedItem = entries.get(viewHolder.getAdapterPosition());
+        if (viewHolder instanceof ActionsRecyclerAdapter.ViewHolder) {
+            final Action deletedItem = actions.get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
-            dashboardAdapter.removeItem(viewHolder.getAdapterPosition());
+            actionsAdapter.removeItem(viewHolder.getAdapterPosition());
 
             Snackbar snackbar;
-            if (deletedItem instanceof Announcement) {
+            if (deletedItem instanceof ActionAnnouncement) {
                 snackbar = Snackbar.make(swipeRefreshLayout, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
             } else {
                 snackbar = Snackbar.make(swipeRefreshLayout, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
             }
             snackbar.setAction(android.R.string.cancel, view -> {
-                if (entries.indexOf(deletedItem) == -1) {
-                    dashboardAdapter.restoreItem(deletedItem, deletedIndex);
-                    entriesView.smoothScrollToPosition(deletedIndex);
+                if (actions.indexOf(deletedItem) == -1) {
+                    actionsAdapter.restoreItem(deletedItem, deletedIndex);
+                    actionsView.smoothScrollToPosition(deletedIndex);
                 }
             });
             snackbar.setActionTextColor(Color.YELLOW);

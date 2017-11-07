@@ -2,20 +2,24 @@ package com.fa.grubot.fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.fa.grubot.ListActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.DashboardFragmentBase;
+import com.fa.grubot.adapters.DashboardRecyclerAdapter;
+import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.presenters.DashboardPresenter;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,11 +31,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
     @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
-
-    @Nullable @BindView(R.id.announcementsView) CardView announcementsView;
-    @Nullable @BindView(R.id.votesView) CardView votesView;
-    @Nullable @BindView(R.id.chatsView) CardView chatsView;
-    @Nullable @BindView(R.id.settingsView) CardView settingsView;
+    @Nullable @BindView(R.id.recycler) RecyclerView dashboardView;
 
     private Unbinder unbinder;
     private DashboardPresenter presenter;
@@ -58,30 +58,24 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
             layout = R.layout.fragment_no_internet_connection;
     }
 
-    public void setupViews() {
+    public void setupToolbar() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Главная страница");
+    }
 
-        votesView.setOnClickListener(view -> {
-            Intent intent = new Intent(this.getActivity(), ListActivity.class);
-            intent.putExtra("type", DashboardSpecificFragment.TYPE_VOTES);
-            startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-        });
+    public void setupRecyclerView(ArrayList<DashboardItem> items) {
+        int spanCount = 1;
 
-        announcementsView.setOnClickListener(view -> {
-            Intent intent = new Intent(this.getActivity(), ListActivity.class);
-            intent.putExtra("type", DashboardSpecificFragment.TYPE_ANNOUNCEMENTS);
-            startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-        });
+        if (getActivity().getResources().getConfiguration().orientation == 2)
+            spanCount = 2;
 
-        chatsView.setOnClickListener(view -> {
-            Intent intent = new Intent(this.getActivity(), ListActivity.class);
-            intent.putExtra("type", 0);
-            startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
-        });
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), spanCount);
+        dashboardView.setLayoutManager(layoutManager);
+        dashboardView.setHasFixedSize(false);
+
+        DashboardRecyclerAdapter groupsAdapter = new DashboardRecyclerAdapter(getActivity(), items);
+        dashboardView.setAdapter(groupsAdapter);
+        groupsAdapter.notifyDataSetChanged();
     }
 
     public void setupRetryButton() {

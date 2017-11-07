@@ -20,7 +20,8 @@ public class DashboardPresenter {
     public void notifyViewCreated(int layout, View v){
         switch (layout) {
             case R.layout.fragment_dashboard:
-                fragment.setupViews();
+                fragment.setupToolbar();
+                fragment.setupRecyclerView(model.getItems());
                 break;
             case R.layout.fragment_no_internet_connection:
                 fragment.setupRetryButton();

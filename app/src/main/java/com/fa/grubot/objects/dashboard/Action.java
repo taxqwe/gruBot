@@ -8,18 +8,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class DashboardEntry implements Serializable {
+public class Action implements Serializable {
     private int id;
     private Group group;
     private String author;
     private String desc;
     private Date date;
 
-    public DashboardEntry() {
+    public Action() {
 
     }
 
-    public DashboardEntry(int id, Group group, String author, String desc, Date date) {
+    public Action(int id, Group group, String author, String desc, Date date) {
         this.id = id;
         this.group = group;
         this.author = author;

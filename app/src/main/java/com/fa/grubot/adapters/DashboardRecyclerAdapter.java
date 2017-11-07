@@ -1,115 +1,197 @@
 package com.fa.grubot.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.fa.grubot.ItemsActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.objects.dashboard.Announcement;
-import com.fa.grubot.objects.dashboard.DashboardEntry;
-import com.fa.grubot.objects.dashboard.Vote;
+import com.fa.grubot.fragments.ActionsFragment;
+import com.fa.grubot.objects.dashboard.DashboardAnnouncement;
+import com.fa.grubot.objects.dashboard.DashboardChat;
+import com.fa.grubot.objects.dashboard.DashboardItem;
+import com.fa.grubot.objects.dashboard.DashboardSettings;
+import com.fa.grubot.objects.dashboard.DashboardVote;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DashboardRecyclerAdapter extends RecyclerView.Adapter<DashboardRecyclerAdapter.ViewHolder>{
+public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
+    private static final int TYPE_ANNOUNCEMENT = 796;
+    private static final int TYPE_VOTE = 468;
+    private static final int TYPE_CHAT = 338;
+    private static final int TYPE_SETTINGS = 819;
 
     private Context context;
-    private final ArrayList<DashboardEntry> entries;
+    ArrayList<DashboardItem> items;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.entryTypeText) TextView entryTypeText;
-        @BindView(R.id.entryDate) TextView entryDate;
-        @BindView(R.id.entryGroup) TextView entryGroup;
-        @BindView(R.id.entryAuthor) TextView entryAuthor;
-        @BindView(R.id.entryDesc) TextView entryDesc;
+    public DashboardRecyclerAdapter(Context context, ArrayList<DashboardItem> items) {
+        this.context = context;
+        this.items = items;
+    }
 
-        @BindView(R.id.view_background) RelativeLayout viewBackground;
-        public @BindView(R.id.view_foreground) RelativeLayout viewForeground;
+    class AnnouncementViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.newAnnouncementsCount) TextView newAnnouncementsCount;
+        @BindView(R.id.archiveAnnouncementsCount) TextView archiveAnnouncementsCount;
+        @BindView(R.id.totalAnnouncementsCount) TextView totalAnnouncementsCount;
+        @BindView(R.id.announcementsView) CardView announcementsView;
 
-
-        private ViewHolder(View view) {
+        private AnnouncementViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-        }
-    }
 
-    public DashboardRecyclerAdapter(Context context, ArrayList<DashboardEntry> entries) {
-        this.context = context;
-        this.entries = entries;
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dashboard_entry, parent, false);
-        return new ViewHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, int pos) {
-        final int position = holder.getAdapterPosition();
-        DashboardEntry entry = entries.get(position);
-
-        holder.entryDate.setText(entry.getDate());
-        holder.entryAuthor.setText(entry.getAuthor());
-        holder.entryDesc.setText(entry.getDesc());
-        holder.entryGroup.setText(entry.getGroup().getName());
-        holder.viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
-
-        if (entry instanceof Announcement) {
-            holder.entryTypeText.setText("Объявление");
-            holder.viewForeground.setOnClickListener(v -> {
-                new MaterialDialog.Builder(context)
-                        .title(entry.getGroup().getName() + ": " + entry.getDesc())
-                        .content(((Announcement) entry).getText())
-                        .positiveText(android.R.string.ok)
-                        .show();
-            });
-        } else {
-            holder.entryTypeText.setText("Голосование");
-            holder.viewForeground.setOnClickListener(v -> {
-                new MaterialDialog.Builder(context)
-                        .title(entry.getGroup().getName() + ": " + entry.getDesc())
-                        .items(((Vote) entry).getOptions())
-                        .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
-                            /**
-                             * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
-                             * returning false here won't allow the newly selected radio button to actually be selected.
-                             **/
-                            return true;
-                        })
-                        .positiveText(android.R.string.ok)
-                        .show();
+            announcementsView.setOnClickListener(view1 -> {
+                Intent intent = new Intent(context, ItemsActivity.class);
+                intent.putExtra("type", ActionsFragment.TYPE_ANNOUNCEMENTS);
+                context.startActivity(intent);
+                ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
             });
         }
     }
 
-    public void removeItem(int position) {
-        entries.remove(position);
-        notifyItemRemoved(position);
+    class VoteViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.newVotesCount) TextView newVotesCount;
+        @BindView(R.id.archiveVotesCount) TextView archiveVotesCount;
+        @BindView(R.id.totalVotesCount) TextView totalVotesCount;
+        @BindView(R.id.votesView) CardView votesView;
+
+        private VoteViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+
+            votesView.setOnClickListener(view1 -> {
+                Intent intent = new Intent(context, ItemsActivity.class);
+                intent.putExtra("type", ActionsFragment.TYPE_VOTES);
+                context.startActivity(intent);
+                ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+            });
+        }
     }
 
-    public void restoreItem(DashboardEntry entry, int position) {
-        entries.add(position, entry);
-        notifyItemInserted(position);
+    class ChatViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.newMessagesCount) TextView newMessagesCount;
+        @BindView(R.id.totalChatsCount) TextView totalChatsCount;
+        @BindView(R.id.chatsView) CardView chatsView;
+
+        private ChatViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+
+            chatsView.setOnClickListener(view1 -> {
+                Intent intent = new Intent(context, ItemsActivity.class);
+                intent.putExtra("type", 0);
+                context.startActivity(intent);
+                ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+            });
+        }
+    }
+
+    class SettingsViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.totalSettingsCount) TextView totalSettingsCount;
+        @BindView(R.id.settingsView) CardView settingsView;
+
+        private SettingsViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+
+            settingsView.setOnClickListener(view1 -> {
+                Intent intent = new Intent(context, ItemsActivity.class);
+                intent.putExtra("type", 0);
+                context.startActivity(intent);
+                ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+            });
+        }
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case TYPE_ANNOUNCEMENT:
+                return (new AnnouncementViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dashboard_announcement, parent, false)));
+            case TYPE_VOTE:
+                return (new VoteViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dashboard_vote, parent, false)));
+            case TYPE_CHAT:
+                return (new ChatViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dashboard_chat, parent, false)));
+            default:
+                return (new SettingsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dashboard_settings, parent, false)));
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int pos) {
+        int position = holder.getAdapterPosition();
+        DashboardItem item = items.get(position);
+        switch (holder.getItemViewType()) {
+            case TYPE_ANNOUNCEMENT:
+                AnnouncementViewHolder announcementViewHolder = (AnnouncementViewHolder) holder;
+                DashboardAnnouncement announcement = (DashboardAnnouncement) item;
+                announcementViewHolder.newAnnouncementsCount.setText("Новых: " + announcement.getNewAnnouncementsCount());
+                announcementViewHolder.archiveAnnouncementsCount.setText("В архиве: " + announcement.getArchiveAnnouncementsCount());
+                announcementViewHolder.totalAnnouncementsCount.setText("Всего: " + announcement.getTotalAnnouncementsCount());
+                announcementViewHolder.announcementsView.setOnClickListener(view -> {
+                    Intent intent = new Intent(context, ItemsActivity.class);
+                    intent.putExtra("type", ActionsFragment.TYPE_ANNOUNCEMENTS);
+                    context.startActivity(intent);
+                    ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                });
+                break;
+            case TYPE_VOTE:
+                VoteViewHolder voteViewHolder = (VoteViewHolder) holder;
+                DashboardVote vote = (DashboardVote) item;
+                voteViewHolder.newVotesCount.setText("Новых: " + vote.getNewVotesCount());
+                voteViewHolder.archiveVotesCount.setText("В архиве: " + vote.getArchiveVotesCount());
+                voteViewHolder.totalVotesCount.setText("Всего: " + vote.getTotalVotesCount());
+                voteViewHolder.votesView.setOnClickListener(view -> {
+                    Intent intent = new Intent(context, ItemsActivity.class);
+                    intent.putExtra("type", ActionsFragment.TYPE_VOTES);
+                    context.startActivity(intent);
+                    ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                });
+                break;
+            case TYPE_CHAT:
+                ChatViewHolder chatViewHolder = (ChatViewHolder) holder;
+                DashboardChat chat = (DashboardChat) item;
+                chatViewHolder.totalChatsCount.setText("Всего чатов: " + chat.getTotalChatsCount());
+                chatViewHolder.newMessagesCount.setText("Новых сообщений: " + chat.getNewMessagesCount());
+                chatViewHolder.chatsView.setOnClickListener(view -> {
+                    Intent intent = new Intent(context, ItemsActivity.class);
+                    intent.putExtra("type", 0);
+                    context.startActivity(intent);
+                    ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                });
+                break;
+            case TYPE_SETTINGS:
+                SettingsViewHolder settingsViewHolder = (SettingsViewHolder) holder;
+                DashboardSettings settings = (DashboardSettings) item;
+                settingsViewHolder.totalSettingsCount.setText("Доступно настроек: " + settings.getTotalSettingsCount());
+                break;
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        DashboardItem item = items.get(position);
+        if (item instanceof DashboardAnnouncement)
+            return TYPE_ANNOUNCEMENT;
+        else if (item instanceof DashboardVote)
+            return TYPE_VOTE;
+        else if (item instanceof DashboardChat)
+            return TYPE_CHAT;
+        else
+            return TYPE_SETTINGS;
     }
 
     @Override
     public int getItemCount() {
-        return entries.size();
-    }
-
-    private int getColorFromDashboardEntry(DashboardEntry entry){
-        if (entry instanceof Announcement)
-            return context.getResources().getColor(R.color.colorAnnouncement);
-        else
-            return context.getResources().getColor(R.color.colorVote);
+        return items.size();
     }
 }

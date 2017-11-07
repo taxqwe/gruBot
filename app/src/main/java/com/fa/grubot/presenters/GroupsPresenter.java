@@ -42,7 +42,7 @@ public class GroupsPresenter {
     public void updateView(int layout, Context context){
         groups = model.loadGroups();
         if (model.isNetworkAvailable(context)) {
-            if (layout == R.layout.fragment_dashboard_specific && groups.size() > 0)
+            if (layout == R.layout.fragment_actions && groups.size() > 0)
                 updateDashboardRecyclerView(groups);
             else
                 fragment.reloadFragment();

@@ -5,28 +5,27 @@ import android.content.Context;
 import android.view.View;
 
 import com.fa.grubot.R;
-import com.fa.grubot.abstractions.DashboardSpecificFragmentBase;
-import com.fa.grubot.fragments.DashboardSpecificFragment;
-import com.fa.grubot.models.DashboardSpecificModel;
-import com.fa.grubot.objects.dashboard.DashboardEntry;
+import com.fa.grubot.abstractions.ActionsFragmentBase;
+import com.fa.grubot.models.ActionsModel;
+import com.fa.grubot.objects.dashboard.Action;
 
 import java.util.ArrayList;
 
-public class DashboardSpecificPresenter {
-    private DashboardSpecificFragmentBase fragment;
-    private DashboardSpecificModel model;
-    private ArrayList<DashboardEntry> entries = new ArrayList<>();
+public class ActionsPresenter {
+    private ActionsFragmentBase fragment;
+    private ActionsModel model;
+    private ArrayList<Action> actions = new ArrayList<>();
 
-    public DashboardSpecificPresenter(DashboardSpecificFragmentBase fragment){
+    public ActionsPresenter(ActionsFragmentBase fragment){
         this.fragment = fragment;
-        this.model = new DashboardSpecificModel();
+        this.model = new ActionsModel();
     }
 
     public void notifyViewCreated(int layout, View v){
         switch (layout) {
-            case R.layout.fragment_dashboard_specific:
+            case R.layout.fragment_actions:
                 fragment.setupToolbar();
-                fragment.setupRecyclerView(entries);
+                fragment.setupRecyclerView(actions);
                 fragment.setupSwipeRefreshLayout(layout);
                 break;
             case R.layout.fragment_no_internet_connection:
@@ -39,17 +38,17 @@ public class DashboardSpecificPresenter {
     }
 
     public void updateView(int layout, Context context, int type){
-        entries = model.loadEntries(type);
+        actions = model.loadActions(type);
         if (model.isNetworkAvailable(context)) {
-            if (layout == R.layout.fragment_dashboard_specific && entries.size() > 0)
-                updateDashboardRecyclerView(entries);
+            if (layout == R.layout.fragment_actions && actions.size() > 0)
+                updateDashboardRecyclerView(actions);
             else
                 fragment.reloadFragment();
         } else
             fragment.reloadFragment();
     }
 
-    private void updateDashboardRecyclerView(ArrayList<DashboardEntry> entries){
+    private void updateDashboardRecyclerView(ArrayList<Action> entries){
         fragment.setupRecyclerView(entries);
     }
 
@@ -57,10 +56,10 @@ public class DashboardSpecificPresenter {
         boolean isNetworkAvailable = model.isNetworkAvailable(context);
         boolean isHasData = false;
         if (isNetworkAvailable) {
-            entries = model.loadEntries(type);
+            actions = model.loadActions(type);
         }
 
-        if (entries.size() > 0)
+        if (actions.size() > 0)
             isHasData = true;
 
         fragment.setupLayouts(isNetworkAvailable, isHasData);
