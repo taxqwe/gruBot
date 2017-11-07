@@ -112,15 +112,11 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    public static GroupsFragment newInstance() {
-        return new GroupsFragment();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home)
-            getActivity().finish();
+            getActivity().onBackPressed();
         return super.onOptionsItemSelected(item);
     }
 

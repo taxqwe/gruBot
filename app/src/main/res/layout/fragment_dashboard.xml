@@ -24,27 +24,29 @@
                 android:id="@+id/announcementsView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                card_view:cardCornerRadius="0dp">
+                android:layout_margin="10dp"
+                card_view:cardCornerRadius="5dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorAnnouncement"
-                    android:padding="5dp">
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorAnnouncement">
 
                         <ImageView
                             android:id="@+id/announcementIcon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_announcement_black_48dp"
-                            android:alpha="150"/>
+                            android:src="@drawable/ic_announcement_black_36dp"
+                            android:layout_margin="5dp"
+                            android:alpha="200"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -52,23 +54,20 @@
                             android:layout_toEndOf="@id/announcementIcon"
                             android:layout_toRightOf="@id/announcementIcon"
                             android:paddingLeft="10dp"
-                            android:textSize="28dp"
                             android:textColor="@color/black"
+                            android:textSize="28sp"
                             android:text="Оповещения"/>
                     </RelativeLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:background="@color/gray"
-                        android:layout_margin="4dp" />
 
                     <TextView
                         android:id="@+id/newAnnouncementsCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
+                        android:paddingTop="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:text="Новых: 10"/>
 
                     <TextView
@@ -76,7 +75,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:text="В архиве: 5"/>
 
                     <TextView
@@ -84,7 +85,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingBottom="5dp"
                         android:text="Всего: 15"/>
 
                 </LinearLayout>
@@ -94,27 +98,29 @@
                 android:id="@+id/votesView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                card_view:cardCornerRadius="0dp">
+                android:layout_margin="10dp"
+                card_view:cardCornerRadius="5dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorVote"
-                    android:padding="5dp">
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorVote">
 
                         <ImageView
                             android:id="@+id/voteIcon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_thumbs_up_down_black_48dp"
-                            android:alpha="150"/>
+                            android:src="@drawable/ic_thumbs_up_down_black_36dp"
+                            android:layout_margin="5dp"
+                            android:alpha="200"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -122,23 +128,20 @@
                             android:layout_toEndOf="@id/voteIcon"
                             android:layout_toRightOf="@id/voteIcon"
                             android:paddingLeft="10dp"
-                            android:textSize="28dp"
                             android:textColor="@color/black"
+                            android:textSize="28sp"
                             android:text="Голосования"/>
                     </RelativeLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:background="@color/gray"
-                        android:layout_margin="4dp" />
 
                     <TextView
                         android:id="@+id/newVotesCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
+                        android:paddingTop="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:text="Новых: 10"/>
 
                     <TextView
@@ -146,7 +149,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
                         android:text="В архиве: 5"/>
 
                     <TextView
@@ -154,7 +159,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingBottom="5dp"
                         android:text="Всего: 15"/>
 
                 </LinearLayout>
@@ -164,27 +172,29 @@
                 android:id="@+id/chatsView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                card_view:cardCornerRadius="0dp">
+                android:layout_margin="10dp"
+                card_view:cardCornerRadius="5dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/holo_green_light"
-                    android:padding="5dp">
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorChat">
 
                         <ImageView
                             android:id="@+id/chatIcon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_group_black_48dp"
-                            android:alpha="150"/>
+                            android:src="@drawable/ic_group_black_36dp"
+                            android:layout_margin="5dp"
+                            android:alpha="200"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -192,23 +202,31 @@
                             android:layout_toEndOf="@id/chatIcon"
                             android:layout_toRightOf="@id/chatIcon"
                             android:paddingLeft="10dp"
-                            android:textSize="28dp"
                             android:textColor="@color/black"
+                            android:textSize="28sp"
                             android:text="Чаты"/>
                     </RelativeLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:background="@color/gray"
-                        android:layout_margin="4dp" />
+                    <TextView
+                        android:id="@+id/totalChatsCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:paddingTop="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:text="Всего чатов: 10"/>
 
                     <TextView
                         android:id="@+id/newMessagesCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingBottom="5dp"
                         android:text="Новых сообщений: 10"/>
 
                 </LinearLayout>
@@ -218,26 +236,29 @@
                 android:id="@+id/settingsView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                card_view:cardCornerRadius="0dp">
+                android:layout_margin="10dp"
+                card_view:cardCornerRadius="5dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp">
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorSettings">
 
                         <ImageView
                             android:id="@+id/settingsIcon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_settings_black_48dp"
-                            android:alpha="150"/>
+                            android:src="@drawable/ic_settings_black_36dp"
+                            android:layout_margin="5dp"
+                            android:alpha="200"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -245,12 +266,26 @@
                             android:layout_toEndOf="@id/settingsIcon"
                             android:layout_toRightOf="@id/settingsIcon"
                             android:paddingLeft="10dp"
-                            android:textSize="28dp"
                             android:textColor="@color/black"
+                            android:textSize="28sp"
                             android:text="Настройки"/>
                     </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/totalSettingsCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:paddingTop="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingBottom="5dp"
+                        android:text="Доступно настроек: 10"/>
+
                 </LinearLayout>
             </android.support.v7.widget.CardView>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -66,18 +66,21 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
             Intent intent = new Intent(this.getActivity(), ListActivity.class);
             intent.putExtra("type", DashboardSpecificFragment.TYPE_VOTES);
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
         });
 
         announcementsView.setOnClickListener(view -> {
             Intent intent = new Intent(this.getActivity(), ListActivity.class);
             intent.putExtra("type", DashboardSpecificFragment.TYPE_ANNOUNCEMENTS);
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
         });
 
         chatsView.setOnClickListener(view -> {
             Intent intent = new Intent(this.getActivity(), ListActivity.class);
             intent.putExtra("type", 0);
             startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
         });
     }
 

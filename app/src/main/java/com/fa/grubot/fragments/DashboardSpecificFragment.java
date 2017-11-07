@@ -159,9 +159,8 @@ public class DashboardSpecificFragment extends Fragment implements DashboardSpec
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == android.R.id.home) {
-            getActivity().finish();
-        }
+        if (id == android.R.id.home)
+            getActivity().onBackPressed();
         return super.onOptionsItemSelected(item);
     }
 

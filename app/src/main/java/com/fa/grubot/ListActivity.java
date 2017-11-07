@@ -5,9 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import com.fa.grubot.fragments.ChatFragment;
 import com.fa.grubot.fragments.DashboardSpecificFragment;
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.util.Globals;
@@ -21,6 +19,7 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
+
         setContentView(R.layout.activity_dashboard);
         Slidr.attach(this, Globals.Config.getSlidrConfig());
 
@@ -50,5 +49,11 @@ public class ListActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
     }
 }
