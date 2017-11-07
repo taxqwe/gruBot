@@ -1,5 +1,6 @@
 package com.fa.grubot.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -63,6 +64,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 buttonText.getRootView().setOnClickListener(v -> {
                     Intent intent = new Intent(context, ChatActivity.class);
                     context.startActivity(intent);
+                    ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
                 });
             }
         }

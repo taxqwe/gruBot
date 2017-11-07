@@ -36,4 +36,10 @@ public class ChatActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
+    }
 }
