@@ -3,12 +3,13 @@ package com.fa.grubot.models;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.chat.ChatUser;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.ReplaySubject;
 
 /**
  * Created by ni.petrov on 22/10/2017.
@@ -34,15 +35,15 @@ public class ChatModel {
 
 
     public Observable<ChatMessage> getMessagesObservable() {
-        return PublishSubject
-                .interval(3, TimeUnit.SECONDS)
+        return ReplaySubject
+                .interval(5, TimeUnit.SECONDS)
                 .map(interval -> {
                             ChatMessage message = new ChatMessage(String.valueOf(interval),
-                                    generateRandomString(15, 150),
+                                    "message#" + interval + " : " + generateRandomString(3, 15),
                                     new ChatUser("2",
                                             "Комлев Антон",
                                             "https://img00.deviantart.net/fc89/i/2014/245/a/5/stalin_the_cat_23_by_kurogn-d7xngqa.jpg"),
-                                    new Date(37, 12, 12));
+                                    new Date());
                             return message;
                         }
                 );
@@ -50,5 +51,26 @@ public class ChatModel {
 
     public void sendMessage(ChatMessage message) {
         // message goes to server
+    }
+
+    public ArrayList<ChatMessage> getCachedMessages() {
+        ArrayList<ChatMessage> cachedMessages = new ArrayList<>();
+        cachedMessages.add(new ChatMessage("-3", "Cached message #1",
+                new ChatUser("2",
+                        "Комлев Антон",
+                        "https://img00.deviantart.net/fc89/i/2014/245/a/5/stalin_the_cat_23_by_kurogn-d7xngqa.jpg"),
+                new Date()));
+        cachedMessages.add(new ChatMessage("-2", "Cached message #2",
+                new ChatUser("2",
+                        "Комлев Антон",
+                        "https://img00.deviantart.net/fc89/i/2014/245/a/5/stalin_the_cat_23_by_kurogn-d7xngqa.jpg"),
+                new Date()));
+        cachedMessages.add(new ChatMessage("-1", "Cached message #3",
+                new ChatUser("2",
+                        "Комлев Антон",
+                        "https://img00.deviantart.net/fc89/i/2014/245/a/5/stalin_the_cat_23_by_kurogn-d7xngqa.jpg"),
+                new Date()));
+
+        return cachedMessages;
     }
 }

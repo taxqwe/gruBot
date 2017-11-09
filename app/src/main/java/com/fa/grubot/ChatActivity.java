@@ -10,8 +10,6 @@ import com.fa.grubot.fragments.ChatFragment;
 import com.fa.grubot.util.Globals;
 import com.r0adkll.slidr.Slidr;
 
-import icepick.Icepick;
-
 /**
  * Created by ni.petrov on 22/10/2017.
  */
@@ -20,7 +18,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_chat);
         Slidr.attach(this, Globals.Config.getSlidrConfig());
 
@@ -34,7 +31,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
     }
 
     @Override
