@@ -21,6 +21,9 @@ public class ChatPresenter {
 
 
     public void onNotifyViewCreated() {
+        //draw cached messages
+        chatFragment.drawCachedMessages(model.getCachedMessages());
+
         chatFragment.subscribeOnNewMessages(model.getMessagesObservable());
 
         //todo get real id
@@ -34,5 +37,8 @@ public class ChatPresenter {
 
     public void sendMessage(ChatMessage message) {
         model.sendMessage(message);
+    }
+
+    public void notifySmartFilterStatusChanged(boolean isSmartEnabled) {
     }
 }
