@@ -1,14 +1,13 @@
 package com.fa.grubot.models;
 
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
-import com.fa.grubot.objects.dashboard.Announcement;
-import com.fa.grubot.objects.dashboard.DashboardEntry;
-import com.fa.grubot.objects.dashboard.Vote;
+import com.fa.grubot.objects.dashboard.Action;
+import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
-import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,9 +29,9 @@ public class GroupInfoModel {
         groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(1, "Чат", new ArrayList<>())));
 
         //Объявления
-        ArrayList<DashboardEntry> entries = getAnnouncementsByGroup(group);
+        ArrayList<Action> entries = getAnnouncementsByGroup(group);
         ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
-        for (DashboardEntry entry : entries) {
+        for (Action entry : entries) {
             items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
         groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Объявления", items)));
@@ -41,7 +40,7 @@ public class GroupInfoModel {
         //Голосования
         entries = getVotesByGroup(group);
         items = new ArrayList<>();
-        for (DashboardEntry entry : entries) {
+        for (Action entry : entries) {
             items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
         groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Голосования", items)));
@@ -59,35 +58,35 @@ public class GroupInfoModel {
         return groupInfoRecyclerItems;
     }
 
-    private ArrayList<DashboardEntry> getAnnouncementsByGroup(Group group) {
-        ArrayList<DashboardEntry> entries = new ArrayList<>();
+    private ArrayList<Action> getAnnouncementsByGroup(Group group) {
+        ArrayList<Action> entries = new ArrayList<>();
 
         switch (group.getId()) {
             case 1:
-                entries.add(new Announcement(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Собрание", new Date(),  placeholder));
-                entries.add(new Announcement(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Выходные дни", new Date(), placeholder));
+                entries.add(new ActionAnnouncement(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Собрание", new Date(),  placeholder));
+                entries.add(new ActionAnnouncement(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Выходные дни", new Date(), placeholder));
                 break;
             case 2:
                 break;
             case 3:
-                entries.add(new Announcement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Поездка", new Date(), placeholder));
-                entries.add(new Announcement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Объявление", new Date(), placeholder));
-                entries.add(new Announcement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Собрание", new Date(), placeholder));
+                entries.add(new ActionAnnouncement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Поездка", new Date(), placeholder));
+                entries.add(new ActionAnnouncement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Объявление", new Date(), placeholder));
+                entries.add(new ActionAnnouncement(3, new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null), "Чехов А. П.", "Собрание", new Date(), placeholder));
                 break;
         }
         return entries;
     }
 
-    private ArrayList<DashboardEntry> getVotesByGroup(Group group) {
-        ArrayList<DashboardEntry> entries = new ArrayList<>();
+    private ArrayList<Action> getVotesByGroup(Group group) {
+        ArrayList<Action> entries = new ArrayList<>();
         switch (group.getId()) {
             case 1:
-                entries.add(new Vote(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date(), new ArrayList<VoteOption>()));
+                entries.add(new ActionVote(1, new Group(1, "ПИ4-1", null), "Комлев Антон", "Новый год", new Date(), new ArrayList<VoteOption>()));
                 break;
             case 2:
-                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Сбор денег", new Date(), new ArrayList<VoteOption>()));
-                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Удовлетворенность чем-то", new Date(), new ArrayList<VoteOption>()));
-                entries.add(new Vote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Активность", new Date(), new ArrayList<VoteOption>()));
+                entries.add(new ActionVote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Сбор денег", new Date(), new ArrayList<VoteOption>()));
+                entries.add(new ActionVote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Удовлетворенность чем-то", new Date(), new ArrayList<VoteOption>()));
+                entries.add(new ActionVote(2, new Group(2, "ПИ4-2", null), "Махин Семен", "Активность", new Date(), new ArrayList<VoteOption>()));
                 break;
             case 3:
                 break;

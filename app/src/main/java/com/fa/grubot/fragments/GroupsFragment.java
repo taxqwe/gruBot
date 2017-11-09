@@ -1,13 +1,16 @@
 package com.fa.grubot.fragments;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,8 +30,8 @@ import io.reactivex.annotations.Nullable;
 
 public class GroupsFragment extends Fragment implements GroupsFragmentBase{
 
-    @Nullable
-    @BindView(R.id.recycler) RecyclerView groupsView;
+    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+    @Nullable @BindView(R.id.recycler) RecyclerView groupsView;
     @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
@@ -40,6 +43,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupsPresenter(this);
         presenter.notifyFragmentStarted(getActivity());
+        setHasOptionsMenu(true);
 
         View v = inflater.inflate(layout, container, false);
         setRetainInstance(true);
@@ -50,7 +54,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         return v;
     }
 
-    public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
+    public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
             if (isHasData)
                 layout = R.layout.fragment_groups;
@@ -61,20 +65,28 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
             layout = R.layout.fragment_no_internet_connection;
     }
 
-    public void setupSwipeRefreshLayout(int layout){
+    public void setupToolbar() {
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Чаты");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    public void setupSwipeRefreshLayout(int layout) {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             presenter.updateView(layout, getActivity());
             onItemsLoadComplete();
         });
     }
 
-    public void setupRecyclerView(ArrayList<Group> groups){
+    public void setupRecyclerView(ArrayList<Group> groups) {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-                this.getContext(),
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration (
+                this.getActivity(),
                 mLayoutManager.getOrientation()
         );
         groupsView.addItemDecoration(dividerItemDecoration);
@@ -84,11 +96,11 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         groupsAdapter.notifyDataSetChanged();
     }
 
-    public void setupRetryButton(){
+    public void setupRetryButton() {
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void reloadFragment(){
+    public void reloadFragment() {
         Fragment currentFragment = this;
         FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
         fragTransaction.detach(currentFragment);
@@ -100,8 +112,12 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    public static GroupsFragment newInstance() {
-        return new GroupsFragment();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home)
+            getActivity().onBackPressed();
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
