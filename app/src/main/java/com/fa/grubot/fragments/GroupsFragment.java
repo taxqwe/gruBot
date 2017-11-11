@@ -69,8 +69,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Чаты");
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     public void setupSwipeRefreshLayout(int layout) {
@@ -110,14 +108,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
 
     private void onItemsLoadComplete() {
         swipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

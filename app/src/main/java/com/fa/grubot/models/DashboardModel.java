@@ -21,8 +21,6 @@ public class DashboardModel {
         ArrayList<DashboardItem> items = new ArrayList<>();
         items.add(new DashboardAnnouncement(5, 14, 19));
         items.add(new DashboardVote(5, 7, 12));
-        items.add(new DashboardChat(3, 7));
-        items.add(new DashboardSettings(0));
         return items;
     }
 
