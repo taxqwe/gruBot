@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.0"
+    buildToolsVersion "27.0.1"
     defaultConfig {
         applicationId "com.fa.grubot"
         minSdkVersion 16
@@ -26,12 +26,12 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:27.0.0'
-    compile 'com.android.support:support-v4:27.0.0'
-    compile 'com.android.support:support-annotations:27.0.0';
-    compile 'com.android.support:design:27.0.0'
-    compile 'com.android.support:cardview-v7:27.0.0'
-    compile 'com.android.support:recyclerview-v7:27.0.0'
+    compile 'com.android.support:appcompat-v7:27.0.1'
+    compile 'com.android.support:support-v4:27.0.1'
+    compile 'com.android.support:support-annotations:27.0.1';
+    compile 'com.android.support:design:27.0.1'
+    compile 'com.android.support:cardview-v7:27.0.1'
+    compile 'com.android.support:recyclerview-v7:27.0.1'
 
     //text drawable
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
@@ -47,9 +47,6 @@ dependencies {
 
     //butterknife
     compile 'com.jakewharton:butterknife:9.0.0-SNAPSHOT'
-
-    //dagger
-    compile 'com.google.dagger:dagger:2.12'
 
     //slideable activity
     compile 'com.r0adkll:slidableactivity:2.0.5'
@@ -71,6 +68,5 @@ dependencies {
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.12'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 }
