@@ -1,5 +1,7 @@
 package com.fa.grubot.models;
 
+import android.content.Context;
+
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
@@ -8,6 +10,7 @@ import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
+import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,5 +115,9 @@ public class GroupInfoModel {
                 break;
         }
         return users;
+    }
+
+    public boolean isNetworkAvailable(Context context){
+        return Globals.InternetMethods.isNetworkAvailable(context);
     }
 }

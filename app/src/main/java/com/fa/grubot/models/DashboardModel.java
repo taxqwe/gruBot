@@ -3,9 +3,7 @@ package com.fa.grubot.models;
 import android.content.Context;
 
 import com.fa.grubot.objects.dashboard.DashboardAnnouncement;
-import com.fa.grubot.objects.dashboard.DashboardChat;
 import com.fa.grubot.objects.dashboard.DashboardItem;
-import com.fa.grubot.objects.dashboard.DashboardSettings;
 import com.fa.grubot.objects.dashboard.DashboardVote;
 import com.fa.grubot.util.Globals;
 

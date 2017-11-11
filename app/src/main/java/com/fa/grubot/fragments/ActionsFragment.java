@@ -153,7 +153,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             });
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();
-
         }
     }
 
