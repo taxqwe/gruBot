@@ -8,10 +8,9 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.fragments.DashboardFragment;
-import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.fragments.GroupsFragment;
+import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.util.BottomNavigationViewHelper;
 
 import java.util.HashMap;
