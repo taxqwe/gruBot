@@ -1,8 +1,10 @@
 package com.fa.grubot.adapters;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,7 +13,10 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.ChatActivity;
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
+import com.fa.grubot.fragments.ActionsFragment;
+import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
@@ -138,6 +143,14 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             userName.setText(user.getFullname());
             userPhone.setText(user.getPhoneNumber());
             userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, user.getFullname()));
+
+            userImage.getRootView().setOnClickListener(view -> {
+                Fragment fragment = new ProfileFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("user", user);
+                fragment.setArguments(args);
+                ((MainActivity)context).pushFragments(MainActivity.TAB_CHATS, fragment,true);
+            });
         }
     }
 

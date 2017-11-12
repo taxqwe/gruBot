@@ -77,8 +77,11 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase {
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
 
-        ImageLoader imageLoader = new ImageLoader(this);
-        imageLoader.loadToolbarImage(userImage, user.getAvatar());
+        if (user.getAvatar() != null) {
+            ImageLoader imageLoader = new ImageLoader(this);
+            imageLoader.loadToolbarImage(userImage, user.getAvatar());
+        }
+
         if (!user.getId().equals(Globals.getMe().getId())) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
