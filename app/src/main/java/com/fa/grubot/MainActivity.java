@@ -42,12 +42,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupViews();
-        selectedTab(TAB_DASHBOARD);
+        if (savedInstanceState != null) {
+            mCurrentTab = savedInstanceState.getString("currentTab");
+            mStacks = (HashMap<String, Stack<Fragment>>) savedInstanceState.getSerializable("stacks");
+        } else
+            selectedTab(TAB_DASHBOARD);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putSerializable("stacks", mStacks);
+        outState.putString("currentTab", mCurrentTab);
         Icepick.saveInstanceState(this, outState);
     }
 
