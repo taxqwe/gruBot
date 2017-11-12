@@ -26,6 +26,7 @@ import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -33,15 +34,15 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class ProfileFragment extends Fragment implements ProfileFragmentBase {
+public class ProfileFragment extends Fragment implements ProfileFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
-    @Nullable @BindView(R.id.userImage) ImageView userImage;
-    @Nullable @BindView(R.id.recycler) RecyclerView itemsView;
+    @Nullable @BindView(R.id.userImage) transient ImageView userImage;
+    @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
 
-    private Unbinder unbinder;
-    private ProfilePresenter presenter;
+    private transient Unbinder unbinder;
+    private transient ProfilePresenter presenter;
     private int layout;
 
     private User user;
@@ -95,7 +96,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase {
         );
         itemsView.addItemDecoration(dividerItemDecoration);
 
-        ProfileRecyclerAdapter groupsAdapter = new ProfileRecyclerAdapter(getActivity(), items);
+        ProfileRecyclerAdapter groupsAdapter = new ProfileRecyclerAdapter(getActivity(), items, user);
         itemsView.setAdapter(groupsAdapter);
         groupsAdapter.notifyDataSetChanged();
     }

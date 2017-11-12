@@ -31,6 +31,7 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -40,19 +41,19 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase {
-    @Nullable @BindView(R.id.root) CoordinatorLayout rootView;
-    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
-    @Nullable @BindView(R.id.recycler) RecyclerView buttonsView;
+public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
+    @Nullable @BindView(R.id.root) transient CoordinatorLayout rootView;
+    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
+    @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
 
-    @Nullable @BindView(R.id.fam) FloatingActionMenu fam;
-    @Nullable @BindView(R.id.fab_add_announcement) FloatingActionButton announcementFab;
-    @Nullable @BindView(R.id.fab_add_vote) FloatingActionButton voteFab;
+    @Nullable @BindView(R.id.fam) transient FloatingActionMenu fam;
+    @Nullable @BindView(R.id.fab_add_announcement) transient FloatingActionButton announcementFab;
+    @Nullable @BindView(R.id.fab_add_vote) transient FloatingActionButton voteFab;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    private GroupInfoRecyclerAdapter groupInfoAdapter;
-    private GroupInfoPresenter presenter;
-    private Unbinder unbinder;
+    private transient GroupInfoRecyclerAdapter groupInfoAdapter;
+    private transient GroupInfoPresenter presenter;
+    private transient Unbinder unbinder;
     private int layout;
 
     private Group group;
