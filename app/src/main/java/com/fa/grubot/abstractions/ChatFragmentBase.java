@@ -2,6 +2,8 @@ package com.fa.grubot.abstractions;
 
 import com.fa.grubot.objects.chat.ChatMessage;
 
+import java.util.List;
+
 import io.reactivex.Observable;
 
 /**
@@ -13,5 +15,9 @@ public interface ChatFragmentBase {
     void subscribeOnNewMessages(Observable<ChatMessage> messagesObservable);
 
     void setUserId(int id);
+
+    void drawMessage(ChatMessage msg, boolean needToScroll);
+
+    void drawCachedMessages(List<ChatMessage> messages);
 
 }

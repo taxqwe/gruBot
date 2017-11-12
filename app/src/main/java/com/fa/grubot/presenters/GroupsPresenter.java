@@ -26,6 +26,7 @@ public class GroupsPresenter {
     public void notifyViewCreated(int layout, View v){
         switch (layout) {
             case R.layout.fragment_groups:
+                fragment.setupToolbar();
                 fragment.setupRecyclerView(groups);
                 fragment.setupSwipeRefreshLayout(layout);
                 break;
@@ -41,7 +42,7 @@ public class GroupsPresenter {
     public void updateView(int layout, Context context){
         groups = model.loadGroups();
         if (model.isNetworkAvailable(context)) {
-            if (layout == R.layout.fragment_dashboard && groups.size() > 0)
+            if (layout == R.layout.fragment_actions && groups.size() > 0)
                 updateDashboardRecyclerView(groups);
             else
                 fragment.reloadFragment();
