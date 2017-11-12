@@ -70,7 +70,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
 
     public void setupToolbar() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        String title = "Профиль " + user.getFullname();
+        String title = user.getFullname();
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
 
