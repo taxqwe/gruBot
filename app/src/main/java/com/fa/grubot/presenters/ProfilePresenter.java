@@ -5,26 +5,30 @@ import android.content.Context;
 import android.view.View;
 
 import com.fa.grubot.R;
-import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.models.ActionsModel;
-import com.fa.grubot.objects.dashboard.Action;
+import com.fa.grubot.models.ProfileModel;
+import com.fa.grubot.objects.group.User;
+import com.fa.grubot.objects.misc.ProfileItem;
 
 import java.util.ArrayList;
 
 public class ProfilePresenter {
     private ProfileFragmentBase fragment;
-    private ActionsModel model;
+    private ProfileModel model;
+
+    private ArrayList<ProfileItem> items = new ArrayList<>();
 
     public ProfilePresenter(ProfileFragmentBase fragment){
         this.fragment = fragment;
-        this.model = new ActionsModel();
+        this.model = new ProfileModel();
     }
 
     public void notifyViewCreated(int layout, View v){
         switch (layout) {
             case R.layout.fragment_profile:
                 fragment.setupToolbar();
+                fragment.setupRecyclerView(items);
                 fragment.setupViews();
                 break;
             case R.layout.fragment_no_internet_connection:
@@ -33,7 +37,11 @@ public class ProfilePresenter {
         }
     }
 
-    public void notifyFragmentStarted(Context context){
+    public void notifyFragmentStarted(Context context, User user){
+        boolean isNetworkAvailable = model.isNetworkAvailable(context);
+        if (isNetworkAvailable)
+            items = model.getItems(user);
+
         fragment.setupLayouts(model.isNetworkAvailable(context));
     }
 

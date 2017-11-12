@@ -41,7 +41,7 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_group_info" />
+    <include layout="@layout/content_profile" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/editFab"
@@ -49,6 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_edit_white_36dp"
         app:backgroundTint="@color/waPrimary"/>
 
 </android.support.design.widget.CoordinatorLayout>
