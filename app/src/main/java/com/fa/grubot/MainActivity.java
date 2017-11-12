@@ -18,8 +18,6 @@ import com.fa.grubot.util.Globals;
 import java.util.HashMap;
 import java.util.Stack;
 
-import icepick.Icepick;
-
 public class MainActivity extends AppCompatActivity {
 
     //@BindView(R.id.bottom_navigation) BottomNavigationView bottomNavigationView;
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Icepick.restoreInstanceState(this, savedInstanceState);
+        //Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_main);
 
         setupViews();
@@ -51,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putSerializable("stacks", mStacks);
         outState.putString("currentTab", mCurrentTab);
-        Icepick.saveInstanceState(this, outState);
+        super.onSaveInstanceState(outState);
+        //Icepick.saveInstanceState(this, outState);
     }
 
     private void setupViews() {

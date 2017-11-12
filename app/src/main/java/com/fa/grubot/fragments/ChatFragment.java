@@ -25,6 +25,7 @@ import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +42,7 @@ import io.reactivex.disposables.Disposable;
  * Created by ni.petrov on 22/10/2017.
  */
 
-public class ChatFragment extends Fragment implements ChatFragmentBase {
+public class ChatFragment extends Fragment implements ChatFragmentBase, Serializable {
 
     private ChatPresenter presenter;
 

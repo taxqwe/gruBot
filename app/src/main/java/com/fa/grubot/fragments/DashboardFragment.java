@@ -18,6 +18,7 @@ import com.fa.grubot.adapters.DashboardRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.presenters.DashboardPresenter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -25,15 +26,15 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class DashboardFragment extends Fragment implements DashboardFragmentBase {
+public class DashboardFragment extends Fragment implements DashboardFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
-    @Nullable @BindView(R.id.recycler) RecyclerView dashboardView;
+    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
+    @Nullable @BindView(R.id.recycler) transient RecyclerView dashboardView;
 
-    private Unbinder unbinder;
-    private DashboardPresenter presenter;
+    private transient Unbinder unbinder;
+    private transient DashboardPresenter presenter;
     private int layout;
 
     @Override

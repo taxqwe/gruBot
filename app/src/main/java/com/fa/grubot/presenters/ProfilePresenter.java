@@ -6,7 +6,6 @@ import android.view.View;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
-import com.fa.grubot.models.ActionsModel;
 import com.fa.grubot.models.ProfileModel;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
