@@ -67,10 +67,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase {
             layout = R.layout.fragment_no_internet_connection;
     }
 
-    public void setupViews() {
-
-    }
-
     public void setupToolbar() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         String title = "Профиль " + user.getFullname();
