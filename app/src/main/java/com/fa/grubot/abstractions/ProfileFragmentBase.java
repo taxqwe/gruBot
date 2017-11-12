@@ -8,7 +8,6 @@ public interface ProfileFragmentBase {
     void setupRecyclerView(ArrayList<ProfileItem> groups);
     void setupToolbar();
     void setupLayouts(boolean isNetworkAvailable);
-    void setupViews();
     void setupRetryButton();
     void reloadFragment();
 }

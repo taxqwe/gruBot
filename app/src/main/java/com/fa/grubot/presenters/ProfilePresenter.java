@@ -29,7 +29,6 @@ public class ProfilePresenter {
             case R.layout.fragment_profile:
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(items);
-                fragment.setupViews();
                 break;
             case R.layout.fragment_no_internet_connection:
                 fragment.setupRetryButton();

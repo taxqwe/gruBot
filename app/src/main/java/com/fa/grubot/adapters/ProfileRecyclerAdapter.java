@@ -59,7 +59,7 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
             case 1:
                 Glide.with(context).load(R.drawable.ic_person_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
                 holder.itemText.setText(item.getText());
-                holder.itemValue.setText(item.getText());
+                holder.itemValue.setText(item.getValue());
                 break;
             case 2:
                 Glide.with(context).load(R.drawable.ic_person_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
