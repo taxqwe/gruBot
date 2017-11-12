@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_material_light"
-    android:id="@+id/root"
-    android:fitsSystemWindows="true">
+    android:id="@+id/root">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
