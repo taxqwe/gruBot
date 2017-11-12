@@ -20,7 +20,6 @@ import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.GroupsPresenter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -28,15 +27,15 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class GroupsFragment extends Fragment implements GroupsFragmentBase, Serializable {
+public class GroupsFragment extends Fragment implements GroupsFragmentBase{
 
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView groupsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
+    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+    @Nullable @BindView(R.id.recycler) RecyclerView groupsView;
+    @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    private transient Unbinder unbinder;
-    private transient GroupsPresenter presenter;
+    private Unbinder unbinder;
+    private GroupsPresenter presenter;
     private int layout;
 
     @Override

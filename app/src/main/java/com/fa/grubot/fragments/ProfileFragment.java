@@ -17,14 +17,15 @@ import android.widget.ImageView;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
+import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.adapters.ProfileRecyclerAdapter;
+import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
 import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -32,15 +33,15 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class ProfileFragment extends Fragment implements ProfileFragmentBase, Serializable {
+public class ProfileFragment extends Fragment implements ProfileFragmentBase {
 
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
+    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
-    @Nullable @BindView(R.id.userImage) transient ImageView userImage;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
+    @Nullable @BindView(R.id.userImage) ImageView userImage;
+    @Nullable @BindView(R.id.recycler) RecyclerView itemsView;
 
-    private transient Unbinder unbinder;
-    private transient ProfilePresenter presenter;
+    private Unbinder unbinder;
+    private ProfilePresenter presenter;
     private int layout;
 
     private User user;

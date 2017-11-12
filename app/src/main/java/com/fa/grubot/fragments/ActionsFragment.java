@@ -26,7 +26,6 @@ import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.presenters.ActionsPresenter;
 import com.fa.grubot.util.RecyclerItemTouchHelper;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -34,19 +33,19 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class ActionsFragment extends Fragment implements ActionsFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, Serializable{
+public class ActionsFragment extends Fragment implements ActionsFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener{
     public static final int TYPE_ANNOUNCEMENTS = 389;
     public static final int TYPE_VOTES = 827;
 
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView actionsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
+    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+    @Nullable @BindView(R.id.recycler) RecyclerView actionsView;
+    @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    private transient Unbinder unbinder;
-    private transient ActionsPresenter presenter;
+    private Unbinder unbinder;
+    private ActionsPresenter presenter;
     private ArrayList<Action> actions;
-    private transient ActionsRecyclerAdapter actionsAdapter;
+    private ActionsRecyclerAdapter actionsAdapter;
     private int layout;
     private int type;
 

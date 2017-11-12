@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 
 import com.fa.grubot.R;
 
-import java.io.Serializable;
-
-public class WorkInProgressFragment extends Fragment implements Serializable {
+public class WorkInProgressFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_work_in_progress, container, false);
