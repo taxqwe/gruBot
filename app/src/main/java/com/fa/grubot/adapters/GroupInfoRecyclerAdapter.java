@@ -1,7 +1,10 @@
 package com.fa.grubot.adapters;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,10 +13,13 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.ChatActivity;
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.objects.dashboard.Announcement;
-import com.fa.grubot.objects.dashboard.DashboardEntry;
-import com.fa.grubot.objects.dashboard.Vote;
+import com.fa.grubot.fragments.ActionsFragment;
+import com.fa.grubot.fragments.ProfileFragment;
+import com.fa.grubot.objects.dashboard.Action;
+import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.util.Globals;
@@ -63,17 +69,18 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 buttonText.getRootView().setOnClickListener(v -> {
                     Intent intent = new Intent(context, ChatActivity.class);
                     context.startActivity(intent);
+                    ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
                 });
             }
         }
     }
 
     class DashboardEntryViewHolder extends GroupInfoRecyclerAdapter.ViewHolder {
-        @BindView(R.id.entryTypeText) TextView entryTypeText;
-        @BindView(R.id.entryDate) TextView entryDate;
-        @BindView(R.id.entryGroup) TextView entryGroup;
-        @BindView(R.id.entryAuthor) TextView entryAuthor;
-        @BindView(R.id.entryDesc) TextView entryDesc;
+        @BindView(R.id.actionTypeText) TextView entryTypeText;
+        @BindView(R.id.actionDate) TextView entryDate;
+        @BindView(R.id.actionGroup) TextView entryGroup;
+        @BindView(R.id.actionAuthor) TextView entryAuthor;
+        @BindView(R.id.actionDesc) TextView entryDesc;
         @BindView(R.id.view_foreground) RelativeLayout viewForeground;
 
 
@@ -83,7 +90,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
         }
 
         private void bind(int position) {
-            DashboardEntry entry = visibleItems.get(position).entry;
+            Action entry = visibleItems.get(position).entry;
 
             entryDate.setText(entry.getDate());
             entryAuthor.setText(entry.getAuthor());
@@ -91,12 +98,12 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             entryGroup.setText(entry.getGroup().getName());
             viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
 
-            if (entry instanceof Announcement) {
+            if (entry instanceof ActionAnnouncement) {
                 entryTypeText.setText("Объявление");
                 viewForeground.setOnClickListener(v -> {
                     new MaterialDialog.Builder(context)
                             .title(entry.getDesc())
-                            .content(((Announcement) entry).getText())
+                            .content(((ActionAnnouncement) entry).getText())
                             .positiveText(android.R.string.ok)
                             .show();
                 });
@@ -105,7 +112,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 viewForeground.setOnClickListener(v -> {
                     new MaterialDialog.Builder(context)
                             .title(entry.getGroup().getName() + ": " + entry.getDesc())
-                            .items(((Vote) entry).getOptions())
+                            .items(((ActionVote) entry).getOptions())
                             .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
                                 /**
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
@@ -136,12 +143,20 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             userName.setText(user.getFullname());
             userPhone.setText(user.getPhoneNumber());
             userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, user.getFullname()));
+
+            userImage.getRootView().setOnClickListener(view -> {
+                Fragment fragment = new ProfileFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("user", user);
+                fragment.setArguments(args);
+                ((MainActivity)context).pushFragments(MainActivity.TAB_CHATS, fragment,true);
+            });
         }
     }
 
     public static class GroupInfoRecyclerItem extends ExpandableRecyclerAdapter.ListItem {
         private GroupInfoButton button;
-        private DashboardEntry entry;
+        private Action entry;
         private User user;
 
         public GroupInfoRecyclerItem(GroupInfoButton button) {
@@ -150,7 +165,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             this.button = button;
         }
 
-        public GroupInfoRecyclerItem(DashboardEntry entry) {
+        public GroupInfoRecyclerItem(Action entry) {
             super(TYPE_ENTRY);
 
             this.entry = entry;
@@ -173,7 +188,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             case TYPE_HEADER:
                 return new HeaderViewHolder(inflate(R.layout.item_group_info_button, parent));
             case TYPE_ENTRY:
-                return new DashboardEntryViewHolder(inflate(R.layout.item_dashboard_entry, parent));
+                return new DashboardEntryViewHolder(inflate(R.layout.item_action, parent));
             case TYPE_USER:
                 return new UserViewHolder(inflate(R.layout.item_user, parent));
             default:
@@ -196,16 +211,16 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
         }
     }
 
-    private int getColorFromDashboardEntry(DashboardEntry entry){
-        if (entry instanceof Announcement)
+    private int getColorFromDashboardEntry(Action entry){
+        if (entry instanceof ActionAnnouncement)
             return context.getResources().getColor(R.color.colorAnnouncement);
         else
             return context.getResources().getColor(R.color.colorVote);
     }
 
-    public void insertItem(DashboardEntry entry) {
+    public void insertItem(Action entry) {
         String type;
-        if (entry instanceof Announcement)
+        if (entry instanceof ActionAnnouncement)
             type = "Объявления";
         else
             type = "Голосования";

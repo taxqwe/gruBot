@@ -8,7 +8,7 @@ import android.net.NetworkInfo;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.fa.grubot.objects.chat.ChatUser;
+import com.fa.grubot.objects.group.User;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 
@@ -43,10 +43,8 @@ public class Globals {
         }
     }
 
-    public static ChatUser getMe() {
-        return new ChatUser("1",
-                "The First One",
-                "http://www.netlore.ru/upload/files/1307/3_321.jpg");
+    public static User getMe() {
+        return new User(0, "DOMINATOR48RUS", "The First One", "+71903322233", "NOONE CAN STOP ME", "http://www.netlore.ru/upload/files/1307/3_321.jpg");
     }
 
     public static class Config {

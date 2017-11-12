@@ -3,6 +3,7 @@
         <item name="colorPrimary">@color/waPrimary</item>
         <item name="colorPrimaryDark">@color/waPrimaryDark</item>
         <item name="colorAccent">@color/waAccent</item>
+        <item name="android:fontFamily">@font/roboto_light</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -19,6 +20,7 @@
     </style>
 
     <style name="MenuButtonsStyle">
+        <item name="android:fontFamily">@font/roboto_light</item>
         <item name="fab_size">mini</item>
         <item name="fab_colorNormal">@color/waPrimary</item>
         <item name="fab_colorPressed">@color/waPrimaryDark</item>

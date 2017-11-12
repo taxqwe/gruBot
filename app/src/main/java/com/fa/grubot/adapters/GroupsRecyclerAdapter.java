@@ -1,7 +1,8 @@
 package com.fa.grubot.adapters;
 
+import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fa.grubot.GroupInfoActivity;
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
+import com.fa.grubot.fragments.GroupInfoFragment;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -55,9 +56,11 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
         holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, group.getName()));
 
         holder.groupImage.getRootView().setOnClickListener(v -> {
-            Intent intent = new Intent(context, GroupInfoActivity.class);
-            intent.putExtra("group", (Serializable) group);
-            context.startActivity(intent);
+            Fragment fragment = new GroupInfoFragment();
+            Bundle args = new Bundle();
+            args.putSerializable("group", group);
+            fragment.setArguments(args);
+            ((MainActivity)context).pushFragments(MainActivity.TAB_CHATS, fragment,true);
         });
     }
 
