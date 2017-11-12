@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -27,6 +28,7 @@ import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
+import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
@@ -45,6 +47,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Nullable @BindView(R.id.root) transient CoordinatorLayout rootView;
     @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
     @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
+    @Nullable @BindView(R.id.groupImage) transient ImageView groupImage;
 
     @Nullable @BindView(R.id.fam) transient FloatingActionMenu fam;
     @Nullable @BindView(R.id.fab_add_announcement) transient FloatingActionButton announcementFab;
@@ -83,6 +86,11 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     public void setupToolbar() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         String title = group.getName();
+
+        if (group.getImgURL() != null) {
+            ImageLoader imageLoader = new ImageLoader(this);
+            imageLoader.loadToolbarImage(groupImage, group.getImgURL());
+        }
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);

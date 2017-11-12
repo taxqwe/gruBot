@@ -17,9 +17,7 @@ import android.widget.ImageView;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
-import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.adapters.ProfileRecyclerAdapter;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
 import com.fa.grubot.presenters.ProfilePresenter;
