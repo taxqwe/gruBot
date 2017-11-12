@@ -59,7 +59,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
     public void setupToolbar() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Главная страница");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Доска");
     }
 
     public void setupRecyclerView(ArrayList<DashboardItem> items) {

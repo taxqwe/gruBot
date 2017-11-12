@@ -8,10 +8,13 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
+import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.util.BottomNavigationViewHelper;
+import com.fa.grubot.util.Globals;
 
 import java.util.HashMap;
 import java.util.Stack;
@@ -111,7 +114,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(mStacks.get(tabId).size() == 0){
             if(tabId.equals(TAB_PROFILE)){
-                pushFragments(tabId, new WorkInProgressFragment(),true);
+                Fragment fragment = new ProfileFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("user", Globals.getMe());
+                fragment.setArguments(args);
+                pushFragments(tabId, fragment,true);
             } else if(tabId.equals(TAB_DASHBOARD)){
                 pushFragments(tabId, new DashboardFragment(),true);
             }else if(tabId.equals(TAB_CHATS)){

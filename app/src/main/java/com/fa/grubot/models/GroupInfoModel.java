@@ -101,17 +101,17 @@ public class GroupInfoModel {
         ArrayList<User> users = new ArrayList<>();
         switch (group.getId()) {
             case 1:
-                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
-                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH"));
-                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123"));
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
+                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH", null));
+                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123", null));
                 break;
             case 2:
-                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
-                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH"));
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
+                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH", null));
                 break;
             case 3:
-                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
-                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123"));
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
+                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123", null));
                 break;
         }
         return users;
