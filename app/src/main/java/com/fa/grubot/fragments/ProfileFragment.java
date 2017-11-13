@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -27,6 +29,7 @@ import com.fa.grubot.util.ImageLoader;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import butterknife.BindAnim;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -92,6 +95,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
                 this.getActivity(),
                 mLayoutManager.getOrientation()
         );
+        itemsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
         itemsView.addItemDecoration(dividerItemDecoration);
 
         ProfileRecyclerAdapter groupsAdapter = new ProfileRecyclerAdapter(getActivity(), items, user);

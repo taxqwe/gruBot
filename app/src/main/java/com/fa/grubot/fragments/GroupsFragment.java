@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 import com.fa.grubot.R;
@@ -88,6 +89,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
                 mLayoutManager.getOrientation()
         );
         groupsView.addItemDecoration(dividerItemDecoration);
+        groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
         GroupsRecyclerAdapter groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
         groupsView.setAdapter(groupsAdapter);
