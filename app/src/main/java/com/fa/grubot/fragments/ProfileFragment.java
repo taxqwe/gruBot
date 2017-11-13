@@ -2,7 +2,6 @@ package com.fa.grubot.fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -16,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
@@ -41,31 +41,46 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     @Nullable @BindView(R.id.userImage) transient ImageView userImage;
     @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
 
+    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) transient View content;
+    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+
     private transient Unbinder unbinder;
     private transient ProfilePresenter presenter;
-    private int layout;
 
     private User user;
+
+    private int state;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new ProfilePresenter(this);
+        View v = inflater.inflate(R.layout.fragment_profile, container, false);
+
         user = (User) this.getArguments().getSerializable("user");
         setHasOptionsMenu(true);
         presenter.notifyFragmentStarted(getActivity(), user);
-        View v = inflater.inflate(layout, container, false);
 
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(layout, v);
+        presenter.notifyViewCreated(state);
 
         return v;
     }
 
+    public void setupViews() {
+        progressBar.setVisibility(View.GONE);
+
+        if (state == Globals.FragmentState.STATE_CONTENT)
+            content.setVisibility(View.VISIBLE);
+        else
+            noInternet.setVisibility(View.VISIBLE);
+    }
+
     public void setupLayouts(boolean isNetworkAvailable){
         if (isNetworkAvailable)
-            layout = R.layout.fragment_profile;
+            state = Globals.FragmentState.STATE_CONTENT;
         else
-            layout = R.layout.fragment_no_internet_connection;
+            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
     }
 
     public void setupToolbar() {

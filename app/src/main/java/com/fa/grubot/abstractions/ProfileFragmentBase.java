@@ -9,5 +9,6 @@ public interface ProfileFragmentBase {
     void setupToolbar();
     void setupLayouts(boolean isNetworkAvailable);
     void setupRetryButton();
+    void setupViews();
     void reloadFragment();
 }

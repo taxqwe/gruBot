@@ -43,6 +43,12 @@ public class Globals {
         }
     }
 
+    public static class FragmentState {
+        public static final int STATE_NO_INTERNET_CONNECTION = 61;
+        public static final int STATE_NO_DATA = 52;
+        public static final int STATE_CONTENT = 44;
+    }
+
     public static User getMe() {
         return new User(0, "DOMINATOR48RUS", "The First One", "+71903322233", "NOONE CAN STOP ME", "http://www.netlore.ru/upload/files/1307/3_321.jpg");
     }

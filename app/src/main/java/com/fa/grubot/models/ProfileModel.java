@@ -19,6 +19,7 @@ public class ProfileModel {
         items.add(new ProfileItem(user.getUsername(), "Логин"));
         items.add(new ProfileItem(user.getPhoneNumber(), "Номер телефона"));
         items.add(new ProfileItem(user.getDesc(), "Описание"));
+
         return items;
     }
 
