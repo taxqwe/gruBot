@@ -2,6 +2,7 @@ package com.fa.grubot.fragments;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -29,7 +29,6 @@ import com.fa.grubot.util.ImageLoader;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import butterknife.BindAnim;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -75,9 +74,11 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
 
+        ImageLoader imageLoader = new ImageLoader(this);
         if (user.getAvatar() != null) {
-            ImageLoader imageLoader = new ImageLoader(this);
             imageLoader.loadToolbarImage(userImage, user.getAvatar());
+        } else {
+            imageLoader.loadToolbarImage(userImage, imageLoader.getUriOfDrawable(R.drawable.material_bg));
         }
 
         if (!user.getId().equals(Globals.getMe().getId())) {

@@ -88,9 +88,11 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         String title = group.getName();
 
+        ImageLoader imageLoader = new ImageLoader(this);
         if (group.getImgURL() != null) {
-            ImageLoader imageLoader = new ImageLoader(this);
             imageLoader.loadToolbarImage(groupImage, group.getImgURL());
+        } else {
+            imageLoader.loadToolbarImage(groupImage, imageLoader.getUriOfDrawable(R.drawable.material_flat));
         }
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
