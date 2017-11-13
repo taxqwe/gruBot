@@ -20,14 +20,14 @@
 
     <include
         android:id="@+id/noInternet"
-        layout="@layout/fragment_no_internet_connection"
+        layout="@layout/content_no_internet_connection"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"/>
 
     <include
         android:id="@+id/noData"
-        layout="@layout/fragment_no_internet_connection"
+        layout="@layout/content_no_internet_connection"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"/>

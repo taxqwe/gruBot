@@ -55,7 +55,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         if (isNetworkAvailable)
             layout = R.layout.fragment_dashboard;
         else
-            layout = R.layout.fragment_no_internet_connection;
+            layout = R.layout.content_no_internet_connection;
     }
 
     public void setupToolbar() {

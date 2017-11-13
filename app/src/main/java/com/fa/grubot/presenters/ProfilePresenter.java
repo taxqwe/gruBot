@@ -35,7 +35,7 @@ public class ProfilePresenter {
         }
     }
 
-    public void notifyFragmentStarted(Context context, User user){
+    public void notifyFragmentStarted(Context context, User user) {
         boolean isNetworkAvailable = model.isNetworkAvailable(context);
         if (isNetworkAvailable)
             items = model.getItems(user);
@@ -44,7 +44,7 @@ public class ProfilePresenter {
         fragment.setupLayouts(model.isNetworkAvailable(context));
     }
 
-    public void onRetryBtnClick(){
+    public void onRetryBtnClick() {
         fragment.reloadFragment();
     }
 

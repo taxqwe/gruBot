@@ -10,5 +10,6 @@ public interface GroupsFragmentBase {
     void setupToolbar();
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
     void setupRetryButton();
+    void setupViews();
     void reloadFragment();
 }

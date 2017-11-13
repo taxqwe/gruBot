@@ -28,10 +28,10 @@ public class ActionsPresenter {
                 fragment.setupRecyclerView(actions);
                 fragment.setupSwipeRefreshLayout(layout);
                 break;
-            case R.layout.fragment_no_internet_connection:
+            case R.layout.content_no_internet_connection:
                 fragment.setupRetryButton();
                 break;
-            case R.layout.fragment_no_data:
+            case R.layout.content_no_data:
                 fragment.setupSwipeRefreshLayout(layout);
                 break;
         }

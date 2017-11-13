@@ -29,7 +29,7 @@ public class GroupInfoPresenter {
                 fragment.setupFab();
                 fragment.setupRecyclerView(actions);
                 break;
-            case R.layout.fragment_no_internet_connection:
+            case R.layout.content_no_internet_connection:
                 fragment.setupRetryButton();
                 break;
         }

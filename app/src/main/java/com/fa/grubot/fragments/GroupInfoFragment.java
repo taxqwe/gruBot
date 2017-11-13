@@ -81,7 +81,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         if (isNetworkAvailable)
             layout = R.layout.fragment_group_info;
         else
-            layout = R.layout.fragment_no_internet_connection;
+            layout = R.layout.content_no_internet_connection;
     }
 
     public void setupToolbar() {

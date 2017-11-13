@@ -14,12 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.GroupsPresenter;
+import com.fa.grubot.util.Globals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,34 +38,55 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
+    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) transient View content;
+    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.noData) transient View noData;
+
     private transient Unbinder unbinder;
     private transient GroupsPresenter presenter;
-    private int layout;
+
+    private int state;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupsPresenter(this);
+        View v = inflater.inflate(R.layout.fragment_groups, container, false);
+
         presenter.notifyFragmentStarted(getActivity());
         setHasOptionsMenu(true);
 
-        View v = inflater.inflate(layout, container, false);
-        setRetainInstance(true);
-
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(layout, v);
+        presenter.notifyViewCreated(state);
 
         return v;
+    }
+
+    public void setupViews() {
+        progressBar.setVisibility(View.GONE);
+
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_DATA:
+                noData.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
             if (isHasData)
-                layout = R.layout.fragment_groups;
+                state = Globals.FragmentState.STATE_CONTENT;
             else
-                layout = R.layout.fragment_no_data;
+                state = Globals.FragmentState.STATE_NO_DATA;
         }
         else
-            layout = R.layout.fragment_no_internet_connection;
+            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
     }
 
     public void setupToolbar() {
@@ -72,9 +95,9 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Чаты");
     }
 
-    public void setupSwipeRefreshLayout(int layout) {
+    public void setupSwipeRefreshLayout(int state) {
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateView(layout, getActivity());
+            presenter.updateView(state, getActivity());
             onItemsLoadComplete();
         });
     }

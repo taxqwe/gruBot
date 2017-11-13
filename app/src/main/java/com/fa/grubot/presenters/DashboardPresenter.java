@@ -23,7 +23,7 @@ public class DashboardPresenter {
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(model.getItems());
                 break;
-            case R.layout.fragment_no_internet_connection:
+            case R.layout.content_no_internet_connection:
                 fragment.setupRetryButton();
                 break;
         }

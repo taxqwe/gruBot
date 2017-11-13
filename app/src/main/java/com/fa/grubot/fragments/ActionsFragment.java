@@ -70,10 +70,10 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             if (isHasData)
                 layout = R.layout.fragment_actions;
             else
-                layout = R.layout.fragment_no_data;
+                layout = R.layout.content_no_data;
         }
         else
-            layout = R.layout.fragment_no_internet_connection;
+            layout = R.layout.content_no_internet_connection;
     }
 
     public void setupToolbar() {
