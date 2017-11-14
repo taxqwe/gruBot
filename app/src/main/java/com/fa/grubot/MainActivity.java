@@ -6,17 +6,12 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.Toast;
 
-import com.fa.grubot.fragments.ActionsFragment;
-import com.fa.grubot.fragments.ChatFragment;
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
-import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.util.BottomNavigationViewHelper;
 import com.fa.grubot.util.Globals;
 

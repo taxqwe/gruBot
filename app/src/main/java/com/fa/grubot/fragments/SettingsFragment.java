@@ -6,20 +6,30 @@ import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.fa.grubot.R;
 import com.fa.grubot.util.Globals;
 
-public class SettingsFragment extends PreferenceFragment {
+import java.io.Serializable;
 
-    private Toolbar toolbar;
+public class SettingsFragment extends PreferenceFragment implements Serializable {
+
+    private transient Toolbar toolbar;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setupToolbar();
         setupViews();
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     private void setupToolbar() {
@@ -39,7 +49,6 @@ public class SettingsFragment extends PreferenceFragment {
 
         backstackSwitch.setOnPreferenceChangeListener((preference, o) -> {
             Globals.Variables.isBackstackEnabled = (boolean) o;
-            Log.e("mytag", String.valueOf(Globals.Variables.isBackstackEnabled));
             return true;
         });
     }
@@ -47,6 +56,7 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.e("mytag", "onDestroy");
         toolbar.setVisibility(View.GONE);
     }
 }

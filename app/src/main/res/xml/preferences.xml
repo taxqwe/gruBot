@@ -8,12 +8,12 @@
         <SwitchPreference
             android:key="animationsSwitch"
             android:title="@string/animations_switch_title"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
 
         <SwitchPreference
             android:key="backstackSwitch"
             android:title="@string/backstack_switch_title"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
 
     </PreferenceCategory>
 </PreferenceScreen>

@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.fa.grubot.util.Globals;
 
@@ -22,9 +21,7 @@ public class SplashActivity extends AppCompatActivity {
     private void loadPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        Globals.Variables.areAnimationsEnabled = prefs.getBoolean("animationsSwitch", true);
-        Globals.Variables.isBackstackEnabled = prefs.getBoolean("backstackSwitch", true);
-        Log.e("mytag", "Animations: " + Globals.Variables.areAnimationsEnabled);
-        Log.e("mytag", "Backstack: " + Globals.Variables.isBackstackEnabled);
+        Globals.Variables.areAnimationsEnabled = prefs.getBoolean("animationsSwitch", false);
+        Globals.Variables.isBackstackEnabled = prefs.getBoolean("backstackSwitch", false);
     }
 }
