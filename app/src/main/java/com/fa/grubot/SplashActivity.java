@@ -23,5 +23,6 @@ public class SplashActivity extends AppCompatActivity {
 
         Globals.Variables.areAnimationsEnabled = prefs.getBoolean("animationsSwitch", false);
         Globals.Variables.isBackstackEnabled = prefs.getBoolean("backstackSwitch", false);
+        Globals.Variables.isSlidrEnabled = prefs.getBoolean("slidrSwitch", true);
     }
 }

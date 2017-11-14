@@ -15,5 +15,10 @@
             android:title="@string/backstack_switch_title"
             android:defaultValue="false" />
 
+        <SwitchPreference
+            android:key="slidrSwitch"
+            android:title="@string/slidr_switch_title"
+            android:defaultValue="true" />
+
     </PreferenceCategory>
 </PreferenceScreen>

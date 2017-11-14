@@ -41,6 +41,7 @@ public class SettingsFragment extends PreferenceFragment implements Serializable
     private void setupViews() {
         SwitchPreference animationsSwitch = (SwitchPreference) findPreference("animationsSwitch");
         SwitchPreference backstackSwitch = (SwitchPreference) findPreference("backstackSwitch");
+        SwitchPreference slidrSwitch = (SwitchPreference) findPreference("slidrSwitch");
 
         animationsSwitch.setOnPreferenceChangeListener((preference, o) -> {
             Globals.Variables.areAnimationsEnabled = (boolean) o;
@@ -49,6 +50,11 @@ public class SettingsFragment extends PreferenceFragment implements Serializable
 
         backstackSwitch.setOnPreferenceChangeListener((preference, o) -> {
             Globals.Variables.isBackstackEnabled = (boolean) o;
+            return true;
+        });
+
+        slidrSwitch.setOnPreferenceChangeListener((preference, o) -> {
+            Globals.Variables.isSlidrEnabled = (boolean) o;
             return true;
         });
     }

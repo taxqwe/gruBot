@@ -9,4 +9,5 @@
     <string name="main_category_title">Основные</string>
     <string name="animations_switch_title">Включить анимации</string>
     <string name="backstack_switch_title">Включить backstack фрагментов</string>
+    <string name="slidr_switch_title">Включить slidr</string>
 </resources>

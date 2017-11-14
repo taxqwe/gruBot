@@ -14,8 +14,9 @@ import com.r0adkll.slidr.model.SlidrPosition;
 
 public class Globals {
     public static class Variables {
-        public static boolean isBackstackEnabled = true;
-        public static boolean areAnimationsEnabled = true;
+        public static boolean isBackstackEnabled = false;
+        public static boolean areAnimationsEnabled = false;
+        public static boolean isSlidrEnabled = true;
     }
 
     public static class ImageMethods {
