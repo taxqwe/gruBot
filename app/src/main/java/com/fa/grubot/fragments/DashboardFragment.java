@@ -11,12 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.adapters.DashboardRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.presenters.DashboardPresenter;
+import com.fa.grubot.util.Globals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,29 +35,47 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
     @Nullable @BindView(R.id.recycler) transient RecyclerView dashboardView;
 
+    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) transient View content;
+    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.noData) transient View noData;
+
     private transient Unbinder unbinder;
     private transient DashboardPresenter presenter;
-    private int layout;
+
+    private int state;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new DashboardPresenter(this);
+        View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
+
         presenter.notifyFragmentStarted(getActivity());
 
-        View v = inflater.inflate(layout, container, false);
-        setRetainInstance(true);
-
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(layout, v);
+        presenter.notifyViewCreated(state);
 
         return v;
     }
 
+    public void setupViews() {
+        progressBar.setVisibility(View.GONE);
+
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
-            layout = R.layout.fragment_dashboard;
+            state = Globals.FragmentState.STATE_CONTENT;
         else
-            layout = R.layout.content_no_internet_connection;
+            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
     }
 
     public void setupToolbar() {

@@ -10,5 +10,6 @@ public interface ActionsFragmentBase {
     void setupToolbar();
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
     void setupRetryButton();
+    void setupViews();
     void reloadFragment();
 }

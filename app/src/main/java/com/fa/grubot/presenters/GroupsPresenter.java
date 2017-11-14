@@ -2,7 +2,6 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
-import android.view.View;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupsFragmentBase;

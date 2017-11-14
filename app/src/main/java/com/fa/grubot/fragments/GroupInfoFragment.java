@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -29,6 +29,7 @@ import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
+import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -55,33 +56,51 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Nullable @BindView(R.id.fab_add_vote) transient FloatingActionButton voteFab;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
+    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) transient View content;
+    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.noData) transient View noData;
+
     private transient GroupInfoRecyclerAdapter groupInfoAdapter;
     private transient GroupInfoPresenter presenter;
     private transient Unbinder unbinder;
-    private int layout;
 
+    private int state;
     private Group group;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupInfoPresenter(this);
+        View v = inflater.inflate(R.layout.fragment_group_info, container, false);
+
         setHasOptionsMenu(true);
         group = (Group) this.getArguments().getSerializable("group");
-        Log.e("mytag", group.getName());
         presenter.notifyFragmentStarted(getActivity(), group);
-        View v = inflater.inflate(layout, container, false);
 
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(layout, v);
+        presenter.notifyViewCreated(state);
 
         return v;
     }
 
+    public void setupViews() {
+        progressBar.setVisibility(View.GONE);
+
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
     public void setupLayouts(boolean isNetworkAvailable){
         if (isNetworkAvailable)
-            layout = R.layout.fragment_group_info;
+            state = Globals.FragmentState.STATE_CONTENT;
         else
-            layout = R.layout.content_no_internet_connection;
+            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
     }
 
     public void setupToolbar() {

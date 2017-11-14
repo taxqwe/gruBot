@@ -9,5 +9,6 @@ public interface DashboardFragmentBase {
     void setupLayouts(boolean isNetworkAvailable);
     void setupToolbar();
     void setupRetryButton();
+    void setupViews();
     void reloadFragment();
 }

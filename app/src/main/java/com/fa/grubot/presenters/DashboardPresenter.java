@@ -2,11 +2,10 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
-import android.view.View;
 
-import com.fa.grubot.R;
 import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.models.DashboardModel;
+import com.fa.grubot.util.Globals;
 
 public class DashboardPresenter {
     private DashboardFragmentBase fragment;
@@ -17,13 +16,15 @@ public class DashboardPresenter {
         this.model = new DashboardModel();
     }
 
-    public void notifyViewCreated(int layout, View v){
-        switch (layout) {
-            case R.layout.fragment_dashboard:
+    public void notifyViewCreated(int state) {
+        fragment.setupViews();
+
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(model.getItems());
                 break;
-            case R.layout.content_no_internet_connection:
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
         }

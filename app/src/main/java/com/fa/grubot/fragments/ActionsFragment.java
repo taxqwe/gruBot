@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
@@ -25,6 +26,7 @@ import com.fa.grubot.adapters.ActionsRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.presenters.ActionsPresenter;
+import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.RecyclerItemTouchHelper;
 
 import java.io.Serializable;
@@ -44,36 +46,59 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Nullable @BindView(R.id.swipeRefreshLayout) transient  SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
+    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) transient View content;
+    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.noData) transient View noData;
+
     private transient Unbinder unbinder;
     private transient ActionsPresenter presenter;
     private ArrayList<Action> actions;
     private transient ActionsRecyclerAdapter actionsAdapter;
-    private int layout;
+
+    private int state;
     private int type;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new ActionsPresenter(this);
+        View v = inflater.inflate(R.layout.fragment_actions, container, false);
+
         type = this.getArguments().getInt("type");
         setHasOptionsMenu(true);
         presenter.notifyFragmentStarted(getActivity(), type);
-        View v = inflater.inflate(layout, container, false);
 
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(layout, v);
+        presenter.notifyViewCreated(state);
 
         return v;
+    }
+
+    public void setupViews() {
+        progressBar.setVisibility(View.GONE);
+
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_DATA:
+                noData.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
         if (isNetworkAvailable) {
             if (isHasData)
-                layout = R.layout.fragment_actions;
+                state = Globals.FragmentState.STATE_CONTENT;
             else
-                layout = R.layout.content_no_data;
+                state = Globals.FragmentState.STATE_NO_DATA;
         }
         else
-            layout = R.layout.content_no_internet_connection;
+            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
     }
 
     public void setupToolbar() {
@@ -89,9 +114,9 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-    public void setupSwipeRefreshLayout(int layout){
+    public void setupSwipeRefreshLayout(int state){
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateView(layout, getActivity(), type);
+            presenter.updateView(state, getActivity(), type);
             onItemsLoadComplete();
         });
     }

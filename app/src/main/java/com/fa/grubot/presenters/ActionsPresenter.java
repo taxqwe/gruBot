@@ -2,12 +2,12 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
-import android.view.View;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.models.ActionsModel;
 import com.fa.grubot.objects.dashboard.Action;
+import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
 
@@ -21,18 +21,20 @@ public class ActionsPresenter {
         this.model = new ActionsModel();
     }
 
-    public void notifyViewCreated(int layout, View v){
-        switch (layout) {
-            case R.layout.fragment_actions:
+    public void notifyViewCreated(int state) {
+        fragment.setupViews();
+
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(actions);
-                fragment.setupSwipeRefreshLayout(layout);
+                fragment.setupSwipeRefreshLayout(state);
                 break;
-            case R.layout.content_no_internet_connection:
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
-            case R.layout.content_no_data:
-                fragment.setupSwipeRefreshLayout(layout);
+            case Globals.FragmentState.STATE_NO_DATA:
+                fragment.setupSwipeRefreshLayout(state);
                 break;
         }
     }
