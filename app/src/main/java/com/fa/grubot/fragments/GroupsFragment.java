@@ -36,7 +36,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
     @Nullable @BindView(R.id.recycler) transient RecyclerView groupsView;
     @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
-    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
     @Nullable @BindView(R.id.content) transient View content;

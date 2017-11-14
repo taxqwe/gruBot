@@ -54,7 +54,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Nullable @BindView(R.id.fam) transient FloatingActionMenu fam;
     @Nullable @BindView(R.id.fab_add_announcement) transient FloatingActionButton announcementFab;
     @Nullable @BindView(R.id.fab_add_vote) transient FloatingActionButton voteFab;
-    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
     @Nullable @BindView(R.id.content) transient View content;

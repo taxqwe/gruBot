@@ -13,6 +13,11 @@ import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 
 public class Globals {
+    public static class Variables {
+        public static boolean isBackstackEnabled = true;
+        public static boolean areAnimationsEnabled = true;
+    }
+
     public static class ImageMethods {
         /**
          * Метод, создающий круглую картинку первой

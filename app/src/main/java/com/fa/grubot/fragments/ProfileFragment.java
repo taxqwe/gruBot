@@ -37,7 +37,7 @@ import io.reactivex.annotations.Nullable;
 public class ProfileFragment extends Fragment implements ProfileFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
-    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
     @Nullable @BindView(R.id.userImage) transient ImageView userImage;
     @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
 

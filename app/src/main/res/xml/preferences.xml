@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/main_category_title">
+
+        <SwitchPreference
+            android:key="animationsSwitch"
+            android:title="@string/animations_switch_title"
+            android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="backstackSwitch"
+            android:title="@string/backstack_switch_title"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

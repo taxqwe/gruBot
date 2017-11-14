@@ -6,11 +6,14 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.Toast;
 
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
+import com.fa.grubot.fragments.SettingsFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.util.BottomNavigationViewHelper;
 import com.fa.grubot.util.Globals;
@@ -18,11 +21,14 @@ import com.fa.grubot.util.Globals;
 import java.util.HashMap;
 import java.util.Stack;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import icepick.Icepick;
+import io.reactivex.annotations.Nullable;
 
 public class MainActivity extends AppCompatActivity {
 
-    //@BindView(R.id.bottom_navigation) BottomNavigationView bottomNavigationView;
+    @Nullable @BindView(R.id.bottom_navigation) BottomNavigationView bottomNavigationView;
 
     private HashMap<String, Stack<Fragment>> mStacks;
     public static final String TAB_PROFILE  = "tab_profile";
@@ -40,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ButterKnife.bind(this);
 
         setupViews();
         if (savedInstanceState != null) {
@@ -64,12 +72,8 @@ public class MainActivity extends AppCompatActivity {
         mStacks.put(TAB_CHATS, new Stack<>());
         mStacks.put(TAB_SETTINGS, new Stack<>());
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-
-
         bottomNavigationView.setSelectedItemId(R.id.action_dashboard);
         BottomNavigationViewHelper.removeShiftMode(bottomNavigationView);
-
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -102,9 +106,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_chats:
                         selectedTab(TAB_CHATS);
                         break;
-                    case R.id.action_settings:
-                        selectedTab(TAB_SETTINGS);
-                        break;
                 }
             }
         });
@@ -119,21 +120,21 @@ public class MainActivity extends AppCompatActivity {
     private void selectedTab(String tabId) {
         mCurrentTab = tabId;
 
-        if(mStacks.get(tabId).size() == 0){
-            if(tabId.equals(TAB_PROFILE)){
+        if(mStacks.get(tabId).size() == 0) {
+            if(tabId.equals(TAB_PROFILE)) {
                 Fragment fragment = new ProfileFragment();
                 Bundle args = new Bundle();
                 args.putSerializable("user", Globals.getMe());
                 fragment.setArguments(args);
                 pushFragments(tabId, fragment,true);
-            } else if(tabId.equals(TAB_DASHBOARD)){
+            } else if(tabId.equals(TAB_DASHBOARD)) {
                 pushFragments(tabId, new DashboardFragment(),true);
-            }else if(tabId.equals(TAB_CHATS)){
+            } else if(tabId.equals(TAB_CHATS)) {
                 pushFragments(tabId, new GroupsFragment(),true);
-            }else if(tabId.equals(TAB_SETTINGS)){
-                pushFragments(tabId, new WorkInProgressFragment(),true);
+            } else if(tabId.equals(TAB_SETTINGS)) {
+                pushFragments(tabId, new SettingsFragment(),true);
             }
-        }else {
+        } else {
             pushFragments(tabId, mStacks.get(tabId).lastElement(),false);
         }
     }

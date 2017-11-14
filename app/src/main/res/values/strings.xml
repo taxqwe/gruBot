@@ -4,4 +4,9 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="hint_enter_a_message">Сообщение</string>
     <string name="enable_smart">Включить умный чат</string>
+
+    <!--preferences-->
+    <string name="main_category_title">Включить анимации</string>
+    <string name="animations_switch_title">Включить анимации</string>
+    <string name="backstack_switch_title">Включить backstack фрагментов</string>
 </resources>

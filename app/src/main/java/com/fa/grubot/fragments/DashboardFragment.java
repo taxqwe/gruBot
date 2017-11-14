@@ -30,8 +30,7 @@ import io.reactivex.annotations.Nullable;
 
 public class DashboardFragment extends Fragment implements DashboardFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
-
+    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
     @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
     @Nullable @BindView(R.id.recycler) transient RecyclerView dashboardView;
 
