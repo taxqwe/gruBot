@@ -15,7 +15,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        
+
         if (Globals.Variables.isSlidrEnabled)
             Slidr.attach(this, Globals.Config.getSlidrConfig());
 
