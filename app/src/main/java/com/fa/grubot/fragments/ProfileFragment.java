@@ -111,8 +111,10 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
                 this.getActivity(),
                 mLayoutManager.getOrientation()
         );
-        itemsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
         itemsView.addItemDecoration(dividerItemDecoration);
+
+        if (Globals.Variables.areAnimationsEnabled)
+            itemsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
         ProfileRecyclerAdapter groupsAdapter = new ProfileRecyclerAdapter(getActivity(), items, user);
         itemsView.setAdapter(groupsAdapter);

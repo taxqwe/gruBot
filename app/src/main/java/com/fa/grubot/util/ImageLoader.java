@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -37,6 +38,7 @@ public class ImageLoader implements com.stfalcon.chatkit.commons.ImageLoader {
                 .transition(DrawableTransitionOptions.withCrossFade(250))
                 .apply(new RequestOptions().centerCrop().fitCenter())
                 .apply(RequestOptions.bitmapTransform(new BlurTransformation(25)))
+                .apply(RequestOptions.overrideOf(Target.SIZE_ORIGINAL))
                 .into(imageView);
     }
 

@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.fa.grubot.fragments.ActionsFragment;
+import com.fa.grubot.fragments.ChatFragment;
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
@@ -76,6 +78,13 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationViewHelper.removeShiftMode(bottomNavigationView);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (!Globals.Variables.isBackstackEnabled) {
+                mStacks.get(TAB_PROFILE).clear();
+                mStacks.get(TAB_DASHBOARD).clear();
+                mStacks.get(TAB_CHATS).clear();
+                mStacks.get(TAB_SETTINGS).clear();
+            }
+
             switch (item.getItemId()) {
                 case R.id.action_profile:
                     selectedTab(TAB_PROFILE);
@@ -161,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(mStacks.get(mCurrentTab).size() == 1){
+        if(mStacks.get(mCurrentTab).size() == 1) {
             if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
                 finish();
                 return;
@@ -169,9 +178,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), "Нажмите еще раз кнопку 'назад' для выхода", Toast.LENGTH_SHORT).show();
             }
             mBackPressed = System.currentTimeMillis();
-            return;
+        } else {
+            popFragments();
         }
-
-        popFragments();
     }
 }

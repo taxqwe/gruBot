@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.util.PreferencesStorage;
 
 public class SplashActivity extends AppCompatActivity {
 

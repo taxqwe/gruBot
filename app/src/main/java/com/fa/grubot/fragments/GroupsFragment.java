@@ -112,7 +112,9 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
                 mLayoutManager.getOrientation()
         );
         groupsView.addItemDecoration(dividerItemDecoration);
-        groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
+
+        if (Globals.Variables.areAnimationsEnabled)
+            groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
         GroupsRecyclerAdapter groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
         groupsView.setAdapter(groupsAdapter);

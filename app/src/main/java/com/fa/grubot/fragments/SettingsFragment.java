@@ -1,16 +1,15 @@
 package com.fa.grubot.fragments;
 
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.fa.grubot.R;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.util.PreferencesStorage;
 
 public class SettingsFragment extends PreferenceFragment {
 
@@ -34,13 +33,14 @@ public class SettingsFragment extends PreferenceFragment {
         SwitchPreference backstackSwitch = (SwitchPreference) findPreference("backstackSwitch");
 
         animationsSwitch.setOnPreferenceChangeListener((preference, o) -> {
-            Globals.Variables.areAnimationsEnabled = preference.isEnabled();
-            return preference.isEnabled();
+            Globals.Variables.areAnimationsEnabled = (boolean) o;
+            return true;
         });
 
         backstackSwitch.setOnPreferenceChangeListener((preference, o) -> {
-            Globals.Variables.isBackstackEnabled = preference.isEnabled();
-            return preference.isEnabled();
+            Globals.Variables.isBackstackEnabled = (boolean) o;
+            Log.e("mytag", String.valueOf(Globals.Variables.isBackstackEnabled));
+            return true;
         });
     }
 
