@@ -1,4 +1,4 @@
-package com.fa.grubot.util;
+package com.fa.grubot.helpers;
 
 import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;

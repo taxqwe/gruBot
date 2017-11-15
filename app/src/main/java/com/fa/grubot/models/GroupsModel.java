@@ -1,11 +1,10 @@
 package com.fa.grubot.models;
 
 import android.content.Context;
-import android.os.Handler;
 
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.util.TemporaryDataHelper;
+import com.fa.grubot.helpers.TemporaryDataHelper;
 
 import java.util.ArrayList;
 

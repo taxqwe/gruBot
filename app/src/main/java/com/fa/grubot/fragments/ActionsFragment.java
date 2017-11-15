@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,7 +28,7 @@ import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.presenters.ActionsPresenter;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.util.RecyclerItemTouchHelper;
+import com.fa.grubot.helpers.RecyclerItemTouchHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;

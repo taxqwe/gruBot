@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.util.TemporaryDataHelper;
+import com.fa.grubot.helpers.TemporaryDataHelper;
 
 public class SplashActivity extends AppCompatActivity {
 
