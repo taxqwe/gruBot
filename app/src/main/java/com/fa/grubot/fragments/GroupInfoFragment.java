@@ -3,6 +3,7 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +32,7 @@ import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
 import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
+import com.fa.grubot.util.TemporaryDataHelper;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
@@ -43,6 +45,7 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
 public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
@@ -69,6 +72,12 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     private Group group;
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupInfoPresenter(this);
         View v = inflater.inflate(R.layout.fragment_group_info, container, false);
@@ -83,20 +92,28 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         return v;
     }
 
-    public void setupViews() {
-        progressBar.setVisibility(View.GONE);
-
-        switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
-                content.setVisibility(View.VISIBLE);
-                break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
-                noInternet.setVisibility(View.VISIBLE);
-                break;
-        }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
-    public void setupLayouts(boolean isNetworkAvailable){
+    public void setupViews() {
+        new Handler().postDelayed(() -> {
+            progressBar.setVisibility(View.GONE);
+
+            switch (state) {
+                case Globals.FragmentState.STATE_CONTENT:
+                    content.setVisibility(View.VISIBLE);
+                    break;
+                case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                    noInternet.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }, Globals.Variables.delayTime);
+    }
+
+    public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
             state = Globals.FragmentState.STATE_CONTENT;
         else
@@ -135,6 +152,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
                         if (!desc.toString().isEmpty() && !text.toString().isEmpty()){
                             ActionAnnouncement actionAnnouncement = new ActionAnnouncement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
+                            TemporaryDataHelper.addNewActionByType(ActionsFragment.TYPE_ANNOUNCEMENTS, actionAnnouncement);
                             groupInfoAdapter.insertItem(actionAnnouncement);
                         }
 
@@ -192,6 +210,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                     Toast.makeText(getActivity(), "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
                 else {
                     ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
+                    TemporaryDataHelper.addNewActionByType(ActionsFragment.TYPE_VOTES, actionVote);
                     groupInfoAdapter.insertItem(actionVote);
                     dialog.dismiss();
                     fam.close(true);

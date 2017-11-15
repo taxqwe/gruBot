@@ -3,6 +3,7 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
 public class GroupsFragment extends Fragment implements GroupsFragmentBase, Serializable {
@@ -49,6 +51,12 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     private int state;
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupsPresenter(this);
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
@@ -62,20 +70,28 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         return v;
     }
 
-    public void setupViews() {
-        progressBar.setVisibility(View.GONE);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
+    }
 
-        switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
-                content.setVisibility(View.VISIBLE);
-                break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
-                noInternet.setVisibility(View.VISIBLE);
-                break;
-            case Globals.FragmentState.STATE_NO_DATA:
-                noData.setVisibility(View.VISIBLE);
-                break;
-        }
+    public void setupViews() {
+        new Handler().postDelayed(() -> {
+            progressBar.setVisibility(View.GONE);
+
+            switch (state) {
+                case Globals.FragmentState.STATE_CONTENT:
+                    content.setVisibility(View.VISIBLE);
+                    break;
+                case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                    noInternet.setVisibility(View.VISIBLE);
+                    break;
+                case Globals.FragmentState.STATE_NO_DATA:
+                    noData.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }, Globals.Variables.delayTime);
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {

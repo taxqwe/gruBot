@@ -7,12 +7,15 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.TemporaryDataHelper;
 
 public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        TemporaryDataHelper.setLists();
         loadPreferences();
         startActivity(new Intent(SplashActivity.this, MainActivity.class));
         SplashActivity.this.finish();

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
 public class DashboardFragment extends Fragment implements DashboardFragmentBase, Serializable {
@@ -45,6 +46,12 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     private int state;
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new DashboardPresenter(this);
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
@@ -55,6 +62,12 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         presenter.notifyViewCreated(state);
 
         return v;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     public void setupViews() {

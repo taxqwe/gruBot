@@ -7,6 +7,10 @@ public class VoteOption {
         this.text = "";
     }
 
+    public VoteOption(String text) {
+        this.text = text;
+    }
+
     public String getText() {
         return text;
     }
