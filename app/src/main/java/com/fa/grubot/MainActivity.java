@@ -12,6 +12,7 @@ import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
+import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.util.BottomNavigationViewHelper;
 import com.fa.grubot.util.Globals;
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Nullable @BindView(R.id.bottom_navigation) BottomNavigationView bottomNavigationView;
 
     private HashMap<String, Stack<Fragment>> mStacks;
+    public static final String TAB_SEARCH  = "tab_search";
     public static final String TAB_PROFILE  = "tab_profile";
     public static final String TAB_DASHBOARD  = "tab_dashboard";
     public static final String TAB_CHATS  = "tab_chats";
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViews() {
         mStacks = new HashMap<>();
+        mStacks.put(TAB_SEARCH, new Stack<>());
         mStacks.put(TAB_PROFILE, new Stack<>());
         mStacks.put(TAB_DASHBOARD, new Stack<>());
         mStacks.put(TAB_CHATS, new Stack<>());
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             if (!Globals.Variables.isBackstackEnabled) {
+                mStacks.get(TAB_SEARCH).clear();
                 mStacks.get(TAB_PROFILE).clear();
                 mStacks.get(TAB_DASHBOARD).clear();
                 mStacks.get(TAB_CHATS).clear();
@@ -81,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             switch (item.getItemId()) {
+                case R.id.action_search:
+                    selectedTab(TAB_SEARCH);
+                    return true;
                 case R.id.action_profile:
                     selectedTab(TAB_PROFILE);
                     return true;
@@ -101,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
             if (mStacks.get(mCurrentTab).size() != 1) {
                 mStacks.get(mCurrentTab).clear();
                 switch (item.getItemId()) {
+                    case R.id.action_search:
+                        selectedTab(TAB_SEARCH);
+                        break;
                     case R.id.action_profile:
                         selectedTab(TAB_PROFILE);
                         break;
@@ -125,18 +135,26 @@ public class MainActivity extends AppCompatActivity {
         mCurrentTab = tabId;
 
         if(mStacks.get(tabId).size() == 0) {
-            if(tabId.equals(TAB_PROFILE)) {
-                Fragment fragment = new ProfileFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("user", Globals.getMe());
-                fragment.setArguments(args);
-                pushFragments(tabId, fragment,true);
-            } else if(tabId.equals(TAB_DASHBOARD)) {
-                pushFragments(tabId, new DashboardFragment(),true);
-            } else if(tabId.equals(TAB_CHATS)) {
-                pushFragments(tabId, new GroupsFragment(),true);
-            } else if(tabId.equals(TAB_SETTINGS)) {
-                pushFragments(tabId, new SettingsFragment(),true);
+            switch (tabId) {
+                case TAB_SEARCH:
+                    pushFragments(tabId, new WorkInProgressFragment(),true);
+                    break;
+                case TAB_PROFILE:
+                    Fragment fragment = new ProfileFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("user", Globals.getMe());
+                    fragment.setArguments(args);
+                    pushFragments(tabId, fragment,true);
+                    break;
+                case TAB_DASHBOARD:
+                    pushFragments(tabId, new DashboardFragment(),true);
+                    break;
+                case TAB_CHATS:
+                    pushFragments(tabId, new GroupsFragment(),true);
+                    break;
+                case TAB_SETTINGS:
+                    pushFragments(tabId, new SettingsFragment(),true);
+                    break;
             }
         } else {
             pushFragments(tabId, mStacks.get(tabId).lastElement(),false);
