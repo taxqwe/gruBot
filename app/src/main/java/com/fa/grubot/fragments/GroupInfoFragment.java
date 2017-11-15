@@ -61,6 +61,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
     @Nullable @BindView(R.id.content) transient View content;
+    @Nullable @BindView(R.id.content_fam) transient View content_fam;
     @Nullable @BindView(R.id.noInternet) transient View noInternet;
     @Nullable @BindView(R.id.noData) transient View noData;
 
@@ -107,6 +108,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
             switch (state) {
                 case Globals.FragmentState.STATE_CONTENT:
                     content.setVisibility(View.VISIBLE);
+                    content_fam.setVisibility(View.VISIBLE);
                     break;
                 case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                     noInternet.setVisibility(View.VISIBLE);
