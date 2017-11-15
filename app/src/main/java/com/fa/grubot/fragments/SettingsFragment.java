@@ -57,10 +57,4 @@ public class SettingsFragment extends PreferenceFragment implements Serializable
             return true;
         });
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        toolbar.setVisibility(View.GONE);
-    }
 }

@@ -50,7 +50,7 @@ import io.reactivex.annotations.Nullable;
 
 public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
     @Nullable @BindView(R.id.root) transient CoordinatorLayout rootView;
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
+    @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
     @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
     @Nullable @BindView(R.id.groupImage) transient ImageView groupImage;
 
@@ -121,7 +121,10 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     }
 
     public void setupToolbar() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.GONE);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(collapsingToolbar);
         String title = group.getName();
 
         ImageLoader imageLoader = new ImageLoader(this);
@@ -259,6 +262,8 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
         unbinder.unbind();
         presenter.destroy();
     }

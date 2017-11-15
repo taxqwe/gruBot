@@ -21,6 +21,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.adapters.ActionsRecyclerAdapter;
@@ -43,7 +44,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     public static final int TYPE_ANNOUNCEMENTS = 389;
     public static final int TYPE_VOTES = 827;
 
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
     @Nullable @BindView(R.id.recycler) transient  RecyclerView actionsView;
     @Nullable @BindView(R.id.swipeRefreshLayout) transient  SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
@@ -118,16 +118,18 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     public void setupToolbar() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        String title = "";
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
+        String title;
         if (type == TYPE_ANNOUNCEMENTS)
             title = "Объявления";
         else
             title = "Голосования";
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setTitle(title);
+        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     public void setupSwipeRefreshLayout(int state){

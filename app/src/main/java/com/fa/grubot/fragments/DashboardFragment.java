@@ -32,7 +32,6 @@ import io.reactivex.annotations.Nullable;
 public class DashboardFragment extends Fragment implements DashboardFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
     @Nullable @BindView(R.id.recycler) transient RecyclerView dashboardView;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
@@ -91,8 +90,9 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     }
 
     public void setupToolbar() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Доска");
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
+        toolbar.setTitle("Доска");
     }
 
     public void setupRecyclerView(ArrayList<DashboardItem> items) {

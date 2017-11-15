@@ -38,7 +38,7 @@ import io.reactivex.annotations.Nullable;
 
 public class ProfileFragment extends Fragment implements ProfileFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
+    @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
     @Nullable @BindView(R.id.userImage) transient ImageView userImage;
     @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
@@ -100,7 +100,10 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     }
 
     public void setupToolbar() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.GONE);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(collapsingToolbar);
         String title = user.getFullname();
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
@@ -160,6 +163,8 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
         unbinder.unbind();
         presenter.destroy();
     }

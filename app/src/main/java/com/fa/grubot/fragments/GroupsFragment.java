@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.adapters.GroupsRecyclerAdapter;
@@ -35,7 +36,6 @@ import io.reactivex.annotations.Nullable;
 
 public class GroupsFragment extends Fragment implements GroupsFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
     @Nullable @BindView(R.id.recycler) transient RecyclerView groupsView;
     @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
@@ -106,9 +106,13 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     public void setupToolbar() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Чаты");
+        toolbar.setTitle("Чаты");
+        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     public void setupSwipeRefreshLayout(int state) {

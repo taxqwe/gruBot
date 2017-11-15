@@ -18,7 +18,7 @@ public class Globals {
         public static boolean areAnimationsEnabled = false;
         public static boolean isSlidrEnabled = true;
 
-        public static int delayTime = 150;
+        public static int delayTime = 200;
     }
 
     public static class ImageMethods {
