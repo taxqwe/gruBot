@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.adapters.ProfileRecyclerAdapter;
@@ -102,6 +103,10 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     public void setupToolbar() {
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setVisibility(View.GONE);
+
+        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(collapsingToolbar);
         String title = user.getFullname();

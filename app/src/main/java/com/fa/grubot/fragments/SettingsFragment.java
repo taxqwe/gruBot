@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.util.Globals;
 
@@ -35,6 +36,10 @@ public class SettingsFragment extends PreferenceFragment implements Serializable
         toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setVisibility(View.VISIBLE);
         toolbar.setTitle("Настройки");
+
+        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
     private void setupViews() {
