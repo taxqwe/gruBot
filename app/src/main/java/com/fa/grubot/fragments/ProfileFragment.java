@@ -66,6 +66,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         presenter = new ProfilePresenter(this);
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        hideMainToolbar();
         user = (User) this.getArguments().getSerializable("user");
         setHasOptionsMenu(true);
         presenter.notifyFragmentStarted(getActivity(), user);
@@ -93,21 +94,23 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         }, Globals.Variables.delayTime);
     }
 
-    public void setupLayouts(boolean isNetworkAvailable){
+    public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
             state = Globals.FragmentState.STATE_CONTENT;
         else
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
     }
 
-    public void setupToolbar() {
+    private void hideMainToolbar() {
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setVisibility(View.GONE);
 
         ((MainActivity)getActivity()).setSupportActionBar(toolbar);
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
+    }
 
+    public void setupToolbar() {
         ((AppCompatActivity) getActivity()).setSupportActionBar(collapsingToolbar);
         String title = user.getFullname();
 

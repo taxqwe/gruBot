@@ -33,13 +33,12 @@ public class ImageLoader implements com.stfalcon.chatkit.commons.ImageLoader {
 
     public void loadToolbarImage(ImageView imageView, String url) {
         Glide
-                .with(fragment)
-                .load(url)
-                .transition(DrawableTransitionOptions.withCrossFade(250))
-                .apply(new RequestOptions().centerCrop().fitCenter())
-                .apply(RequestOptions.bitmapTransform(new BlurTransformation(25)))
-                .apply(RequestOptions.overrideOf(Target.SIZE_ORIGINAL))
-                .into(imageView);
+            .with(fragment)
+            .load(url)
+            .transition(DrawableTransitionOptions.withCrossFade(400))
+            .apply(new RequestOptions().centerCrop().fitCenter())
+            .apply(RequestOptions.bitmapTransform(new BlurTransformation(25)))
+            .into(imageView);
     }
 
     public String getUriOfDrawable(int drawable) {

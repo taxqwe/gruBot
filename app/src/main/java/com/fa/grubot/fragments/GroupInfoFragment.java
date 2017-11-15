@@ -50,7 +50,6 @@ import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
 public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
-    @Nullable @BindView(R.id.root) transient CoordinatorLayout rootView;
     @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
     @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
     @Nullable @BindView(R.id.groupImage) transient ImageView groupImage;
@@ -82,6 +81,8 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupInfoPresenter(this);
         View v = inflater.inflate(R.layout.fragment_group_info, container, false);
+
+        hideMainToolbar();
 
         setHasOptionsMenu(true);
         group = (Group) this.getArguments().getSerializable("group");
@@ -119,6 +120,15 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
             state = Globals.FragmentState.STATE_CONTENT;
         else
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+    }
+
+    private void hideMainToolbar() {
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.GONE);
+
+        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
     public void setupToolbar() {
