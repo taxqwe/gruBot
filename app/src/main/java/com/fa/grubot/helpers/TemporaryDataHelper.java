@@ -13,24 +13,24 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class TemporaryDataHelper {
-    private static final String placeholder = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna " +
+    private final String placeholder = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna " +
             "aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " +
             "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint " +
             "occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum";
-    private static final ArrayList<VoteOption> options = new ArrayList<>(Arrays.asList(new VoteOption("Первый вариант"), new VoteOption("Второй вариант"), new VoteOption("Третий вариант")));
+    private final ArrayList<VoteOption> options = new ArrayList<>(Arrays.asList(new VoteOption("Первый вариант"), new VoteOption("Второй вариант"), new VoteOption("Третий вариант")));
 
-    private static ArrayList<Action> announcementsList = new ArrayList<>();
-    private static ArrayList<Action> votesList = new ArrayList<>();
-    private static ArrayList<User> usersList = new ArrayList<>();
-    private static ArrayList<Group> groupsList = new ArrayList<>();
+    private ArrayList<Action> announcementsList = new ArrayList<>();
+    private ArrayList<Action> votesList = new ArrayList<>();
+    private ArrayList<User> usersList = new ArrayList<>();
+    private ArrayList<Group> groupsList = new ArrayList<>();
 
-    public static void setLists() {
+    public TemporaryDataHelper() {
         setUsers();
         setGroups();
         setActions();
     }
 
-    public static ArrayList<Action> getActionsByType(int type) {
+    public ArrayList<Action> getActionsByType(int type) {
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
             return announcementsList;
         } else {
@@ -38,7 +38,7 @@ public class TemporaryDataHelper {
         }
     }
 
-    public static ArrayList<Action> getActionsByGroupAndType(int type, Group group) {
+    public ArrayList<Action> getActionsByGroupAndType(int type, Group group) {
         ArrayList<Action> actions = new ArrayList<>();
 
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
@@ -56,7 +56,7 @@ public class TemporaryDataHelper {
         }
     }
 
-    public static void addNewActionByType(int type, Action action) {
+    public void addNewActionByType(int type, Action action) {
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
             announcementsList.add(action);
         } else {
@@ -64,15 +64,15 @@ public class TemporaryDataHelper {
         }
     }
 
-    public static ArrayList<User> getUsersByGroup(Group group) {
+    public ArrayList<User> getUsersByGroup(Group group) {
         return group.getUsers();
     }
 
-    public static ArrayList<Group> getGroups() {
+    public ArrayList<Group> getGroups() {
         return groupsList;
     }
 
-    private static void setActions() {
+    private void setActions() {
         announcementsList.add(new ActionAnnouncement(1, groupsList.get(0), "Комлев Антон", "Собрание", new Date(),  placeholder));
         announcementsList.add(new ActionAnnouncement(1, groupsList.get(0), "Комлев Антон", "Выходные дни", new Date(), placeholder));
         announcementsList.add(new ActionAnnouncement(3, groupsList.get(2), "Чехов А. П.", "Поездка", new Date(), placeholder));
@@ -85,7 +85,7 @@ public class TemporaryDataHelper {
         votesList.add(new ActionVote(2, groupsList.get(1), "Махин Семен", "Активность", new Date(), options));
     }
 
-    private static void setUsers() {
+    private void setUsers() {
         usersList.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
         usersList.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH", null));
         usersList.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123", null));
@@ -96,7 +96,7 @@ public class TemporaryDataHelper {
 
     }
 
-    private static void setGroups() {
+    private void setGroups() {
         groupsList.add(new Group(1, "ПИ4-1", new ArrayList<>(Arrays.asList(usersList.get(0), usersList.get(2), usersList.get(1))), "https://2static3.fjcdn.com/comments/Fun+fact+the+flat+topped+great+helm+is+a+piece+_3cb2af934364bbe51707d55061d6aacb.jpg"));
         groupsList.add(new Group(2, "ПИ4-2", new ArrayList<>(Arrays.asList(usersList.get(6), usersList.get(3))),null));
         groupsList.add(new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", new ArrayList<>(Arrays.asList(usersList.get(5), usersList.get(4), usersList.get(3))),null));

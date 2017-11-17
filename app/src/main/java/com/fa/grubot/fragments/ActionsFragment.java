@@ -20,6 +20,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
@@ -102,7 +103,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
                     noData.setVisibility(View.VISIBLE);
                     break;
             }
-        }, Globals.Variables.delayTime);
+        }, App.INSTANCE.getDelayTime());
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
@@ -153,7 +154,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(actionsView);
 
-        if (Globals.Variables.areAnimationsEnabled)
+        if (App.INSTANCE.areAnimationsEnabled())
             actionsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
         this.actions = actions;

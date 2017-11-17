@@ -6,16 +6,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.fa.grubot.util.Globals;
-import com.fa.grubot.helpers.TemporaryDataHelper;
-
 public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TemporaryDataHelper.setLists();
         loadPreferences();
         startActivity(new Intent(SplashActivity.this, MainActivity.class));
         SplashActivity.this.finish();
@@ -24,8 +20,8 @@ public class SplashActivity extends AppCompatActivity {
     private void loadPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        Globals.Variables.areAnimationsEnabled = prefs.getBoolean("animationsSwitch", false);
-        Globals.Variables.isBackstackEnabled = prefs.getBoolean("backstackSwitch", false);
-        Globals.Variables.isSlidrEnabled = prefs.getBoolean("slidrSwitch", true);
+        App.INSTANCE.setAnimationsEnabled(prefs.getBoolean("animationsSwitch", false));
+        App.INSTANCE.setBackstackEnabled(prefs.getBoolean("backstackSwitch", false));
+        App.INSTANCE.setSlidrEnabled(prefs.getBoolean("slidrSwitch", true));
     }
 }

@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
@@ -91,7 +92,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
                 content.setVisibility(View.VISIBLE);
             else
                 noInternet.setVisibility(View.VISIBLE);
-        }, Globals.Variables.delayTime);
+        }, App.INSTANCE.getDelayTime());
     }
 
     public void setupLayouts(boolean isNetworkAvailable) {
@@ -123,7 +124,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
             imageLoader.loadToolbarImage(userImage, imageLoader.getUriOfDrawable(R.drawable.material_bg));
         }
 
-        if (!user.getId().equals(Globals.getMe().getId())) {
+        if (!user.getId().equals(App.INSTANCE.getCurrentUser().getId())) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -140,7 +141,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         );
         itemsView.addItemDecoration(dividerItemDecoration);
 
-        if (Globals.Variables.areAnimationsEnabled)
+        if (App.INSTANCE.areAnimationsEnabled())
             itemsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
         ProfileRecyclerAdapter groupsAdapter = new ProfileRecyclerAdapter(getActivity(), items, user);

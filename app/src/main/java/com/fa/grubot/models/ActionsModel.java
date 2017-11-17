@@ -2,6 +2,7 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 
+import com.fa.grubot.App;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.util.Globals;
 import com.fa.grubot.helpers.TemporaryDataHelper;
@@ -14,7 +15,7 @@ public class ActionsModel {
 
     }
     public ArrayList<Action> loadActions(int type) {
-        return TemporaryDataHelper.getActionsByType(type);
+        return App.INSTANCE.getDataHelper().getActionsByType(type);
     }
 
     public boolean isNetworkAvailable(Context context){

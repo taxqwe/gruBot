@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
@@ -91,7 +92,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
                     noData.setVisibility(View.VISIBLE);
                     break;
             }
-        }, Globals.Variables.delayTime);
+        }, App.INSTANCE.getDelayTime());
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
@@ -133,7 +134,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         );
         groupsView.addItemDecoration(dividerItemDecoration);
 
-        if (Globals.Variables.areAnimationsEnabled)
+        if (App.INSTANCE.areAnimationsEnabled())
             groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
         GroupsRecyclerAdapter groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);

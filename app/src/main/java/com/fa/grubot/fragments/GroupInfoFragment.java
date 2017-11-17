@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
@@ -113,7 +114,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                     noInternet.setVisibility(View.VISIBLE);
                     break;
             }
-        }, Globals.Variables.delayTime);
+        }, App.INSTANCE.getDelayTime());
     }
 
     public void setupLayouts(boolean isNetworkAvailable) {
@@ -170,7 +171,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
                         if (!desc.toString().isEmpty() && !text.toString().isEmpty()){
                             ActionAnnouncement actionAnnouncement = new ActionAnnouncement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
-                            TemporaryDataHelper.addNewActionByType(ActionsFragment.TYPE_ANNOUNCEMENTS, actionAnnouncement);
+                            App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_ANNOUNCEMENTS, actionAnnouncement);
                             groupInfoAdapter.insertItem(actionAnnouncement);
                         }
 
@@ -228,7 +229,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                     Toast.makeText(getActivity(), "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
                 else {
                     ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
-                    TemporaryDataHelper.addNewActionByType(ActionsFragment.TYPE_VOTES, actionVote);
+                    App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_VOTES, actionVote);
                     groupInfoAdapter.insertItem(actionVote);
                     dialog.dismiss();
                     fam.close(true);
@@ -245,7 +246,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         buttonsView.setLayoutManager(mLayoutManager);
         buttonsView.setHasFixedSize(false);
 
-        if (Globals.Variables.areAnimationsEnabled)
+        if (App.INSTANCE.areAnimationsEnabled())
             buttonsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
         groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons);

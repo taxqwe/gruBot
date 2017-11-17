@@ -2,6 +2,7 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 
+import com.fa.grubot.App;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.objects.dashboard.Action;
@@ -24,7 +25,7 @@ public class GroupInfoModel {
         groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(1, "Чат", new ArrayList<>())));
 
         //Объявления
-        ArrayList<Action> entries = TemporaryDataHelper.getActionsByGroupAndType(ActionsFragment.TYPE_ANNOUNCEMENTS, group);
+        ArrayList<Action> entries = App.INSTANCE.getDataHelper().getActionsByGroupAndType(ActionsFragment.TYPE_ANNOUNCEMENTS, group);
         ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
         for (Action entry : entries) {
             items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
@@ -33,7 +34,7 @@ public class GroupInfoModel {
         groupInfoRecyclerItems.addAll(items);
 
         //Голосования
-        entries = TemporaryDataHelper.getActionsByGroupAndType(ActionsFragment.TYPE_VOTES, group);
+        entries = App.INSTANCE.getDataHelper().getActionsByGroupAndType(ActionsFragment.TYPE_VOTES, group);
         items = new ArrayList<>();
         for (Action entry : entries) {
             items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
@@ -42,7 +43,7 @@ public class GroupInfoModel {
         groupInfoRecyclerItems.addAll(items);
 
         //Пользователи
-        ArrayList<User> users = TemporaryDataHelper.getUsersByGroup(group);
+        ArrayList<User> users = App.INSTANCE.getDataHelper().getUsersByGroup(group);
         items = new ArrayList<>();
         for (User user : users) {
             items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));

@@ -9,9 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.util.Globals;
 
 import java.io.Serializable;
 
@@ -48,17 +48,17 @@ public class SettingsFragment extends PreferenceFragment implements Serializable
         SwitchPreference slidrSwitch = (SwitchPreference) findPreference("slidrSwitch");
 
         animationsSwitch.setOnPreferenceChangeListener((preference, o) -> {
-            Globals.Variables.areAnimationsEnabled = (boolean) o;
+            App.INSTANCE.setAnimationsEnabled((boolean) o);
             return true;
         });
 
         backstackSwitch.setOnPreferenceChangeListener((preference, o) -> {
-            Globals.Variables.isBackstackEnabled = (boolean) o;
+            App.INSTANCE.setBackstackEnabled((boolean) o);
             return true;
         });
 
         slidrSwitch.setOnPreferenceChangeListener((preference, o) -> {
-            Globals.Variables.isSlidrEnabled = (boolean) o;
+            App.INSTANCE.setSlidrEnabled((boolean) o);
             return true;
         });
     }

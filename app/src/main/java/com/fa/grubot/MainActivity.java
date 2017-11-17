@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationViewHelper.removeShiftMode(bottomNavigationView);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            if (!Globals.Variables.isBackstackEnabled) {
+            if (!App.INSTANCE.isBackstackEnabled()) {
                 mStacks.get(TAB_SEARCH).clear();
                 mStacks.get(TAB_PROFILE).clear();
                 mStacks.get(TAB_DASHBOARD).clear();
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 case TAB_PROFILE:
                     Fragment fragment = new ProfileFragment();
                     Bundle args = new Bundle();
-                    args.putSerializable("user", Globals.getMe());
+                    args.putSerializable("user", App.INSTANCE.getCurrentUser());
                     fragment.setArguments(args);
                     pushFragments(tabId, fragment,true);
                     break;

@@ -13,14 +13,6 @@ import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 
 public class Globals {
-    public static class Variables {
-        public static boolean isBackstackEnabled = false;
-        public static boolean areAnimationsEnabled = false;
-        public static boolean isSlidrEnabled = true;
-
-        public static int delayTime = 0;
-    }
-
     public static class ImageMethods {
         /**
          * Метод, создающий круглую картинку первой
@@ -55,24 +47,5 @@ public class Globals {
         public static final int STATE_NO_INTERNET_CONNECTION = 61;
         public static final int STATE_NO_DATA = 52;
         public static final int STATE_CONTENT = 44;
-    }
-
-    public static User getMe() {
-        return new User(0, "DOMINATOR48RUS", "The First One", "+71903322233", "NOONE CAN STOP ME", "http://www.netlore.ru/upload/files/1307/3_321.jpg");
-    }
-
-    public static class Config {
-        public static SlidrConfig getSlidrConfig() {
-            return new SlidrConfig.Builder()
-                .position(SlidrPosition.LEFT)
-                .sensitivity(0.7f)
-                .scrimColor(Color.BLACK)
-                .scrimStartAlpha(0.8f)
-                .scrimEndAlpha(0f)
-                .velocityThreshold(2400)
-                .distanceThreshold(0.5f)
-                .edge(false)
-                .build();
-        }
     }
 }

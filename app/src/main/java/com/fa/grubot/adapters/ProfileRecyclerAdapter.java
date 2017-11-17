@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.group.User;
@@ -83,7 +84,7 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
                 Glide.with(context).load(R.drawable.ic_phone_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
                 holder.itemText.setText(item.getText());
                 holder.itemValue.setText(item.getValue());
-                if (!user.getId().equals(Globals.getMe().getId())) {
+                if (!user.getId().equals(App.INSTANCE.getCurrentUser().getId())) {
                     holder.itemImage.getRootView().setOnClickListener(view -> {
                         Dexter.withActivity((MainActivity) context)
                                 .withPermission(Manifest.permission.CALL_PHONE)
