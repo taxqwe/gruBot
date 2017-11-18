@@ -10,10 +10,6 @@ import com.fa.grubot.fragments.ChatFragment;
 import com.fa.grubot.util.Globals;
 import com.r0adkll.slidr.Slidr;
 
-/**
- * Created by ni.petrov on 22/10/2017.
- */
-
 public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

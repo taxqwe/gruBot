@@ -3,6 +3,7 @@
     package="com.fa.grubot">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -23,27 +24,17 @@
         </activity>
 
         <activity
+            android:name=".MainActivity"
             android:screenOrientation="sensor"
-            android:name=".DashboardActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden"/>
-
-        <activity android:name=".GroupInfoActivity"
-            android:screenOrientation="sensor"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:windowSoftInputMode="stateAlwaysHidden"/>
 
         <activity android:name=".ChatActivity"
             android:screenOrientation="sensor"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize" />
-
-        <activity android:name=".ItemsActivity"
-            android:screenOrientation="sensor"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"/>
 
     </application>
 

@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,6 +20,7 @@ import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.GroupsPresenter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -28,15 +28,15 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.annotations.Nullable;
 
-public class GroupsFragment extends Fragment implements GroupsFragmentBase{
+public class GroupsFragment extends Fragment implements GroupsFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
-    @Nullable @BindView(R.id.recycler) RecyclerView groupsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout;
+    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
+    @Nullable @BindView(R.id.recycler) transient RecyclerView groupsView;
+    @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    private Unbinder unbinder;
-    private GroupsPresenter presenter;
+    private transient Unbinder unbinder;
+    private transient GroupsPresenter presenter;
     private int layout;
 
     @Override
@@ -69,8 +69,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Чаты");
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     public void setupSwipeRefreshLayout(int layout) {
@@ -110,14 +108,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase{
 
     private void onItemsLoadComplete() {
         swipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

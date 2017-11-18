@@ -1,5 +1,7 @@
 package com.fa.grubot.models;
 
+import android.content.Context;
+
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
@@ -8,6 +10,7 @@ import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
+import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -98,19 +101,23 @@ public class GroupInfoModel {
         ArrayList<User> users = new ArrayList<>();
         switch (group.getId()) {
             case 1:
-                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
-                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH"));
-                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123"));
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
+                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH", null));
+                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123", null));
                 break;
             case 2:
-                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
-                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH"));
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
+                users.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH", null));
                 break;
             case 3:
-                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка"));
-                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123"));
+                users.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
+                users.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123", null));
                 break;
         }
         return users;
+    }
+
+    public boolean isNetworkAvailable(Context context){
+        return Globals.InternetMethods.isNetworkAvailable(context);
     }
 }

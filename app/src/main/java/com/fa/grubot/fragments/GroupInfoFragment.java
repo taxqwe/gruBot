@@ -1,18 +1,25 @@
-package com.fa.grubot;
+package com.fa.grubot.fragments;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fa.grubot.abstractions.GroupInfoActivityBase;
+import com.fa.grubot.R;
+import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.adapters.VoteRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
@@ -20,62 +27,73 @@ import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
-import com.fa.grubot.util.Globals;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
-import com.r0adkll.slidr.Slidr;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import icepick.Icepick;
+import io.reactivex.annotations.Nullable;
 
-public class GroupInfoActivity extends AppCompatActivity implements GroupInfoActivityBase {
-    @BindView(R.id.root) CoordinatorLayout rootView;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.recycler) RecyclerView buttonsView;
+public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
+    @Nullable @BindView(R.id.root) transient CoordinatorLayout rootView;
+    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
+    @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
 
-    @BindView(R.id.fam) FloatingActionMenu fam;
-    @BindView(R.id.fab_add_announcement) FloatingActionButton announcementFab;
-    @BindView(R.id.fab_add_vote) FloatingActionButton voteFab;
+    @Nullable @BindView(R.id.fam) transient FloatingActionMenu fam;
+    @Nullable @BindView(R.id.fab_add_announcement) transient FloatingActionButton announcementFab;
+    @Nullable @BindView(R.id.fab_add_vote) transient FloatingActionButton voteFab;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    private GroupInfoRecyclerAdapter groupInfoAdapter;
-    private GroupInfoPresenter presenter;
-    private Unbinder unbinder;
+    private transient GroupInfoRecyclerAdapter groupInfoAdapter;
+    private transient GroupInfoPresenter presenter;
+    private transient Unbinder unbinder;
+    private int layout;
 
     private Group group;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_group_info);
-        Slidr.attach(this, Globals.Config.getSlidrConfig());
-        Icepick.restoreInstanceState(this, savedInstanceState);
-
-        unbinder = ButterKnife.bind(this);
-
-        group = (Group) getIntent().getExtras().getSerializable("group");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupInfoPresenter(this);
-        presenter.notifyViewCreated(group);
+        setHasOptionsMenu(true);
+        group = (Group) this.getArguments().getSerializable("group");
+        Log.e("mytag", group.getName());
+        presenter.notifyFragmentStarted(getActivity(), group);
+        View v = inflater.inflate(layout, container, false);
+
+        unbinder = ButterKnife.bind(this, v);
+        presenter.notifyViewCreated(layout, v);
+
+        return v;
     }
 
-    public void setupToolbar(){
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle(group.getName());
+    public void setupLayouts(boolean isNetworkAvailable){
+        if (isNetworkAvailable)
+            layout = R.layout.fragment_group_info;
+        else
+            layout = R.layout.fragment_no_internet_connection;
+    }
+
+    public void setupToolbar() {
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        String title = group.getName();
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     public void setupFab(){
         fam.setClosedOnTouchOutside(true);
         announcementFab.setOnClickListener(view -> {
             groupInfoAdapter.collapseAll(); //TODO не баг, а фича. Если убрать все сломается и мне сейчас лень это фиксить, когда можно просто написать эту строку. Если кто-то это прочитает, то ёбните меня.
-            new MaterialDialog.Builder(this)
+            new MaterialDialog.Builder(getActivity())
                     .title("Объявление")
                     .customView(R.layout.dialog_add_announcement, false)
                     .canceledOnTouchOutside(false)
@@ -98,7 +116,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         voteFab.setOnClickListener(view -> {
             groupInfoAdapter.collapseAll(); //TODO не баг, а фича. Если убрать все сломается и мне сейчас лень это фиксить, когда можно просто написать эту строку. Если кто-то это прочитает, то ёбните меня.
 
-            MaterialDialog materialDialog = new MaterialDialog.Builder(this)
+            MaterialDialog materialDialog = new MaterialDialog.Builder(getActivity())
                     .title("Голосование")
                     .customView(R.layout.dialog_add_vote, false)
                     .canceledOnTouchOutside(false)
@@ -106,15 +124,13 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
                     .negativeText(android.R.string.cancel)
                     .autoDismiss(false)
                     .neutralText("+ вариант")
-                    .onNegative((dialog, which) -> {
-                        dialog.dismiss();
-                    })
+                    .onNegative((dialog, which) -> dialog.dismiss())
                     .build();
             RecyclerView voteRecycler = materialDialog.getView().findViewById(R.id.vote_recycler);
             EditText desc = (EditText) materialDialog.getView().findViewById(R.id.voteDesc);
-            LinearLayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-            VoteRecyclerAdapter voteAdapter = new VoteRecyclerAdapter(this, new ArrayList<VoteOption>(Arrays.asList(new VoteOption())));
+            VoteRecyclerAdapter voteAdapter = new VoteRecyclerAdapter(getActivity(), new ArrayList<VoteOption>(Collections.singletonList(new VoteOption())));
             voteRecycler.setLayoutManager(mLayoutManager);
             voteRecycler.setHasFixedSize(false);
 
@@ -137,19 +153,19 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
                     }
                 }
                 if (desc.getText().toString().isEmpty())
-                    Toast.makeText(this, "Описание должно быть заполнено", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Описание должно быть заполнено", Toast.LENGTH_SHORT).show();
                 else
-                    if (options.size() < 2)
-                        Toast.makeText(this, "Должно быть не менее двух вариантов выбора", Toast.LENGTH_SHORT).show();
-                    else
-                        if (hasEmpty)
-                            Toast.makeText(this, "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
-                        else {
-                            ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
-                            groupInfoAdapter.insertItem(actionVote);
-                            dialog.dismiss();
-                            fam.close(true);
-                        }
+                if (options.size() < 2)
+                    Toast.makeText(getActivity(), "Должно быть не менее двух вариантов выбора", Toast.LENGTH_SHORT).show();
+                else
+                if (hasEmpty)
+                    Toast.makeText(getActivity(), "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
+                else {
+                    ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
+                    groupInfoAdapter.insertItem(actionVote);
+                    dialog.dismiss();
+                    fam.close(true);
+                }
             };
             materialDialog.getBuilder().onNeutral(neutralCallback).onPositive(positiveCallback);
 
@@ -158,33 +174,39 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
     }
 
     public void setupRecyclerView(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> buttons){
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         buttonsView.setLayoutManager(mLayoutManager);
         buttonsView.setHasFixedSize(false);
 
-        groupInfoAdapter = new GroupInfoRecyclerAdapter(this, buttons);
+        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons);
         groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);
         groupInfoAdapter.notifyDataSetChanged();
+    }
+
+    public void setupRetryButton(){
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+    }
+
+    public void reloadFragment(){
+        Fragment currentFragment = this;
+        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
+        fragTransaction.detach(currentFragment);
+        fragTransaction.attach(currentFragment);
+        fragTransaction.commit();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home)
-            onBackPressed();
+            getActivity().onBackPressed();
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         unbinder.unbind();
         presenter.destroy();
     }
