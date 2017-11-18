@@ -3,21 +3,26 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
+import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fa.grubot.App;
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
@@ -27,6 +32,8 @@ import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
+import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
@@ -39,50 +46,120 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
 public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
-    @Nullable @BindView(R.id.root) transient CoordinatorLayout rootView;
-    @Nullable @BindView(R.id.toolbar) transient Toolbar toolbar;
+
+    @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
+    @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
     @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
+    @Nullable @BindView(R.id.groupImage) transient ImageView groupImage;
 
     @Nullable @BindView(R.id.fam) transient FloatingActionMenu fam;
     @Nullable @BindView(R.id.fab_add_announcement) transient FloatingActionButton announcementFab;
     @Nullable @BindView(R.id.fab_add_vote) transient FloatingActionButton voteFab;
-    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
+
+    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) transient View content;
+    @Nullable @BindView(R.id.content_fam) transient View content_fam;
+    @Nullable @BindView(R.id.noInternet) transient View noInternet;
 
     private transient GroupInfoRecyclerAdapter groupInfoAdapter;
     private transient GroupInfoPresenter presenter;
     private transient Unbinder unbinder;
-    private int layout;
 
+    private int state;
     private Group group;
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupInfoPresenter(this);
+        View v = inflater.inflate(R.layout.fragment_group_info, container, false);
+
+        hideMainToolbar();
+
         setHasOptionsMenu(true);
         group = (Group) this.getArguments().getSerializable("group");
-        Log.e("mytag", group.getName());
         presenter.notifyFragmentStarted(getActivity(), group);
-        View v = inflater.inflate(layout, container, false);
 
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(layout, v);
+        presenter.notifyViewCreated(state);
 
         return v;
     }
 
-    public void setupLayouts(boolean isNetworkAvailable){
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
+    }
+
+    public void showRequiredViews() {
+        new Handler().postDelayed(() -> {
+            progressBar.setVisibility(View.GONE);
+
+            switch (state) {
+                case Globals.FragmentState.STATE_CONTENT:
+                    appBarLayout.setExpanded(true);
+                    content.setVisibility(View.VISIBLE);
+                    content_fam.setVisibility(View.VISIBLE);
+                    break;
+                case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                    appBarLayout.setExpanded(false);
+                    noInternet.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }, App.INSTANCE.getDelayTime());
+    }
+
+    public void showLoadingView() {
+        content.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        appBarLayout.setExpanded(false);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+
+    public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
-            layout = R.layout.fragment_group_info;
+            state = Globals.FragmentState.STATE_CONTENT;
         else
-            layout = R.layout.fragment_no_internet_connection;
+            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+    }
+
+    private void hideMainToolbar() {
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.GONE);
+
+        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
     public void setupToolbar() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.GONE);
+        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(collapsingToolbar);
         String title = group.getName();
+
+        ImageLoader imageLoader = new ImageLoader(this);
+        if (group.getImgURL() != null) {
+            imageLoader.loadToolbarImage(groupImage, group.getImgURL());
+        } else {
+            imageLoader.loadToolbarImage(groupImage, imageLoader.getUriOfDrawable(R.drawable.material_flat));
+        }
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -105,6 +182,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
                         if (!desc.toString().isEmpty() && !text.toString().isEmpty()){
                             ActionAnnouncement actionAnnouncement = new ActionAnnouncement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
+                            App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_ANNOUNCEMENTS, actionAnnouncement);
                             groupInfoAdapter.insertItem(actionAnnouncement);
                         }
 
@@ -162,6 +240,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                     Toast.makeText(getActivity(), "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
                 else {
                     ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
+                    App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_VOTES, actionVote);
                     groupInfoAdapter.insertItem(actionVote);
                     dialog.dismiss();
                     fam.close(true);
@@ -178,6 +257,9 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         buttonsView.setLayoutManager(mLayoutManager);
         buttonsView.setHasFixedSize(false);
 
+        if (App.INSTANCE.areAnimationsEnabled())
+            buttonsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
+
         groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons);
         groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);
@@ -185,15 +267,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     }
 
     public void setupRetryButton(){
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
-    }
-
-    public void reloadFragment(){
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), group));
     }
 
     @Override
@@ -207,6 +281,8 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
         unbinder.unbind();
         presenter.destroy();
     }

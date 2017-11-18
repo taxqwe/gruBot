@@ -4,10 +4,7 @@ import com.fa.grubot.objects.dashboard.DashboardItem;
 
 import java.util.ArrayList;
 
-public interface DashboardFragmentBase {
+public interface DashboardFragmentBase extends FragmentBase {
     void setupRecyclerView(ArrayList<DashboardItem> items);
     void setupLayouts(boolean isNetworkAvailable);
-    void setupToolbar();
-    void setupRetryButton();
-    void reloadFragment();
 }

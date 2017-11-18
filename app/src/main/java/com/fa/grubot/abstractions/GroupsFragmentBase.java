@@ -4,11 +4,8 @@ import com.fa.grubot.objects.group.Group;
 
 import java.util.ArrayList;
 
-public interface GroupsFragmentBase {
+public interface GroupsFragmentBase extends FragmentBase {
     void setupRecyclerView(ArrayList<Group> groups);
-    void setupSwipeRefreshLayout(int layout);
-    void setupToolbar();
+    void setupSwipeRefreshLayout();
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
-    void setupRetryButton();
-    void reloadFragment();
 }

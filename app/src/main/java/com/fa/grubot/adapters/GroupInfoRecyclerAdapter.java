@@ -12,10 +12,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fa.grubot.BranchesActivity;
 import com.fa.grubot.ChatActivity;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
@@ -65,12 +65,22 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 childCountText.setVisibility(View.VISIBLE);
             }
 
-            if (button.getId() == 1) {
-                buttonText.getRootView().setOnClickListener(v -> {
-                    Intent intent = new Intent(context, ChatActivity.class);
-                    context.startActivity(intent);
-                    ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
-                });
+            switch (button.getId()) {
+                case 1:
+                    buttonText.getRootView().setOnClickListener(v -> {
+                        Intent intent = new Intent(context, ChatActivity.class);
+                        context.startActivity(intent);
+                        ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                    });
+                    break;
+                case 2:
+                    buttonText.getRootView().setOnClickListener(v -> {
+                        Intent intent = new Intent(context, BranchesActivity.class);
+                        intent.putExtra("groupId", 0);
+                        context.startActivity(intent);
+                        ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                    });
+                    break;
             }
         }
     }

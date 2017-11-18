@@ -1,4 +1,4 @@
-package com.fa.grubot.util;
+package com.fa.grubot.helpers;
 
 import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.internal.BottomNavigationMenuView;

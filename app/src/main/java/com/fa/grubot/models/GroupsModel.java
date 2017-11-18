@@ -2,6 +2,7 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 
+import com.fa.grubot.App;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 
@@ -13,11 +14,7 @@ public class GroupsModel {
 
     }
     public ArrayList<Group> loadGroups(){
-        ArrayList<Group> groups = new ArrayList<>();
-        groups.add(new Group(1, "ПИ4-1", null));
-        groups.add(new Group(2, "ПИ4-2", null));
-        groups.add(new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", null));
-        return groups;
+        return App.INSTANCE.getDataHelper().getGroups();
     }
 
     public boolean isNetworkAvailable(Context context){
