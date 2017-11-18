@@ -22,7 +22,6 @@ import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
-import com.fa.grubot.util.Globals;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;

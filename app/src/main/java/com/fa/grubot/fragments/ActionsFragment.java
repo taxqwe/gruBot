@@ -25,11 +25,11 @@ import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.adapters.ActionsRecyclerAdapter;
+import com.fa.grubot.helpers.RecyclerItemTouchHelper;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.presenters.ActionsPresenter;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.helpers.RecyclerItemTouchHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;

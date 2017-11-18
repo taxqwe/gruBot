@@ -33,7 +33,6 @@ import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
 import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
-import com.fa.grubot.helpers.TemporaryDataHelper;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;

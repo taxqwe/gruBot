@@ -14,7 +14,6 @@ import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.helpers.BottomNavigationViewHelper;
-import com.fa.grubot.util.Globals;
 
 import java.util.HashMap;
 import java.util.Stack;

@@ -5,7 +5,6 @@ import android.content.Context;
 import com.fa.grubot.App;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.helpers.TemporaryDataHelper;
 
 import java.util.ArrayList;
 

@@ -1,16 +1,12 @@
 package com.fa.grubot.util;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.fa.grubot.objects.group.User;
-import com.r0adkll.slidr.model.SlidrConfig;
-import com.r0adkll.slidr.model.SlidrPosition;
 
 public class Globals {
     public static class ImageMethods {
