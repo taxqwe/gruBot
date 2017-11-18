@@ -1,7 +1,6 @@
 package com.fa.grubot.objects.group;
 
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
-import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.util.ArrayList;
 

@@ -1,8 +1,6 @@
 package com.fa.grubot;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -13,13 +11,12 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.abstractions.GroupInfoActivityBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.adapters.VoteRecyclerAdapter;
-import com.fa.grubot.objects.dashboard.Announcement;
-import com.fa.grubot.objects.dashboard.Vote;
+import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
@@ -29,7 +26,6 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 import com.r0adkll.slidr.Slidr;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -82,7 +78,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
             new MaterialDialog.Builder(this)
                     .title("Объявление")
                     .customView(R.layout.dialog_add_announcement, false)
-                    .cancelable(false)
+                    .canceledOnTouchOutside(false)
                     .positiveText(android.R.string.ok)
                     .negativeText(android.R.string.cancel)
                     .onPositive((dialog, which) -> {
@@ -90,8 +86,8 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
                         EditText text = (EditText) dialog.findViewById(R.id.announcementText);
 
                         if (!desc.toString().isEmpty() && !text.toString().isEmpty()){
-                            Announcement announcement = new Announcement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
-                            groupInfoAdapter.insertItem(announcement);
+                            ActionAnnouncement actionAnnouncement = new ActionAnnouncement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
+                            groupInfoAdapter.insertItem(actionAnnouncement);
                         }
 
                         fam.close(true);
@@ -105,7 +101,7 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
             MaterialDialog materialDialog = new MaterialDialog.Builder(this)
                     .title("Голосование")
                     .customView(R.layout.dialog_add_vote, false)
-                    .cancelable(false)
+                    .canceledOnTouchOutside(false)
                     .positiveText(android.R.string.ok)
                     .negativeText(android.R.string.cancel)
                     .autoDismiss(false)
@@ -149,8 +145,8 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
                         if (hasEmpty)
                             Toast.makeText(this, "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
                         else {
-                            Vote vote = new Vote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
-                            groupInfoAdapter.insertItem(vote);
+                            ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
+                            groupInfoAdapter.insertItem(actionVote);
                             dialog.dismiss();
                             fam.close(true);
                         }
@@ -178,6 +174,12 @@ public class GroupInfoActivity extends AppCompatActivity implements GroupInfoAct
         if (id == android.R.id.home)
             onBackPressed();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
     }
 
     @Override

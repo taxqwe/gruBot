@@ -98,6 +98,9 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
         chatToolbar.bringToFront();
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(chatToolbar);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Чат");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         ImageLoader imageLoader = new com.fa.grubot.util.ImageLoader(this);
 
@@ -179,6 +182,9 @@ public class ChatFragment extends Fragment implements ChatFragmentBase {
                 Toast.makeText(getActivity(),
                         isSmartEnabled ? "Умный фильтр включен" : "Умный фильтр выключен", Toast.LENGTH_SHORT).show();
                 presenter.notifySmartFilterStatusChanged(isSmartEnabled);
+                break;
+            case android.R.id.home:
+                getActivity().onBackPressed();
                 break;
         }
         return super.onOptionsItemSelected(item);

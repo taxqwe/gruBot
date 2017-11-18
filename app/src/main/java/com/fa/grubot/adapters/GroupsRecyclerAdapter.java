@@ -1,5 +1,6 @@
 package com.fa.grubot.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -58,6 +59,7 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
             Intent intent = new Intent(context, GroupInfoActivity.class);
             intent.putExtra("group", (Serializable) group);
             context.startActivity(intent);
+            ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
         });
     }
 
