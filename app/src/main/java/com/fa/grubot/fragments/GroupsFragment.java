@@ -135,11 +135,14 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration (
-                this.getActivity(),
-                mLayoutManager.getOrientation()
-        );
-        groupsView.addItemDecoration(dividerItemDecoration);
+        if (groupsView.getItemDecorationCount() == 0) {
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+                    this.getActivity(),
+                    mLayoutManager.getOrientation()
+            );
+
+            groupsView.addItemDecoration(dividerItemDecoration);
+        }
 
         if (App.INSTANCE.areAnimationsEnabled())
             groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
