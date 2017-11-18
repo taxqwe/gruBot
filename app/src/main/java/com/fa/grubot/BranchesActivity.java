@@ -41,8 +41,12 @@ public class BranchesActivity extends AppCompatActivity{
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
+        Bundle bundle = new Bundle();
+        bundle.putInt("groupId", groupId);
+
         BranchesFragment fragment = new BranchesFragment();
-        fragmentTransaction.replace(R.id.content, fragment).commit();
+        fragment.setArguments(bundle);
+        fragmentTransaction.replace(R.id.content_branches, fragment).commit();
     }
 
     @Override

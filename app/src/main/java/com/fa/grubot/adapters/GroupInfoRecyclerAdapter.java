@@ -76,6 +76,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 case 2:
                     buttonText.getRootView().setOnClickListener(v -> {
                         Intent intent = new Intent(context, BranchesActivity.class);
+                        intent.putExtra("groupId", 0);
                         context.startActivity(intent);
                         ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
                     });
