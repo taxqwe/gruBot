@@ -20,7 +20,6 @@ import com.fa.grubot.abstractions.ChatFragmentBase;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.chat.MessagesListParcelable;
 import com.fa.grubot.presenters.ChatPresenter;
-import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.PreferencesStorage;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;

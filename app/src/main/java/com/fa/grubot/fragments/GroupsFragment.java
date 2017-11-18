@@ -5,7 +5,6 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -77,7 +76,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         Icepick.saveInstanceState(this, outState);
     }
 
-    public void setupViews() {
+    public void showRequiredViews() {
         new Handler().postDelayed(() -> {
             progressBar.setVisibility(View.GONE);
 
@@ -94,6 +93,14 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
             }
         }, App.INSTANCE.getDelayTime());
     }
+
+    public void showLoadingView() {
+        content.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
@@ -116,9 +123,10 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
-    public void setupSwipeRefreshLayout(int state) {
+    public void setupSwipeRefreshLayout() {
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateView(state, getActivity());
+            presenter.onRefresh(getActivity());
             onItemsLoadComplete();
         });
     }
@@ -128,11 +136,14 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration (
-                this.getActivity(),
-                mLayoutManager.getOrientation()
-        );
-        groupsView.addItemDecoration(dividerItemDecoration);
+        if (groupsView.getItemDecorationCount() == 0) {
+            DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+                    this.getActivity(),
+                    mLayoutManager.getOrientation()
+            );
+
+            groupsView.addItemDecoration(dividerItemDecoration);
+        }
 
         if (App.INSTANCE.areAnimationsEnabled())
             groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
@@ -143,15 +154,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     public void setupRetryButton() {
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
-    }
-
-    public void reloadFragment() {
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
     }
 
     private void onItemsLoadComplete() {

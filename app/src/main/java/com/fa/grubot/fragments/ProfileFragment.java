@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +42,7 @@ import io.reactivex.annotations.Nullable;
 public class ProfileFragment extends Fragment implements ProfileFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
+    @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
     @Nullable @BindView(R.id.userImage) transient ImageView userImage;
     @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
@@ -84,16 +86,31 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         Icepick.saveInstanceState(this, outState);
     }
 
-    public void setupViews() {
+    public void showRequiredViews() {
         new Handler().postDelayed(() -> {
             progressBar.setVisibility(View.GONE);
 
-            if (state == Globals.FragmentState.STATE_CONTENT)
-                content.setVisibility(View.VISIBLE);
-            else
-                noInternet.setVisibility(View.VISIBLE);
+            switch (state) {
+                case Globals.FragmentState.STATE_CONTENT:
+                    appBarLayout.setExpanded(true);
+                    collapsingToolbar.setVisibility(View.VISIBLE);
+                    content.setVisibility(View.VISIBLE);
+                    break;
+                case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                    appBarLayout.setExpanded(false);
+                    noInternet.setVisibility(View.VISIBLE);
+                    break;
+            }
         }, App.INSTANCE.getDelayTime());
     }
+
+    public void showLoadingView() {
+        content.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        appBarLayout.setExpanded(false);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
 
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
@@ -150,15 +167,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     }
 
     public void setupRetryButton(){
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
-    }
-
-    public void reloadFragment(){
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), user));
     }
 
     @Override

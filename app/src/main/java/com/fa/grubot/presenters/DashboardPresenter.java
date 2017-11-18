@@ -5,11 +5,21 @@ import android.content.Context;
 
 import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.models.DashboardModel;
+import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.util.Globals;
+
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class DashboardPresenter {
     private DashboardFragmentBase fragment;
     private DashboardModel model;
+
+    private ArrayList<DashboardItem> items;
 
     public DashboardPresenter(DashboardFragmentBase fragment){
         this.fragment = fragment;
@@ -17,12 +27,12 @@ public class DashboardPresenter {
     }
 
     public void notifyViewCreated(int state) {
-        fragment.setupViews();
+        fragment.showRequiredViews();
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
-                fragment.setupRecyclerView(model.getItems());
+                fragment.setupRecyclerView(items);
                 break;
             case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
@@ -30,20 +40,40 @@ public class DashboardPresenter {
         }
     }
 
-    public void notifyFragmentStarted(Context context){
-        boolean isNetworkAvailable = model.isNetworkAvailable(context);
-        /*if (isNetworkAvailable)
-            entries = model.loadDashboard();
-
-
-        */
-        fragment.setupLayouts(isNetworkAvailable);
+    public void notifyFragmentStarted(Context context) {
+        if (model.isNetworkAvailable(context))
+            getData(true);
+        else
+            fragment.setupLayouts(false);
     }
 
-    public void onRetryBtnClick(){
-        fragment.reloadFragment();
+    private void getData(final boolean isFirst) {
+        Observable.defer(() -> Observable.just(model.getItems()))
+                .filter(result -> result != null)
+                .subscribeOn(Schedulers.io())
+                .timeout(15, TimeUnit.SECONDS)
+                .doOnSubscribe(d -> {
+                    if (!isFirst)
+                        fragment.showLoadingView();
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(result -> {
+                    items = result;
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
     }
 
+    public void onRetryBtnClick(Context context) {
+        if (model.isNetworkAvailable(context)) {
+            getData(false);
+        }
+    }
     public void destroy(){
         fragment = null;
         model = null;

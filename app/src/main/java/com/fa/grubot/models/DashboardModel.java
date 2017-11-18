@@ -2,6 +2,7 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 
+import com.fa.grubot.App;
 import com.fa.grubot.objects.dashboard.DashboardAnnouncement;
 import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.objects.dashboard.DashboardVote;
@@ -17,9 +18,17 @@ public class DashboardModel {
 
     public ArrayList<DashboardItem> getItems() {
         ArrayList<DashboardItem> items = new ArrayList<>();
-        items.add(new DashboardAnnouncement(5, 14, 19));
-        items.add(new DashboardVote(5, 7, 12));
+        items.add(new DashboardAnnouncement(getNewAnnouncementsCount(), 0, getNewAnnouncementsCount()));
+        items.add(new DashboardVote(getNewVotesCount(), 0, getNewVotesCount()));
         return items;
+    }
+
+    private int getNewAnnouncementsCount() {
+        return App.INSTANCE.getDataHelper().getAnnouncemtsCount();
+    }
+
+    private int getNewVotesCount() {
+        return App.INSTANCE.getDataHelper().getVotesCount();
     }
 
     public boolean isNetworkAvailable(Context context) {

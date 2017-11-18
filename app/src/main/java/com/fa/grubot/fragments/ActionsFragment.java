@@ -25,11 +25,11 @@ import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.adapters.ActionsRecyclerAdapter;
+import com.fa.grubot.helpers.RecyclerItemTouchHelper;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.presenters.ActionsPresenter;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.helpers.RecyclerItemTouchHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         Icepick.saveInstanceState(this, outState);
     }
 
-    public void setupViews() {
+    public void showRequiredViews() {
         new Handler().postDelayed(() -> {
             progressBar.setVisibility(View.GONE);
 
@@ -104,6 +104,13 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
                     break;
             }
         }, App.INSTANCE.getDelayTime());
+    }
+
+    public void showLoadingView() {
+        content.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
@@ -132,9 +139,10 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-    public void setupSwipeRefreshLayout(int state){
+    public void setupSwipeRefreshLayout() {
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateView(state, getActivity(), type);
+            presenter.onRefresh(getActivity(), type);
             onItemsLoadComplete();
         });
     }
@@ -164,7 +172,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     public void setupRetryButton(){
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), type));
     }
 
     public void reloadFragment(){

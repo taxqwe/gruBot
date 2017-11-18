@@ -3,7 +3,6 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -38,7 +37,6 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
     @Nullable @BindView(R.id.content) transient View content;
     @Nullable @BindView(R.id.noInternet) transient View noInternet;
-    @Nullable @BindView(R.id.noData) transient View noData;
 
     private transient Unbinder unbinder;
     private transient DashboardPresenter presenter;
@@ -70,7 +68,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         Icepick.saveInstanceState(this, outState);
     }
 
-    public void setupViews() {
+    public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
 
         switch (state) {
@@ -81,6 +79,11 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
                 noInternet.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+    public void showLoadingView() {
+        content.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     public void setupLayouts(boolean isNetworkAvailable) {
@@ -116,15 +119,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     }
 
     public void setupRetryButton() {
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
-    }
-
-    public void reloadFragment() {
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
     }
 
     @Override

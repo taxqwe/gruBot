@@ -1,5 +1,6 @@
 package com.fa.grubot;
 
+
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import com.r0adkll.slidr.Slidr;
 /**
  * Created by ni.petrov on 18/11/2017.
  */
+
 
 public class BranchesActivity extends AppCompatActivity{
     private int groupId;

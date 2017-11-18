@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fa.grubot.fragments.ChatFragment;
-import com.fa.grubot.util.Globals;
 import com.r0adkll.slidr.Slidr;
 
 public class ChatActivity extends AppCompatActivity {

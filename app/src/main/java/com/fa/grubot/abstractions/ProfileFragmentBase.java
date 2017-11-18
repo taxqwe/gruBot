@@ -4,11 +4,7 @@ import com.fa.grubot.objects.misc.ProfileItem;
 
 import java.util.ArrayList;
 
-public interface ProfileFragmentBase {
+public interface ProfileFragmentBase extends FragmentBase {
     void setupRecyclerView(ArrayList<ProfileItem> groups);
-    void setupToolbar();
     void setupLayouts(boolean isNetworkAvailable);
-    void setupRetryButton();
-    void setupViews();
-    void reloadFragment();
 }

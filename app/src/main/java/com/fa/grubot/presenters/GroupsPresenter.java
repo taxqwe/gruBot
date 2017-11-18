@@ -10,6 +10,11 @@ import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class GroupsPresenter {
     private GroupsFragmentBase fragment;
@@ -24,51 +29,68 @@ public class GroupsPresenter {
     }
 
     public void notifyViewCreated(int state){
-        fragment.setupViews();
+        fragment.showRequiredViews();
+
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(groups);
-                fragment.setupSwipeRefreshLayout(state);
+                fragment.setupSwipeRefreshLayout();
                 break;
             case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
             case Globals.FragmentState.STATE_NO_DATA:
-                fragment.setupSwipeRefreshLayout(state);
+                fragment.setupSwipeRefreshLayout();
                 break;
         }
     }
 
-    public void updateView(int layout, Context context){
-        groups = model.loadGroups();
-        if (model.isNetworkAvailable(context)) {
-            if (layout == R.layout.fragment_actions && groups.size() > 0)
-                updateDashboardRecyclerView(groups);
-            else
-                fragment.reloadFragment();
-        } else
-            fragment.reloadFragment();
-    }
-
-    private void updateDashboardRecyclerView(ArrayList<Group> entries){
-        fragment.setupRecyclerView(groups);
-    }
-
     public void notifyFragmentStarted(Context context){
-        boolean isNetworkAvailable = model.isNetworkAvailable(context);
-        boolean isHasData = false;
-        if (isNetworkAvailable)
-            groups = model.loadGroups();
-
-        if (groups.size() > 0)
-            isHasData = true;
-
-        fragment.setupLayouts(isNetworkAvailable, isHasData);
+        if (model.isNetworkAvailable(context))
+            getData(true);
+        else
+            fragment.setupLayouts(false, false);
     }
 
-    public void onRetryBtnClick(){
-        fragment.reloadFragment();
+    private void getData(final boolean isFirst) {
+        Observable.defer(() -> Observable.just(model.loadGroups()))
+                .filter(result -> result != null)
+                .subscribeOn(Schedulers.io())
+                .timeout(15, TimeUnit.SECONDS)
+                .doOnSubscribe(d -> {
+                    if (!isFirst)
+                        fragment.showLoadingView();
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(result -> {
+                    groups = result;
+                    if (groups.isEmpty())
+                        fragment.setupLayouts(true, false);
+                    else
+                        fragment.setupLayouts(true, true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
+    }
+
+    public void onRefresh(Context context) {
+        if (model.isNetworkAvailable(context)) {
+            getData(false);
+        } else {
+            fragment.setupLayouts(false, false);
+            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+        }
+    }
+
+    public void onRetryBtnClick(Context context) {
+        if (model.isNetworkAvailable(context)) {
+            getData(false);
+        }
     }
 
     public void destroy(){
