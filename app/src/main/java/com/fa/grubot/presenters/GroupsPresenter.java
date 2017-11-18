@@ -10,6 +10,11 @@ import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class GroupsPresenter {
     private GroupsFragmentBase fragment;
@@ -24,7 +29,7 @@ public class GroupsPresenter {
     }
 
     public void notifyViewCreated(int state){
-        fragment.setupViews();
+        fragment.showRequiredViews();
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
@@ -56,19 +61,41 @@ public class GroupsPresenter {
     }
 
     public void notifyFragmentStarted(Context context){
-        boolean isNetworkAvailable = model.isNetworkAvailable(context);
-        boolean isHasData = false;
-        if (isNetworkAvailable)
-            groups = model.loadGroups();
-
-        if (groups.size() > 0)
-            isHasData = true;
-
-        fragment.setupLayouts(isNetworkAvailable, isHasData);
+        if (model.isNetworkAvailable(context))
+            getData(true);
+        else
+            fragment.setupLayouts(false, false);
     }
 
-    public void onRetryBtnClick(){
-        fragment.reloadFragment();
+    private void getData(final boolean isFirst) {
+        Observable.defer(() -> Observable.just(model.loadGroups()))
+                .filter(result -> result != null)
+                .subscribeOn(Schedulers.io())
+                .timeout(15, TimeUnit.SECONDS)
+                .doOnSubscribe(d -> {
+                    if (!isFirst)
+                        fragment.showLoadingView();
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(result -> {
+                    groups = result;
+                    if (groups.isEmpty())
+                        fragment.setupLayouts(true, false);
+                    else
+                        fragment.setupLayouts(true, true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
+    }
+
+    public void onRetryBtnClick(Context context) {
+        if (model.isNetworkAvailable(context)) {
+            getData(false);
+        }
     }
 
     public void destroy(){

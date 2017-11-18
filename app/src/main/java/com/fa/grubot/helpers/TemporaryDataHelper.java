@@ -64,6 +64,14 @@ public class TemporaryDataHelper {
         }
     }
 
+    public int getAnnouncemtsCount() {
+        return announcementsList.size();
+    }
+
+    public int getVotesCount() {
+        return votesList.size();
+    }
+
     public ArrayList<User> getUsersByGroup(Group group) {
         return group.getUsers();
     }

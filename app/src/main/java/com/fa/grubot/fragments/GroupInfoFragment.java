@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,7 +50,9 @@ import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
 public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
+
     @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
+    @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
     @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
     @Nullable @BindView(R.id.groupImage) transient ImageView groupImage;
 
@@ -62,7 +65,6 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Nullable @BindView(R.id.content) transient View content;
     @Nullable @BindView(R.id.content_fam) transient View content_fam;
     @Nullable @BindView(R.id.noInternet) transient View noInternet;
-    @Nullable @BindView(R.id.noData) transient View noData;
 
     private transient GroupInfoRecyclerAdapter groupInfoAdapter;
     private transient GroupInfoPresenter presenter;
@@ -100,21 +102,31 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         Icepick.saveInstanceState(this, outState);
     }
 
-    public void setupViews() {
+    public void showRequiredViews() {
         new Handler().postDelayed(() -> {
             progressBar.setVisibility(View.GONE);
 
             switch (state) {
                 case Globals.FragmentState.STATE_CONTENT:
+                    appBarLayout.setExpanded(true);
                     content.setVisibility(View.VISIBLE);
                     content_fam.setVisibility(View.VISIBLE);
                     break;
                 case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                    appBarLayout.setExpanded(false);
                     noInternet.setVisibility(View.VISIBLE);
                     break;
             }
         }, App.INSTANCE.getDelayTime());
     }
+
+    public void showLoadingView() {
+        content.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        appBarLayout.setExpanded(false);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
 
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
@@ -255,7 +267,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     }
 
     public void setupRetryButton(){
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), group));
     }
 
     public void reloadFragment(){

@@ -76,7 +76,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         Icepick.saveInstanceState(this, outState);
     }
 
-    public void setupViews() {
+    public void showRequiredViews() {
         new Handler().postDelayed(() -> {
             progressBar.setVisibility(View.GONE);
 
@@ -93,6 +93,14 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
             }
         }, App.INSTANCE.getDelayTime());
     }
+
+    public void showLoadingView() {
+        content.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
@@ -142,7 +150,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     public void setupRetryButton() {
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
     }
 
     public void reloadFragment() {
