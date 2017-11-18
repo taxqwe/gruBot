@@ -1,6 +1,7 @@
 package com.fa.grubot.helpers;
 
 import com.fa.grubot.fragments.ActionsFragment;
+import com.fa.grubot.objects.chat.BranchOfDiscussions;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
@@ -108,5 +109,15 @@ public class TemporaryDataHelper {
         groupsList.add(new Group(1, "ПИ4-1", new ArrayList<>(Arrays.asList(usersList.get(0), usersList.get(2), usersList.get(1))), "https://2static3.fjcdn.com/comments/Fun+fact+the+flat+topped+great+helm+is+a+piece+_3cb2af934364bbe51707d55061d6aacb.jpg"));
         groupsList.add(new Group(2, "ПИ4-2", new ArrayList<>(Arrays.asList(usersList.get(6), usersList.get(3))),null));
         groupsList.add(new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", new ArrayList<>(Arrays.asList(usersList.get(5), usersList.get(4), usersList.get(3))),null));
+    }
+
+    public ArrayList<BranchOfDiscussions> getBranches() {
+        ArrayList<BranchOfDiscussions> branches = new ArrayList<>();
+
+        branches.add(new BranchOfDiscussions(1, 2, "Заблевали пол", new Date(), new Date(), 15));
+        branches.add(new BranchOfDiscussions(2, 5, "Драка детей", new Date(), new Date(), 20));
+        branches.add(new BranchOfDiscussions(3, 34, "Украли сменку", new Date(), new Date(), 25));
+
+        return branches;
     }
 }
