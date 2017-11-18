@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.group.User;
@@ -70,26 +70,21 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
 
         switch (position) {
             case 0:
-                Glide.with(context).load(R.drawable.ic_description_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
+                Glide.with(context).load(R.drawable.ic_person_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
                 holder.itemText.setText(item.getText());
                 holder.itemValue.setText(item.getValue());
                 break;
             case 1:
                 Glide.with(context).load(R.drawable.ic_person_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
-                holder.itemText.setText(item.getText());
-                holder.itemValue.setText(item.getValue());
-                break;
-            case 2:
-                Glide.with(context).load(R.drawable.ic_person_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
                 holder.itemImage.setVisibility(View.INVISIBLE);
                 holder.itemText.setText(item.getText());
                 holder.itemValue.setText("@" + item.getValue());
                 break;
-            case 3:
+            case 2:
                 Glide.with(context).load(R.drawable.ic_phone_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
                 holder.itemText.setText(item.getText());
                 holder.itemValue.setText(item.getValue());
-                if (!user.getId().equals(Globals.getMe().getId())) {
+                if (!user.getId().equals(App.INSTANCE.getCurrentUser().getId())) {
                     holder.itemImage.getRootView().setOnClickListener(view -> {
                         Dexter.withActivity((MainActivity) context)
                                 .withPermission(Manifest.permission.CALL_PHONE)
@@ -111,6 +106,11 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
                                 }).check();
                     });
                 }
+                break;
+            case 3:
+                Glide.with(context).load(R.drawable.ic_description_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
+                holder.itemText.setText(item.getText());
+                holder.itemValue.setText(item.getValue());
                 break;
         }
 

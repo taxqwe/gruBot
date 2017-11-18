@@ -10,5 +10,6 @@ public interface GroupInfoFragmentBase {
     void setupRecyclerView(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> buttons);
     void setupLayouts(boolean isNetworkAvailable);
     void setupRetryButton();
+    void setupViews();
     void reloadFragment();
 }

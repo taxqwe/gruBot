@@ -15,7 +15,9 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        Slidr.attach(this, Globals.Config.getSlidrConfig());
+
+        if (App.INSTANCE.isSlidrEnabled())
+            Slidr.attach(this, App.INSTANCE.getSlidrConfig());
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

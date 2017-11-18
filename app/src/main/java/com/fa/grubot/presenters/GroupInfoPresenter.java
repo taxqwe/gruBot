@@ -2,13 +2,13 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
-import android.view.View;
+import android.os.Handler;
 
-import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.models.GroupInfoModel;
 import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
 
@@ -22,14 +22,16 @@ public class GroupInfoPresenter {
         this.model = new GroupInfoModel();
     }
 
-    public void notifyViewCreated(int layout, View v){
-        switch (layout) {
-            case R.layout.fragment_group_info:
+    public void notifyViewCreated(int state){
+        fragment.setupViews();
+
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupFab();
                 fragment.setupRecyclerView(actions);
                 break;
-            case R.layout.fragment_no_internet_connection:
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
         }

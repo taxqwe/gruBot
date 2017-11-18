@@ -2,12 +2,12 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
-import android.view.View;
 
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.models.GroupsModel;
 import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
 
@@ -23,18 +23,19 @@ public class GroupsPresenter {
         this.model = new GroupsModel();
     }
 
-    public void notifyViewCreated(int layout, View v){
-        switch (layout) {
-            case R.layout.fragment_groups:
+    public void notifyViewCreated(int state){
+        fragment.setupViews();
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(groups);
-                fragment.setupSwipeRefreshLayout(layout);
+                fragment.setupSwipeRefreshLayout(state);
                 break;
-            case R.layout.fragment_no_internet_connection:
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
-            case R.layout.fragment_no_data:
-                fragment.setupSwipeRefreshLayout(layout);
+            case Globals.FragmentState.STATE_NO_DATA:
+                fragment.setupSwipeRefreshLayout(state);
                 break;
         }
     }
