@@ -4,6 +4,7 @@ package com.fa.grubot.objects.chat;
 import com.stfalcon.chatkit.commons.models.IMessage;
 import com.stfalcon.chatkit.commons.models.IUser;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -20,7 +21,11 @@ public class ChatMessage implements IMessage {
 
     private Date createdAt;
 
+    private ArrayList<Integer> belongsToBranches;
+
     public ChatMessage(String id, String text, IUser user, Date createdAd) {
+        belongsToBranches = new ArrayList<>();
+
         this.id = id;
         this.text = text;
         this.user = user;
@@ -45,5 +50,17 @@ public class ChatMessage implements IMessage {
     @Override
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+    public void snapToBranch(int branchId){
+        belongsToBranches.add(branchId);
+    }
+
+    public ArrayList<Integer> getBranchesOfMessage(){
+        return belongsToBranches;
+    }
+
+    public boolean isHasNoBrancehs(){
+        return belongsToBranches.isEmpty();
     }
 }

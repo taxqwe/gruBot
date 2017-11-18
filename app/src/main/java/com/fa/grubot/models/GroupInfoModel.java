@@ -24,13 +24,15 @@ public class GroupInfoModel {
 
         groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(1, "Чат", new ArrayList<>())));
 
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Ветки осбуждений", new ArrayList<>())));
+
         //Объявления
         ArrayList<Action> entries = App.INSTANCE.getDataHelper().getActionsByGroupAndType(ActionsFragment.TYPE_ANNOUNCEMENTS, group);
         ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
         for (Action entry : entries) {
             items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Объявления", items)));
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", items)));
         groupInfoRecyclerItems.addAll(items);
 
         //Голосования
@@ -39,7 +41,7 @@ public class GroupInfoModel {
         for (Action entry : entries) {
             items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(entry));
         }
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Голосования", items)));
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", items)));
         groupInfoRecyclerItems.addAll(items);
 
         //Пользователи
@@ -48,7 +50,7 @@ public class GroupInfoModel {
         for (User user : users) {
             items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
         }
-        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Список участников", items)));
+        groupInfoRecyclerItems.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Список участников", items)));
         groupInfoRecyclerItems.addAll(items);
 
         return groupInfoRecyclerItems;
