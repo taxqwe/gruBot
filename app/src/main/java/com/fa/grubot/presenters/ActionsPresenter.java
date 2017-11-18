@@ -76,6 +76,15 @@ public class ActionsPresenter {
                 .subscribe();
     }
 
+    public void onRefresh(Context context, int type) {
+        if (model.isNetworkAvailable(context)) {
+            getData(false, type);
+        } else {
+            fragment.setupLayouts(false, false);
+            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+        }
+    }
+
     public void onRetryBtnClick(Context context, int type) {
         if (model.isNetworkAvailable(context)) {
             getData(false, type);

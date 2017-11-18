@@ -124,8 +124,9 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     public void setupSwipeRefreshLayout() {
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.notifyFragmentStarted(getActivity());
+            presenter.onRefresh(getActivity());
             onItemsLoadComplete();
         });
     }

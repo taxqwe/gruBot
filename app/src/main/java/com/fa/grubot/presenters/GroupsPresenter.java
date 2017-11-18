@@ -78,6 +78,15 @@ public class GroupsPresenter {
                 .subscribe();
     }
 
+    public void onRefresh(Context context) {
+        if (model.isNetworkAvailable(context)) {
+            getData(false);
+        } else {
+            fragment.setupLayouts(false, false);
+            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+        }
+    }
+
     public void onRetryBtnClick(Context context) {
         if (model.isNetworkAvailable(context)) {
             getData(false);

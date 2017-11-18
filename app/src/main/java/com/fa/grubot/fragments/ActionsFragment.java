@@ -140,8 +140,9 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     public void setupSwipeRefreshLayout() {
+        swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.notifyFragmentStarted(getActivity(), type);
+            presenter.onRefresh(getActivity(), type);
             onItemsLoadComplete();
         });
     }
