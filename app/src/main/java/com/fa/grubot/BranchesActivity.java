@@ -3,14 +3,13 @@ package com.fa.grubot;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fa.grubot.fragments.BranchesFragment;
-import com.fa.grubot.fragments.ChatFragment;
+import com.fa.grubot.objects.group.Group;
 import com.r0adkll.slidr.Slidr;
 
 /**
@@ -18,8 +17,8 @@ import com.r0adkll.slidr.Slidr;
  */
 
 
-public class BranchesActivity extends AppCompatActivity{
-    private int groupId;
+public class BranchesActivity extends AppCompatActivity {
+    private Group group;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
@@ -29,20 +28,17 @@ public class BranchesActivity extends AppCompatActivity{
         init();
     }
 
-
     private void init(){
         if (App.INSTANCE.isSlidrEnabled())
             Slidr.attach(this, App.INSTANCE.getSlidrConfig());
 
-
-        Intent intent = getIntent();
-        groupId = intent.getIntExtra("groupId", 0);
+        group = (Group) getIntent().getExtras().getSerializable("group");
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         Bundle bundle = new Bundle();
-        bundle.putInt("groupId", groupId);
+        bundle.putSerializable("group", group);
 
         BranchesFragment fragment = new BranchesFragment();
         fragment.setArguments(bundle);
