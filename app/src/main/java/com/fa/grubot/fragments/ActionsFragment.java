@@ -139,9 +139,9 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-    public void setupSwipeRefreshLayout(int state){
+    public void setupSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateView(state, getActivity(), type);
+            presenter.notifyFragmentStarted(getActivity(), type);
             onItemsLoadComplete();
         });
     }

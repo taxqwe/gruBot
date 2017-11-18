@@ -122,14 +122,6 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
     }
 
-    public void reloadFragment() {
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();

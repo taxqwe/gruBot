@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface GroupsFragmentBase extends FragmentBase {
     void setupRecyclerView(ArrayList<Group> groups);
-    void setupSwipeRefreshLayout(int state);
+    void setupSwipeRefreshLayout();
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
 }

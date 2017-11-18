@@ -33,30 +33,15 @@ public class ActionsPresenter {
             case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(actions);
-                fragment.setupSwipeRefreshLayout(state);
+                fragment.setupSwipeRefreshLayout();
                 break;
             case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
             case Globals.FragmentState.STATE_NO_DATA:
-                fragment.setupSwipeRefreshLayout(state);
+                fragment.setupSwipeRefreshLayout();
                 break;
         }
-    }
-
-    public void updateView(int layout, Context context, int type){
-        actions = model.loadActions(type);
-        if (model.isNetworkAvailable(context)) {
-            if (layout == R.layout.fragment_actions && actions.size() > 0)
-                updateDashboardRecyclerView(actions);
-            else
-                fragment.reloadFragment();
-        } else
-            fragment.reloadFragment();
-    }
-
-    private void updateDashboardRecyclerView(ArrayList<Action> entries){
-        fragment.setupRecyclerView(entries);
     }
 
     public void notifyFragmentStarted(Context context, int type) {

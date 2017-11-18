@@ -123,9 +123,9 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
-    public void setupSwipeRefreshLayout(int state) {
+    public void setupSwipeRefreshLayout() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.updateView(state, getActivity());
+            presenter.notifyFragmentStarted(getActivity());
             onItemsLoadComplete();
         });
     }
@@ -151,14 +151,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
     public void setupRetryButton() {
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
-    }
-
-    public void reloadFragment() {
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
     }
 
     private void onItemsLoadComplete() {

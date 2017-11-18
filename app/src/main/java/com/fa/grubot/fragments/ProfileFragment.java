@@ -170,14 +170,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), user));
     }
 
-    public void reloadFragment(){
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

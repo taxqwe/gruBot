@@ -4,6 +4,5 @@ public interface FragmentBase {
     void setupToolbar();
     void setupRetryButton();
     void showRequiredViews();
-    void reloadFragment();
     void showLoadingView();
 }

@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface ActionsFragmentBase extends FragmentBase {
     void setupRecyclerView(ArrayList<Action> entries);
-    void setupSwipeRefreshLayout(int state);
+    void setupSwipeRefreshLayout();
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
 }

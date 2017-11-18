@@ -30,34 +30,20 @@ public class GroupsPresenter {
 
     public void notifyViewCreated(int state){
         fragment.showRequiredViews();
+
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(groups);
-                fragment.setupSwipeRefreshLayout(state);
+                fragment.setupSwipeRefreshLayout();
                 break;
             case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
             case Globals.FragmentState.STATE_NO_DATA:
-                fragment.setupSwipeRefreshLayout(state);
+                fragment.setupSwipeRefreshLayout();
                 break;
         }
-    }
-
-    public void updateView(int layout, Context context){
-        groups = model.loadGroups();
-        if (model.isNetworkAvailable(context)) {
-            if (layout == R.layout.fragment_actions && groups.size() > 0)
-                updateDashboardRecyclerView(groups);
-            else
-                fragment.reloadFragment();
-        } else
-            fragment.reloadFragment();
-    }
-
-    private void updateDashboardRecyclerView(ArrayList<Group> entries){
-        fragment.setupRecyclerView(groups);
     }
 
     public void notifyFragmentStarted(Context context){

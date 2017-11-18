@@ -270,14 +270,6 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), group));
     }
 
-    public void reloadFragment(){
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
