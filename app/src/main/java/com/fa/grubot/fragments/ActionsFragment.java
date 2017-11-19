@@ -81,6 +81,16 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
+            swipeRefreshLayout.destroyDrawingCache();
+            swipeRefreshLayout.clearAnimation();
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
@@ -170,8 +180,8 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             final Action deletedItem = actions.get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
+            //Completable.fromAction(() -> App.INSTANCE.getDataHelper().addActionToArchive(type, deletedItem));
             actionsAdapter.removeItem(viewHolder.getAdapterPosition());
-            //App.INSTANCE.getDataHelper().addActionToArchive(type, deletedItem);
 
             Snackbar snackbar;
             if (deletedItem instanceof ActionAnnouncement) {
@@ -181,11 +191,9 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             }
 
             snackbar.setAction(android.R.string.cancel, view -> {
-                if (actions.indexOf(deletedItem) == -1) {
-                    actionsAdapter.restoreItem(deletedItem, deletedIndex);
-                    actionsView.smoothScrollToPosition(deletedIndex);
-                    //App.INSTANCE.getDataHelper().restoreActionFromArchive(type, deletedItem, deletedIndex);
-                }
+                //App.INSTANCE.getDataHelper().restoreActionFromArchive(type, deletedItem, deletedIndex);
+                actionsAdapter.restoreItem(deletedItem, deletedIndex);
+                actionsView.smoothScrollToPosition(deletedIndex);
             });
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();

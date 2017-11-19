@@ -82,8 +82,9 @@ public class ActionsTabFragment extends Fragment implements Serializable {
     }
 
     private void setupViewPager() {
-        ActionsPagerAdapter actionsPagerAdapter = new ActionsPagerAdapter(getFragmentManager(), 2, type);
+        ActionsPagerAdapter actionsPagerAdapter = new ActionsPagerAdapter(getChildFragmentManager(), 2, type);
 
+        viewPager.setOffscreenPageLimit(0);
         viewPager.setAdapter(actionsPagerAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
