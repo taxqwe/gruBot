@@ -10,16 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-
 import android.widget.TextView;
-
 
 import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.BranchesFragmentBase;
 import com.fa.grubot.adapters.BranchesAdapter;
 import com.fa.grubot.objects.chat.BranchOfDiscussions;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.BranchesPresenter;
 
 import java.util.ArrayList;
@@ -38,7 +35,7 @@ public class BranchesFragment extends Fragment implements BranchesFragmentBase {
 
     private BranchesPresenter presenter;
 
-    private Group group;
+    private int groupId;
 
     @BindView(R.id.branches_recycler)
     RecyclerView recyclerView;
@@ -57,7 +54,7 @@ public class BranchesFragment extends Fragment implements BranchesFragmentBase {
 
         View v = inflater.inflate(R.layout.fragment_branches, container, false);
 
-        group = (Group) this.getArguments().getSerializable("group");
+        groupId = this.getArguments().getInt("groupId");
 
         unbinder = ButterKnife.bind(this, v);
 
