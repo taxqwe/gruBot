@@ -3,7 +3,6 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -35,7 +34,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.Icepick;
-import io.reactivex.Completable;
 import io.reactivex.annotations.Nullable;
 
 public class ActionsFragment extends Fragment implements ActionsFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, Serializable {
@@ -59,7 +57,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     private ArrayList<Action> actions;
     private transient ActionsRecyclerAdapter actionsAdapter;
 
-    private int state = Globals.FragmentState.STATE_NO_DATA;
+    private int state;
     private int type;
 
     @Override
@@ -75,9 +73,8 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
 
         type = this.getArguments().getInt("type");
         setHasOptionsMenu(true);
-        presenter.notifyFragmentStarted(getActivity(), type);
-
         unbinder = ButterKnife.bind(this, v);
+        presenter.notifyFragmentStarted(getActivity(), type);
 
         return v;
     }
@@ -103,21 +100,19 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     public void showRequiredViews() {
-        new Handler().postDelayed(() -> {
-            progressBar.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
 
-            switch (state) {
-                case Globals.FragmentState.STATE_CONTENT:
-                    content.setVisibility(View.VISIBLE);
-                    break;
-                case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
-                    noInternet.setVisibility(View.VISIBLE);
-                    break;
-                case Globals.FragmentState.STATE_NO_DATA:
-                    noData.setVisibility(View.VISIBLE);
-                    break;
-            }
-        }, App.INSTANCE.getDelayTime());
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_DATA:
+                noData.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     public void showLoadingView() {
@@ -154,7 +149,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         }
     }
 
-    public void setupRecyclerView(ArrayList<Action> actions){
+    public void setupRecyclerView(ArrayList<Action> newActions) {
         int spanCount = 1;
 
         if (getActivity().getResources().getConfiguration().orientation == 2)
@@ -174,13 +169,14 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         if (App.INSTANCE.areAnimationsEnabled())
             actionsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
-        this.actions = actions;
-        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), actions);
+        this.actions = newActions;
+        Log.e("mytag", "View: " + String.valueOf(newActions.size()));
+        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), newActions);
         actionsView.setAdapter(actionsAdapter);
         actionsAdapter.notifyDataSetChanged();
     }
 
-    public void setupRetryButton(){
+    public void setupRetryButton() {
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), type));
     }
 
@@ -197,7 +193,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             final Action deletedItem = actions.get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
-            //App.INSTANCE.getDataHelper().addActionToArchive(type, deletedItem);
+            App.INSTANCE.getDataHelper().addActionToArchive(type, deletedItem);
             actionsAdapter.removeItem(viewHolder.getAdapterPosition());
 
             Snackbar snackbar;
@@ -208,7 +204,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             }
 
             snackbar.setAction(android.R.string.cancel, view -> {
-                //App.INSTANCE.getDataHelper().restoreActionFromArchive(type, deletedItem, deletedIndex);
+                App.INSTANCE.getDataHelper().restoreActionFromArchive(type, deletedItem, deletedIndex);
                 actionsAdapter.restoreItem(deletedItem, deletedIndex);
                 actionsView.smoothScrollToPosition(deletedIndex);
             });

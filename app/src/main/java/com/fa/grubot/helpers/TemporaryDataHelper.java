@@ -1,5 +1,7 @@
 package com.fa.grubot.helpers;
 
+import android.util.Log;
+
 import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.objects.chat.BranchOfDiscussions;
 import com.fa.grubot.objects.dashboard.Action;
@@ -36,6 +38,7 @@ public class TemporaryDataHelper {
     }
 
     public ArrayList<Action> getActionsByType(int type) {
+        Log.e("mytag", "Helper: " + String.valueOf(announcementsList.size()));
         switch (type) {
             case ActionsFragment.TYPE_ANNOUNCEMENTS:
                 return announcementsList;

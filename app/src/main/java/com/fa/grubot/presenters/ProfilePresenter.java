@@ -43,8 +43,10 @@ public class ProfilePresenter {
     public void notifyFragmentStarted(Context context, User user) {
         if (model.isNetworkAvailable(context))
             getData(true, user);
-        else
-            fragment.setupLayouts(model.isNetworkAvailable(context));
+        else {
+            fragment.setupLayouts(false);
+            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+        }
     }
 
     private void getData(final boolean isFirst, final User user) {
@@ -58,7 +60,8 @@ public class ProfilePresenter {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(result -> {
-                    items = result;
+                    items.clear();
+                    items.addAll(result);
                     fragment.setupLayouts(true);
                     notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
                 })

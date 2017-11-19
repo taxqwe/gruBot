@@ -19,7 +19,7 @@ public class DashboardPresenter {
     private DashboardFragmentBase fragment;
     private DashboardModel model;
 
-    private ArrayList<DashboardItem> items;
+    private ArrayList<DashboardItem> items = new ArrayList<>();
 
     public DashboardPresenter(DashboardFragmentBase fragment){
         this.fragment = fragment;
@@ -43,8 +43,10 @@ public class DashboardPresenter {
     public void notifyFragmentStarted(Context context) {
         if (model.isNetworkAvailable(context))
             getData(true);
-        else
+        else {
             fragment.setupLayouts(false);
+            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+        }
     }
 
     private void getData(final boolean isFirst) {
@@ -58,7 +60,8 @@ public class DashboardPresenter {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(result -> {
-                    items = result;
+                    items.clear();
+                    items.addAll(result);
                     fragment.setupLayouts(true);
                     notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
                 })

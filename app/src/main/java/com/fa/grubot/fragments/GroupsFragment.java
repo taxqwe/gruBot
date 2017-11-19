@@ -2,7 +2,6 @@ package com.fa.grubot.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -75,21 +74,19 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     public void showRequiredViews() {
-        new Handler().postDelayed(() -> {
-            progressBar.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
 
-            switch (state) {
-                case Globals.FragmentState.STATE_CONTENT:
-                    content.setVisibility(View.VISIBLE);
-                    break;
-                case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
-                    noInternet.setVisibility(View.VISIBLE);
-                    break;
-                case Globals.FragmentState.STATE_NO_DATA:
-                    noData.setVisibility(View.VISIBLE);
-                    break;
-            }
-        }, App.INSTANCE.getDelayTime());
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_DATA:
+                noData.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     public void showLoadingView() {
