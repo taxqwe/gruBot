@@ -43,6 +43,7 @@ public class ActionsTabFragment extends Fragment implements Serializable {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_actions_tab, container, false);
 
+        setHasOptionsMenu(true);
         type = this.getArguments().getInt("type");
         unbinder = ButterKnife.bind(this, v);
 
@@ -84,7 +85,6 @@ public class ActionsTabFragment extends Fragment implements Serializable {
     private void setupViewPager() {
         ActionsPagerAdapter actionsPagerAdapter = new ActionsPagerAdapter(getChildFragmentManager(), type);
 
-        viewPager.setOffscreenPageLimit(0);
         viewPager.setAdapter(actionsPagerAdapter);
 
         tabLayout.setupWithViewPager(viewPager);

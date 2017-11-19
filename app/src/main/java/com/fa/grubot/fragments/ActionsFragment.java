@@ -10,6 +10,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.Icepick;
+import io.reactivex.Completable;
 import io.reactivex.annotations.Nullable;
 
 public class ActionsFragment extends Fragment implements ActionsFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, Serializable {
@@ -43,7 +45,8 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     public static final int TYPE_VOTES_ARCHIVE = 828;
 
     @Nullable @BindView(R.id.recycler) transient  RecyclerView actionsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) transient  SwipeRefreshLayout swipeRefreshLayout;
+    @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
+    @Nullable @BindView(R.id.swipeRefreshLayoutNoData) transient SwipeRefreshLayout swipeRefreshLayoutNoData;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
@@ -56,13 +59,13 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     private ArrayList<Action> actions;
     private transient ActionsRecyclerAdapter actionsAdapter;
 
-    private int state;
+    private int state = Globals.FragmentState.STATE_NO_DATA;
     private int type;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //Icepick.restoreInstanceState(this, savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
     @Override
@@ -75,12 +78,11 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         presenter.notifyFragmentStarted(getActivity(), type);
 
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
     }
 
-    @Override
+    /*@Override
     public void onPause() {
         super.onPause();
         if (swipeRefreshLayout != null) {
@@ -88,12 +90,12 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             swipeRefreshLayout.destroyDrawingCache();
             swipeRefreshLayout.clearAnimation();
         }
-    }
+    }*/
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //Icepick.saveInstanceState(this, outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     public void showRequiredViews() {
@@ -133,11 +135,19 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     public void setupSwipeRefreshLayout() {
-        swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.onRefresh(getActivity(), type);
-            onItemsLoadComplete();
-        });
+        if (state == Globals.FragmentState.STATE_NO_DATA) {
+            swipeRefreshLayoutNoData.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
+            swipeRefreshLayoutNoData.setOnRefreshListener(() -> {
+                presenter.onRefresh(getActivity(), type);
+                onItemsLoadComplete();
+            });
+        } else {
+            swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                presenter.onRefresh(getActivity(), type);
+                onItemsLoadComplete();
+            });
+        }
     }
 
     public void setupRecyclerView(ArrayList<Action> actions){
@@ -171,7 +181,10 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     private void onItemsLoadComplete() {
-        swipeRefreshLayout.setRefreshing(false);
+        if (state == Globals.FragmentState.STATE_NO_DATA)
+            swipeRefreshLayoutNoData.setRefreshing(false);
+        else
+            swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -180,7 +193,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             final Action deletedItem = actions.get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
-            //Completable.fromAction(() -> App.INSTANCE.getDataHelper().addActionToArchive(type, deletedItem));
+            //App.INSTANCE.getDataHelper().addActionToArchive(type, deletedItem);
             actionsAdapter.removeItem(viewHolder.getAdapterPosition());
 
             Snackbar snackbar;

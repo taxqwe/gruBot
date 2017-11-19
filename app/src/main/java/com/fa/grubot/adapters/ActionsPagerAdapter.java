@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 
 import com.fa.grubot.fragments.ActionsFragment;
@@ -13,40 +12,41 @@ public class ActionsPagerAdapter extends FragmentPagerAdapter {
 
     private int type;
 
+    private ActionsFragment currentActions;
+    private ActionsFragment archiveActions;
+
     public ActionsPagerAdapter(FragmentManager fragmentManager, int type) {
         super(fragmentManager);
         this.type = type;
+        setFragments();
+    }
+
+    private void setFragments() {
+        ActionsFragment actionsFragment = new ActionsFragment();
+        Bundle args = new Bundle();
+        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS)
+            args.putInt("type", ActionsFragment.TYPE_ANNOUNCEMENTS);
+        else
+            args.putInt("type", ActionsFragment.TYPE_VOTES);
+        actionsFragment.setArguments(args);
+        currentActions = actionsFragment;
+
+        ActionsFragment actionsArchiveFragment = new ActionsFragment();
+        Bundle args1 = new Bundle();
+        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS)
+            args1.putInt("type", ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE);
+        else
+            args1.putInt("type", ActionsFragment.TYPE_VOTES_ARCHIVE);
+        actionsArchiveFragment.setArguments(args1);
+        archiveActions = actionsArchiveFragment;
     }
 
     @Override
     public Fragment getItem(int position) {
-
-        switch (position) {
-            case 0:
-                Fragment actionsFragment = new ActionsFragment();
-                Bundle args = new Bundle();
-
-                if (type == ActionsFragment.TYPE_ANNOUNCEMENTS)
-                    args.putInt("type", ActionsFragment.TYPE_ANNOUNCEMENTS);
-                else
-                    args.putInt("type", ActionsFragment.TYPE_VOTES);
-
-                actionsFragment.setArguments(args);
-                return actionsFragment;
-            case 1:
-                Fragment actionsArchiveFragment = new ActionsFragment();
-                Bundle args1 = new Bundle();
-
-                if (type == ActionsFragment.TYPE_ANNOUNCEMENTS)
-                    args1.putInt("type", ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE);
-                else
-                    args1.putInt("type", ActionsFragment.TYPE_VOTES_ARCHIVE);
-
-                actionsArchiveFragment.setArguments(args1);
-                return actionsArchiveFragment;
-            default:
-                return null;
-        }
+        if (position == 0)
+            return currentActions;
+        else
+            return archiveActions;
     }
 
     @Override

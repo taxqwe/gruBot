@@ -37,6 +37,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
     @Nullable @BindView(R.id.recycler) transient RecyclerView groupsView;
     @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
+    @Nullable @BindView(R.id.swipeRefreshLayoutNoData) transient SwipeRefreshLayout swipeRefreshLayoutNoData;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
@@ -123,11 +124,19 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     public void setupSwipeRefreshLayout() {
-        swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.onRefresh(getActivity());
-            onItemsLoadComplete();
-        });
+        if (state == Globals.FragmentState.STATE_NO_DATA) {
+            swipeRefreshLayoutNoData.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
+            swipeRefreshLayoutNoData.setOnRefreshListener(() -> {
+                presenter.onRefresh(getActivity());
+                onItemsLoadComplete();
+            });
+        } else {
+            swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                presenter.onRefresh(getActivity());
+                onItemsLoadComplete();
+            });
+        }
     }
 
     public void setupRecyclerView(ArrayList<Group> groups) {
@@ -157,7 +166,10 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     private void onItemsLoadComplete() {
-        swipeRefreshLayout.setRefreshing(false);
+        if (state == Globals.FragmentState.STATE_NO_DATA)
+            swipeRefreshLayoutNoData.setRefreshing(false);
+        else
+            swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
