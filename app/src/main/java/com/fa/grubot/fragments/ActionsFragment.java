@@ -82,15 +82,19 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         return v;
     }
 
-    /*@Override
+    @Override
     public void onPause() {
         super.onPause();
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(false);
             swipeRefreshLayout.destroyDrawingCache();
             swipeRefreshLayout.clearAnimation();
+        } else {
+            swipeRefreshLayoutNoData.setRefreshing(false);
+            swipeRefreshLayoutNoData.destroyDrawingCache();
+            swipeRefreshLayoutNoData.clearAnimation();
         }
-    }*/
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
