@@ -22,6 +22,10 @@ public class TemporaryDataHelper {
 
     private ArrayList<Action> announcementsList = new ArrayList<>();
     private ArrayList<Action> votesList = new ArrayList<>();
+
+    private ArrayList<Action> announcementsArchiveList = new ArrayList<>();
+    private ArrayList<Action> votesArchiveList = new ArrayList<>();
+
     private ArrayList<User> usersList = new ArrayList<>();
     private ArrayList<Group> groupsList = new ArrayList<>();
 
@@ -32,11 +36,17 @@ public class TemporaryDataHelper {
     }
 
     public ArrayList<Action> getActionsByType(int type) {
-        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
-            return announcementsList;
-        } else {
-            return votesList;
+        switch (type) {
+            case ActionsFragment.TYPE_ANNOUNCEMENTS:
+                return announcementsList;
+            case ActionsFragment.TYPE_VOTES:
+                return votesList;
+            case ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE:
+                return announcementsArchiveList;
+            case ActionsFragment.TYPE_VOTES_ARCHIVE:
+                return votesArchiveList;
         }
+        return null;
     }
 
     public ArrayList<Action> getActionsByGroupAndType(int type, Group group) {
@@ -62,6 +72,26 @@ public class TemporaryDataHelper {
             announcementsList.add(action);
         } else {
             votesList.add(action);
+        }
+    }
+
+    public void addActionToArchive(int type, Action action) {
+        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
+            announcementsList.remove(action);
+            announcementsArchiveList.add(action);
+        } else {
+            votesList.remove(action);
+            votesArchiveList.add(action);
+        }
+    }
+
+    public void restoreActionFromArchive(int type, Action action, int position) {
+        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
+            announcementsArchiveList.remove(action);
+            announcementsList.add(position, action);
+        } else {
+            votesArchiveList.remove(action);
+            votesList.add(position, action);
         }
     }
 

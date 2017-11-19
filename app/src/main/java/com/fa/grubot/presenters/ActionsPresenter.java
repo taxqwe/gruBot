@@ -3,7 +3,6 @@ package com.fa.grubot.presenters;
 
 import android.content.Context;
 
-import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.models.ActionsModel;
 import com.fa.grubot.objects.dashboard.Action;
@@ -31,7 +30,6 @@ public class ActionsPresenter {
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
-                fragment.setupToolbar();
                 fragment.setupRecyclerView(actions);
                 fragment.setupSwipeRefreshLayout();
                 break;

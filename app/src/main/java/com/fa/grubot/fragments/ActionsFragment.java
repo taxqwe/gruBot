@@ -1,7 +1,6 @@
 package com.fa.grubot.fragments;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,10 +9,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -21,7 +18,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.fa.grubot.App;
-import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.adapters.ActionsRecyclerAdapter;
@@ -43,6 +39,8 @@ import io.reactivex.annotations.Nullable;
 public class ActionsFragment extends Fragment implements ActionsFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, Serializable {
     public static final int TYPE_ANNOUNCEMENTS = 389;
     public static final int TYPE_VOTES = 827;
+    public static final int TYPE_ANNOUNCEMENTS_ARCHIVE = 390;
+    public static final int TYPE_VOTES_ARCHIVE = 828;
 
     @Nullable @BindView(R.id.recycler) transient  RecyclerView actionsView;
     @Nullable @BindView(R.id.swipeRefreshLayout) transient  SwipeRefreshLayout swipeRefreshLayout;
@@ -124,21 +122,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
     }
 
-    public void setupToolbar() {
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
-        toolbar.setVisibility(View.VISIBLE);
-        String title;
-        if (type == TYPE_ANNOUNCEMENTS)
-            title = "Объявления";
-        else
-            title = "Голосования";
-
-        toolbar.setTitle(title);
-        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
-        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-    }
-
     public void setupSwipeRefreshLayout() {
         swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -159,8 +142,10 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         actionsView.setItemAnimator(new DefaultItemAnimator());
         actionsView.setHasFixedSize(false);
 
-        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(actionsView);
+        if (type == TYPE_ANNOUNCEMENTS || type == TYPE_VOTES) {
+            ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(actionsView);
+        }
 
         if (App.INSTANCE.areAnimationsEnabled())
             actionsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
@@ -175,14 +160,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), type));
     }
 
-    public void reloadFragment(){
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
-    }
-
     private void onItemsLoadComplete() {
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -194,6 +171,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             final int deletedIndex = viewHolder.getAdapterPosition();
 
             actionsAdapter.removeItem(viewHolder.getAdapterPosition());
+            //App.INSTANCE.getDataHelper().addActionToArchive(type, deletedItem);
 
             Snackbar snackbar;
             if (deletedItem instanceof ActionAnnouncement) {
@@ -201,23 +179,17 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             } else {
                 snackbar = Snackbar.make(swipeRefreshLayout, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
             }
+
             snackbar.setAction(android.R.string.cancel, view -> {
                 if (actions.indexOf(deletedItem) == -1) {
                     actionsAdapter.restoreItem(deletedItem, deletedIndex);
                     actionsView.smoothScrollToPosition(deletedIndex);
+                    //App.INSTANCE.getDataHelper().restoreActionFromArchive(type, deletedItem, deletedIndex);
                 }
             });
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
