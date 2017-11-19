@@ -1,7 +1,6 @@
 package com.fa.grubot.fragments;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
@@ -260,7 +259,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         if (App.INSTANCE.areAnimationsEnabled())
             buttonsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
-        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons);
+        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons, group.getId());
         groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);
         groupInfoAdapter.notifyDataSetChanged();

@@ -37,11 +37,14 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
     private Context context;
     private ArrayList<GroupInfoRecyclerItem> buttons;
 
-    public GroupInfoRecyclerAdapter(Context context, ArrayList<GroupInfoRecyclerItem> buttons) {
+    private int groupId;
+
+    public GroupInfoRecyclerAdapter(Context context, ArrayList<GroupInfoRecyclerItem> buttons,
+                                    int groupId) {
         super(context);
         this.context = context;
         this.buttons = buttons;
-
+        this.groupId = groupId;
         setItems(buttons);
     }
 
@@ -76,7 +79,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 case 2:
                     buttonText.getRootView().setOnClickListener(v -> {
                         Intent intent = new Intent(context, BranchesActivity.class);
-                        intent.putExtra("groupId", 0);
+                        intent.putExtra("groupId", groupId);
                         context.startActivity(intent);
                         ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
                     });

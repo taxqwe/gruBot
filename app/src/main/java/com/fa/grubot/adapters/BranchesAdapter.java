@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
  * Created by ni.petrov on 18/11/2017.
  */
 
-public class BranchesAdapter extends RecyclerView.Adapter<BranchesAdapter.ViewHolder>{
+public class BranchesAdapter extends RecyclerView.Adapter<BranchesAdapter.ViewHolder> {
 
     private ArrayList<BranchOfDiscussions> data;
 
@@ -37,20 +37,18 @@ public class BranchesAdapter extends RecyclerView.Adapter<BranchesAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.theme.setText(data.get(position).getTheme());
-        holder.author.setText(data.get(position).getAuthorsId());
-        holder.count.setText(data.get(position).getMessagesCount());
+        holder.author.setText(String.valueOf(data.get(position).getAuthorsId()));
+        holder.count.setText(String.valueOf(data.get(position).getMessagesCount()));
         holder.startDate.setText(data.get(position).getStartDate());
         holder.lastDate.setText(data.get(position).getLastDate());
     }
 
     @Override
     public int getItemCount() {
-        if (data.isEmpty()) {
-            return 0;
-        } else return data.size();
+        return data.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.theme)
         TextView theme;
 
