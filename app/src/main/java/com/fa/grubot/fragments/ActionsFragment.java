@@ -62,7 +62,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Icepick.restoreInstanceState(this, savedInstanceState);
+        //Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
+        //Icepick.saveInstanceState(this, outState);
     }
 
     public void showRequiredViews() {

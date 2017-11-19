@@ -121,6 +121,5 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public int getItemCount() {
         return (items == null) ? 0 : items.size();
-
     }
 }
