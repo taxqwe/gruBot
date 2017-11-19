@@ -63,9 +63,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
         presenter.notifyFragmentStarted(getActivity());
         setHasOptionsMenu(true);
-
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
     }

@@ -88,9 +88,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         setHasOptionsMenu(true);
         group = (Group) this.getArguments().getSerializable("group");
         presenter.notifyFragmentStarted(getActivity(), group);
-
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
     }

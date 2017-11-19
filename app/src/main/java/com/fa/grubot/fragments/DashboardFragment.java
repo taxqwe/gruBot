@@ -54,9 +54,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         presenter.notifyFragmentStarted(getActivity());
-
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
     }
