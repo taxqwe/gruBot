@@ -35,6 +35,7 @@ public class TemporaryDataHelper {
         setUsers();
         setGroups();
         setActions();
+        setBranchesOfGroups();
     }
 
     public ArrayList<Action> getActionsByType(int type) {
@@ -144,13 +145,33 @@ public class TemporaryDataHelper {
         groupsList.add(new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", new ArrayList<>(Arrays.asList(usersList.get(5), usersList.get(4), usersList.get(3))),null));
     }
 
-    public ArrayList<BranchOfDiscussions> getBranches() {
-        ArrayList<BranchOfDiscussions> branches = new ArrayList<>();
+    private void setBranchesOfGroups() {
+        // gr1
 
-        branches.add(new BranchOfDiscussions(1, 2, "Заблевали пол", new Date(), new Date(), 15));
-        branches.add(new BranchOfDiscussions(2, 5, "Драка детей", new Date(), new Date(), 20));
-        branches.add(new BranchOfDiscussions(3, 34, "Украли сменку", new Date(), new Date(), 25));
+        //gr2
 
-        return branches;
+
+        //gr3 has no branches
+
+
+    }
+
+    public ArrayList<BranchOfDiscussions> getBranches(int idOfGroup) {
+        ArrayList<BranchOfDiscussions> branchesOfGroup = new ArrayList<>();
+        switch (idOfGroup) {
+            case 1:
+                branchesOfGroup.add(new BranchOfDiscussions(1, 2, "Заблевали пол", new Date(), new Date(), 15));
+                branchesOfGroup.add(new BranchOfDiscussions(2, 5, "Драка детей", new Date(), new Date(), 20));
+                branchesOfGroup.add(new BranchOfDiscussions(3, 34, "Украли сменку", new Date(), new Date(), 25));
+                break;
+            case 2:
+                branchesOfGroup.add(new BranchOfDiscussions(4, 4, "Золотая медаль никому не нужна", new Date(), new Date(), 14));
+                branchesOfGroup.add(new BranchOfDiscussions(5, 6, "Учитель педофил", new Date(), new Date(), 88));
+                branchesOfGroup.add(new BranchOfDiscussions(6, 19, "Кто такой FACE?", new Date(), new Date(), 11));
+                break;
+            case 3:
+                break;
+        }
+        return branchesOfGroup;
     }
 }
