@@ -2,8 +2,8 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
+import android.util.Log;
 
-import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.models.ActionsModel;
 import com.fa.grubot.objects.dashboard.Action;
@@ -26,12 +26,11 @@ public class ActionsPresenter {
         this.model = new ActionsModel();
     }
 
-    public void notifyViewCreated(int state) {
+    private void notifyViewCreated(int state) {
         fragment.showRequiredViews();
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
-                fragment.setupToolbar();
                 fragment.setupRecyclerView(actions);
                 fragment.setupSwipeRefreshLayout();
                 break;
@@ -47,8 +46,10 @@ public class ActionsPresenter {
     public void notifyFragmentStarted(Context context, int type) {
         if (model.isNetworkAvailable(context))
             getData(true, type);
-        else
+        else {
             fragment.setupLayouts(false, false);
+            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+        }
     }
 
     private void getData(final boolean isFirst, final int type) {
@@ -62,12 +63,16 @@ public class ActionsPresenter {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(result -> {
-                    actions = result;
-                    if (actions.isEmpty())
+                    actions.clear();
+                    actions.addAll(result);
+                    Log.e("mytag", "Presenter: " + String.valueOf(result.size()));
+                    if (actions.isEmpty()) {
                         fragment.setupLayouts(true, false);
-                    else
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
+                    } else {
                         fragment.setupLayouts(true, true);
-                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                    }
                 })
                 .doOnError(error -> {
                     fragment.setupLayouts(false, false);

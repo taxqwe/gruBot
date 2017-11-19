@@ -21,7 +21,7 @@ public class GroupInfoPresenter {
     private GroupInfoModel model;
     private ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> actions = new ArrayList<>();
 
-    public GroupInfoPresenter(GroupInfoFragmentBase fragment){
+    public GroupInfoPresenter(GroupInfoFragmentBase fragment) {
         this.fragment = fragment;
         this.model = new GroupInfoModel();
     }
@@ -44,8 +44,10 @@ public class GroupInfoPresenter {
     public void notifyFragmentStarted(Context context, Group group) {
         if (model.isNetworkAvailable(context))
             getData(true, group);
-        else
+        else {
             fragment.setupLayouts(false);
+            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+        }
     }
 
     private void getData(final boolean isFirst, final Group group) {
@@ -59,7 +61,8 @@ public class GroupInfoPresenter {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(result -> {
-                    actions = result;
+                    actions.clear();
+                    actions.addAll(result);
                     fragment.setupLayouts(true);
                     notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
                 })

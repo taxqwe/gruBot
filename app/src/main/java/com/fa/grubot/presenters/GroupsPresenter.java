@@ -3,7 +3,6 @@ package com.fa.grubot.presenters;
 
 import android.content.Context;
 
-import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.models.GroupsModel;
 import com.fa.grubot.objects.group.Group;
@@ -49,8 +48,10 @@ public class GroupsPresenter {
     public void notifyFragmentStarted(Context context){
         if (model.isNetworkAvailable(context))
             getData(true);
-        else
+        else {
             fragment.setupLayouts(false, false);
+            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+        }
     }
 
     private void getData(final boolean isFirst) {
@@ -64,12 +65,15 @@ public class GroupsPresenter {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(result -> {
-                    groups = result;
-                    if (groups.isEmpty())
+                    groups.clear();
+                    groups.addAll(result);
+                    if (groups.isEmpty()) {
                         fragment.setupLayouts(true, false);
-                    else
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
+                    } else {
                         fragment.setupLayouts(true, true);
-                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                    }
                 })
                 .doOnError(error -> {
                     fragment.setupLayouts(false, false);

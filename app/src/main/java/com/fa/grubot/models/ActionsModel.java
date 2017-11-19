@@ -10,14 +10,15 @@ import java.util.ArrayList;
 
 public class ActionsModel {
 
-    public ActionsModel(){
+    public ActionsModel() {
 
     }
+
     public ArrayList<Action> loadActions(int type) {
         return App.INSTANCE.getDataHelper().getActionsByType(type);
     }
 
-    public boolean isNetworkAvailable(Context context){
+    public boolean isNetworkAvailable(Context context) {
         return Globals.InternetMethods.isNetworkAvailable(context);
     }
 }
