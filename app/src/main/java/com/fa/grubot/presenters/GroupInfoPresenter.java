@@ -51,7 +51,7 @@ public class GroupInfoPresenter {
     }
 
     private void getData(final boolean isFirst, final Group group) {
-        Observable.defer(() -> Observable.just(model.loadButtons(group)))
+        Observable.just(model.loadButtons(group))
                 .filter(result -> result != null)
                 .subscribeOn(Schedulers.io())
                 .timeout(15, TimeUnit.SECONDS)
