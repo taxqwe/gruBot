@@ -50,7 +50,7 @@ public class DashboardPresenter {
     }
 
     private void getData(final boolean isFirst) {
-        Observable.defer(() -> Observable.just(model.getItems()))
+        Observable.just(model.getItems())
                 .filter(result -> result != null)
                 .subscribeOn(Schedulers.io())
                 .timeout(15, TimeUnit.SECONDS)

@@ -53,7 +53,7 @@ public class ActionsPresenter {
     }
 
     private void getData(final boolean isFirst, final int type) {
-        Observable.defer(() -> Observable.just(model.loadActions(type)))
+        Observable.just(model.loadActions(type))
                 .filter(result -> result != null)
                 .subscribeOn(Schedulers.io())
                 .timeout(15, TimeUnit.SECONDS)
@@ -65,7 +65,6 @@ public class ActionsPresenter {
                 .doOnNext(result -> {
                     actions.clear();
                     actions.addAll(result);
-                    Log.e("mytag", "Presenter: " + String.valueOf(result.size()));
                     if (actions.isEmpty()) {
                         fragment.setupLayouts(true, false);
                         notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);

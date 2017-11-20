@@ -55,7 +55,7 @@ public class GroupsPresenter {
     }
 
     private void getData(final boolean isFirst) {
-        Observable.defer(() -> Observable.just(model.loadGroups()))
+        Observable.just(model.loadGroups())
                 .filter(result -> result != null)
                 .subscribeOn(Schedulers.io())
                 .timeout(15, TimeUnit.SECONDS)

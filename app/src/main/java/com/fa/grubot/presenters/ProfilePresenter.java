@@ -50,7 +50,7 @@ public class ProfilePresenter {
     }
 
     private void getData(final boolean isFirst, final User user) {
-        Observable.defer(() -> Observable.just(model.getItems(user)))
+        Observable.just(model.getItems(user))
                 .filter(result -> result != null)
                 .subscribeOn(Schedulers.io())
                 .timeout(15, TimeUnit.SECONDS)
