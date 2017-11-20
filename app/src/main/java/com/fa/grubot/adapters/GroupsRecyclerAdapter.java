@@ -1,6 +1,8 @@
 package com.fa.grubot.adapters;
 
+import android.app.Fragment;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.objects.Group;
+import com.fa.grubot.fragments.GroupInfoFragment;
+import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
@@ -46,12 +50,17 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int pos) {
         final int position = holder.getAdapterPosition();
+        Group group = groups.get(position);
 
-        holder.groupName.setText(groups.get(position).getName());
-        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, groups.get(position).getName()));
+        holder.groupName.setText(group.getName());
+        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, group.getName()));
 
         holder.groupImage.getRootView().setOnClickListener(v -> {
-            //// TODO: 19.10.2017
+            Fragment fragment = new GroupInfoFragment();
+            Bundle args = new Bundle();
+            args.putSerializable("group", group);
+            fragment.setArguments(args);
+            ((MainActivity)context).pushFragments(MainActivity.TAB_CHATS, fragment,true);
         });
     }
 
