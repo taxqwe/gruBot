@@ -13,6 +13,7 @@ import com.fa.grubot.objects.misc.VoteOption;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TemporaryDataHelper {
@@ -160,14 +161,16 @@ public class TemporaryDataHelper {
         ArrayList<BranchOfDiscussions> branchesOfGroup = new ArrayList<>();
         switch (idOfGroup) {
             case 1:
-                branchesOfGroup.add(new BranchOfDiscussions(1, 2, "Заблевали пол", new Date(), new Date(), 15));
-                branchesOfGroup.add(new BranchOfDiscussions(2, 5, "Драка детей", new Date(), new Date(), 20));
-                branchesOfGroup.add(new BranchOfDiscussions(3, 34, "Украли сменку", new Date(), new Date(), 25));
+                Calendar past = Calendar.getInstance();
+                past.set(2017, 11, 15, 21, 15);
+                branchesOfGroup.add(new BranchOfDiscussions(1, 2, "Заблевали пол", past, Calendar.getInstance(), 15));
+                branchesOfGroup.add(new BranchOfDiscussions(2, 5, "Драка детей", Calendar.getInstance(), Calendar.getInstance(), 20));
+                branchesOfGroup.add(new BranchOfDiscussions(3, 34, "Украли сменку", Calendar.getInstance(), Calendar.getInstance(), 25));
                 break;
             case 2:
-                branchesOfGroup.add(new BranchOfDiscussions(4, 4, "Золотая медаль никому не нужна", new Date(), new Date(), 14));
-                branchesOfGroup.add(new BranchOfDiscussions(5, 6, "Учитель педофил", new Date(), new Date(), 88));
-                branchesOfGroup.add(new BranchOfDiscussions(6, 19, "Кто такой FACE?", new Date(), new Date(), 11));
+                branchesOfGroup.add(new BranchOfDiscussions(4, 4, "Золотая медаль никому не нужна", Calendar.getInstance(), Calendar.getInstance(), 14));
+                branchesOfGroup.add(new BranchOfDiscussions(5, 6, "Учитель педофил", Calendar.getInstance(), Calendar.getInstance(), 88));
+                branchesOfGroup.add(new BranchOfDiscussions(6, 19, "Кто такой FACE?", Calendar.getInstance(), Calendar.getInstance(), 11));
                 break;
             case 3:
                 break;
