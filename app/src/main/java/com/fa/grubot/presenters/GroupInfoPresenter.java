@@ -42,12 +42,20 @@ public class GroupInfoPresenter {
     }
 
     public void notifyFragmentStarted(Context context, Group group) {
-        if (model.isNetworkAvailable(context))
-            getData(true, group);
-        else {
-            fragment.setupLayouts(false);
-            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(true, group);
+                    else {
+                        fragment.setupLayouts(false);
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    }
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
     }
 
     private void getData(final boolean isFirst, final Group group) {
@@ -74,9 +82,12 @@ public class GroupInfoPresenter {
     }
 
     public void onRetryBtnClick(Context context, Group group) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false, group);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(false, group);
+                })
+                .subscribe();
     }
 
     public void destroy(){

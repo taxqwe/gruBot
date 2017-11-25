@@ -46,12 +46,20 @@ public class GroupsPresenter {
     }
 
     public void notifyFragmentStarted(Context context){
-        if (model.isNetworkAvailable(context))
-            getData(true);
-        else {
-            fragment.setupLayouts(false, false);
-            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(true);
+                    else {
+                        fragment.setupLayouts(false, false);
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    }
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
     }
 
     private void getData(final boolean isFirst) {
@@ -83,18 +91,29 @@ public class GroupsPresenter {
     }
 
     public void onRefresh(Context context) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false);
-        } else {
-            fragment.setupLayouts(false, false);
-            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(false);
+                    else {
+                        fragment.setupLayouts(false, false);
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    }
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
     }
 
     public void onRetryBtnClick(Context context) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(false);
+                })
+                .subscribe();
     }
 
     public void destroy(){

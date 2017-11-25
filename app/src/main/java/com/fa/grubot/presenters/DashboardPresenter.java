@@ -26,7 +26,7 @@ public class DashboardPresenter {
         this.model = new DashboardModel();
     }
 
-    public void notifyViewCreated(int state) {
+    private void notifyViewCreated(int state) {
         fragment.showRequiredViews();
 
         switch (state) {
@@ -41,12 +41,20 @@ public class DashboardPresenter {
     }
 
     public void notifyFragmentStarted(Context context) {
-        if (model.isNetworkAvailable(context))
-            getData(true);
-        else {
-            fragment.setupLayouts(false);
-            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(true);
+                    else {
+                        fragment.setupLayouts(false);
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    }
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
     }
 
     private void getData(final boolean isFirst) {
@@ -73,9 +81,12 @@ public class DashboardPresenter {
     }
 
     public void onRetryBtnClick(Context context) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(false);
+                })
+                .subscribe();
     }
     public void destroy(){
         fragment = null;

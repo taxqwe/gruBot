@@ -44,12 +44,20 @@ public class ActionsPresenter {
     }
 
     public void notifyFragmentStarted(Context context, int type) {
-        if (model.isNetworkAvailable(context))
-            getData(true, type);
-        else {
-            fragment.setupLayouts(false, false);
-            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(true, type);
+                    else {
+                        fragment.setupLayouts(false, false);
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    }
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
     }
 
     private void getData(final boolean isFirst, final int type) {
@@ -81,18 +89,29 @@ public class ActionsPresenter {
     }
 
     public void onRefresh(Context context, int type) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false, type);
-        } else {
-            fragment.setupLayouts(false, false);
-            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(false, type);
+                    else {
+                        fragment.setupLayouts(false, false);
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    }
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
     }
 
     public void onRetryBtnClick(Context context, int type) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false, type);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(false, type);
+                })
+                .subscribe();
     }
 
     public void destroy(){
