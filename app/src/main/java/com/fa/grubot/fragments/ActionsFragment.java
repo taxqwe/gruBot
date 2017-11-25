@@ -9,7 +9,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,7 +169,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             actionsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
         this.actions = newActions;
-        Log.e("mytag", "View: " + String.valueOf(newActions.size()));
         actionsAdapter = new ActionsRecyclerAdapter(getActivity(), newActions);
         actionsView.setAdapter(actionsAdapter);
         actionsAdapter.notifyDataSetChanged();

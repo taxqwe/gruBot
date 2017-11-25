@@ -60,7 +60,6 @@ public class Globals {
                     .filter(result -> result != null)
                     .subscribeOn(Schedulers.io())
                     .timeout(15, TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
         }
      }
