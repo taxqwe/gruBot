@@ -2,7 +2,6 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
-import android.util.Log;
 
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
@@ -26,11 +25,12 @@ public class GroupInfoPresenter {
     private GroupInfoModel model;
     private ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> buttons = new ArrayList<>();
 
-    private String groupId;
     private Group group;
 
-    private DocumentReference documentReference;
-    private ListenerRegistration registration;
+    private transient DocumentReference documentReference;
+    private transient ListenerRegistration registration;
+
+    private int usersCount;
 
     public GroupInfoPresenter(GroupInfoFragmentBase fragment) {
         this.fragment = fragment;
@@ -70,10 +70,6 @@ public class GroupInfoPresenter {
                 DocumentSnapshot doc = task.getResult();
                 group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<DocumentReference>) doc.get("users"), doc.get("imgUrl").toString());
 
-                Log.e("mytag", group.getId());
-                for (DocumentReference ref : (ArrayList<DocumentReference>) doc.get("users"))
-                    Log.e("mytag", ref.getPath());
-
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(1, "Чат", new ArrayList<>())));
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Ветки осбуждений", new ArrayList<>())));
                 setAnnouncements();
@@ -100,13 +96,15 @@ public class GroupInfoPresenter {
                     items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(announcement));
                 }
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", new ArrayList<>())));
-                setUsers();
+                buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", items)));
+                usersCount = group.getUsers().size();
+                items.clear();
+                setUsers(items, 0);
             } else {
                 fragment.setupLayouts(false);
                 notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
             }
         });
-        buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", items)));
     }
 
     private Action setDataForAction(Action action) {
@@ -129,28 +127,30 @@ public class GroupInfoPresenter {
         return action;
     }
 
-    private void setUsers() {
-        ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
-        for (DocumentReference ref : group.getUsers()) {
-            ref.get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot doc = task.getResult();
-                    User user = new User(doc.getId(),
-                            doc.get("username").toString(),
-                            doc.get("fullname").toString(),
-                            doc.get("phoneNumber").toString(),
-                            doc.get("desc").toString(),
-                            doc.get("imgUrl").toString());
-                    items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
-                } else {
-                    fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                }
-            });
+    private void setUsers(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items, int count) {
+        if (count >= usersCount) {
+            buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Список участников", items)));
+            fragment.setupLayouts(true);
+            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+            return;
         }
-        buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Список участников", items)));
-        fragment.setupLayouts(true);
-        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+
+        group.getUsers().get(count).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot doc = task.getResult();
+                User user = new User(doc.getId(),
+                        doc.get("username").toString(),
+                        doc.get("fullname").toString(),
+                        doc.get("phoneNumber").toString(),
+                        doc.get("desc").toString(),
+                        doc.get("imgUrl").toString());
+                items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
+                setUsers(items, count + 1);
+            } else {
+                fragment.setupLayouts(false);
+                notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
