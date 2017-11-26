@@ -30,6 +30,7 @@ public class GroupsPresenter {
     }
 
     public void notifyFragmentStarted() {
+        fragment.setupToolbar();
         setupConnection();
         setRegistration();
     }
@@ -39,7 +40,6 @@ public class GroupsPresenter {
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
-                fragment.setupToolbar();
                 fragment.setupRecyclerView(groups);
                 break;
             case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
