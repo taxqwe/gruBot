@@ -3,8 +3,6 @@ package com.fa.grubot.helpers;
 import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.objects.chat.BranchOfDiscussions;
 import com.fa.grubot.objects.dashboard.Action;
-import com.fa.grubot.objects.dashboard.ActionAnnouncement;
-import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
@@ -12,7 +10,6 @@ import com.fa.grubot.objects.misc.VoteOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 
 public class TemporaryDataHelper {
     private final String placeholder = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna " +
@@ -116,7 +113,7 @@ public class TemporaryDataHelper {
     }
 
     private void setActions() {
-        announcementsList.add(new ActionAnnouncement(1, null, "Комлев Антон", "Собрание", new Date(),  placeholder));
+        /*announcementsList.add(new ActionAnnouncement(1, null, "Комлев Антон", "Собрание", new Date(),  placeholder));
         announcementsList.add(new ActionAnnouncement(1, null, "Комлев Антон", "Выходные дни", new Date(), placeholder));
         announcementsList.add(new ActionAnnouncement(3, null, "Чехов А. П.", "Поездка", new Date(), placeholder));
         announcementsList.add(new ActionAnnouncement(3, null, "Чехов А. П.", "Объявление", new Date(), placeholder));
@@ -125,18 +122,18 @@ public class TemporaryDataHelper {
         votesList.add(new ActionVote(1, null, "Комлев Антон", "Новый год", new Date(), options));
         votesList.add(new ActionVote(2, null, "Махин Семен", "Сбор денег", new Date(), options));
         votesList.add(new ActionVote(2, null, "Махин Семен", "Удовлетворенность чем-то", new Date(), options));
-        votesList.add(new ActionVote(2, null, "Махин Семен", "Активность", new Date(), options));
+        votesList.add(new ActionVote(2, null, "Махин Семен", "Активность", new Date(), options));*/
     }
 
     private void setUsers() {
-        usersList.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
+        /*usersList.add(new User(1, "pussyStealer", "Антон Комлев", "7(903)869-14-82", "Кружка", null));
         usersList.add(new User(2, "actuallyStalin", "Петров Николай", "7(903)322-14-88", "OHHHHHHHHHHHHHHHHHHHHHHHH", null));
         usersList.add(new User(3, "dip", "Прахов Владислав", "7(903)869-22-77", "123", null));
         usersList.add(new User(4, "a_goat", "Елена Головач", "7(903)334-33-32", "TIPA OPISANIE", "https://upload.wikimedia.org/wikipedia/commons/f/ff/Domestic_goat_kid_in_capeweed.jpg"));
         usersList.add(new User(5, "deus_vult", "Конрад Цёлльнер фон Ротенштайн", "7(903)132-81-39", "TIPA OPISANIE EWE RAZ", "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wg_zoellner.gif"));
         usersList.add(new User(6, "just_a_painter", "Адольф Гитлер", "7(903)132-11-11", "TIPA TOJE", "https://upload.wikimedia.org/wikipedia/commons/a/ab/Bundesarchiv_Bild_183-H1216-0500-002%2C_Adolf_Hitler.jpg"));
         usersList.add(new User(7, "semen", "Махин Семен", "7(903)322-14-88", "4343", null));
-
+        */
     }
 
     private void setGroups() {

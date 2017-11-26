@@ -1,15 +1,17 @@
 package com.fa.grubot.objects.group;
 
+import com.google.firebase.firestore.DocumentReference;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Group implements Serializable {
     private String id;
     private String name;
-    private ArrayList<String> users;
+    private ArrayList<DocumentReference> users;
     private String imgURL;
 
-    public Group(String id, String name, ArrayList<String> users, String imgURL) {
+    public Group(String id, String name, ArrayList<DocumentReference> users, String imgURL) {
         this.id = id;
         this.name = name;
         this.users = users;
@@ -28,7 +30,7 @@ public class Group implements Serializable {
         return imgURL;
     }
 
-    public ArrayList<String> getUsers() {
+    public ArrayList<DocumentReference> getUsers() {
         return users;
     }
 }

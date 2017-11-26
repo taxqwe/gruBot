@@ -58,16 +58,16 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
         Action action = entries.get(position);
 
         holder.actionDate.setText(action.getDate());
-        holder.actionAuthor.setText(action.getAuthor());
+        holder.actionAuthor.setText(action.getAuthorName());
         holder.actionDesc.setText(action.getDesc());
-        holder.actionGroup.setText(action.getGroup().getName());
+        holder.actionGroup.setText(action.getGroupName());
         holder.viewForeground.setBackgroundColor(getColorFromDashboardEntry(action));
 
         if (action instanceof ActionAnnouncement) {
             holder.actionTypeText.setText("Объявление");
             holder.viewForeground.setOnClickListener(v -> {
                 new MaterialDialog.Builder(context)
-                        .title(action.getGroup().getName() + ": " + action.getDesc())
+                        .title(action.getGroupName() + ": " + action.getDesc())
                         .content(((ActionAnnouncement) action).getText())
                         .positiveText(android.R.string.ok)
                         .show();
@@ -76,7 +76,7 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
             holder.actionTypeText.setText("Голосование");
             holder.viewForeground.setOnClickListener(v -> {
                 new MaterialDialog.Builder(context)
-                        .title(action.getGroup().getName() + ": " + action.getDesc())
+                        .title(action.getGroupName() + ": " + action.getDesc())
                         .items(((ActionVote) action).getOptions())
                         .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
                             /**

@@ -52,7 +52,7 @@ public class App extends Application {
     }
 
     public User getCurrentUser() {
-        return new User(0, "DOMINATOR48RUS", "The First One", "+71903322233", "NOONE CAN STOP ME", "http://www.netlore.ru/upload/files/1307/3_321.jpg");
+        return new User("0", "DOMINATOR48RUS", "The First One", "+71903322233", "NOONE CAN STOP ME", "http://www.netlore.ru/upload/files/1307/3_321.jpg");
     }
 
     public SlidrConfig getSlidrConfig() {

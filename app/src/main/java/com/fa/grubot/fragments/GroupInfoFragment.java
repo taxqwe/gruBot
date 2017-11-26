@@ -25,8 +25,6 @@ import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.adapters.VoteRecyclerAdapter;
-import com.fa.grubot.objects.dashboard.ActionAnnouncement;
-import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
@@ -34,12 +32,12 @@ import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.firebase.firestore.DocumentChange;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -86,7 +84,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
         setHasOptionsMenu(true);
         group = (Group) this.getArguments().getSerializable("group");
-        presenter.notifyFragmentStarted(getActivity(), group);
+        presenter.notifyFragmentStarted(group.getId());
         unbinder = ButterKnife.bind(this, v);
 
         return v;
@@ -175,9 +173,9 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                         EditText text = (EditText) dialog.findViewById(R.id.announcementText);
 
                         if (!desc.toString().isEmpty() && !text.toString().isEmpty()){
-                            ActionAnnouncement actionAnnouncement = new ActionAnnouncement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
-                            App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_ANNOUNCEMENTS, actionAnnouncement);
-                            groupInfoAdapter.insertItem(actionAnnouncement);
+                            //ActionAnnouncement actionAnnouncement = new ActionAnnouncement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
+                            //App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_ANNOUNCEMENTS, actionAnnouncement);
+                            //groupInfoAdapter.insertItem(actionAnnouncement);
                         }
 
                         fam.close(true);
@@ -233,9 +231,9 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                 if (hasEmpty)
                     Toast.makeText(getActivity(), "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
                 else {
-                    ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
-                    App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_VOTES, actionVote);
-                    groupInfoAdapter.insertItem(actionVote);
+                    //ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
+                    //App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_VOTES, actionVote);
+                    //groupInfoAdapter.insertItem(actionVote);
                     dialog.dismiss();
                     fam.close(true);
                 }
@@ -254,8 +252,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         if (App.INSTANCE.areAnimationsEnabled())
             buttonsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
-
-        //groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons, group.getId());
+        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons, group.getId());
 
         groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);
@@ -264,6 +261,22 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
     public void setupRetryButton(){
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), group));
+    }
+
+    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Group group) {
+        if (groupInfoAdapter != null) {
+            switch (type) {
+                case ADDED:
+                    //groupInfoAdapter.addItem(newIndex, group);
+                    break;
+                case MODIFIED:
+                    //groupInfoAdapter.updateItem(oldIndex, newIndex, group);
+                    break;
+                case REMOVED:
+                    //groupInfoAdapter.removeItem(oldIndex);
+                    break;
+            }
+        }
     }
 
     @Override

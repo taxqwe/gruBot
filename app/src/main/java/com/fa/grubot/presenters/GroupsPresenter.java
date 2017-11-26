@@ -7,6 +7,7 @@ import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -23,12 +24,17 @@ public class GroupsPresenter {
     private CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("groups");
     private ListenerRegistration registration;
 
-    public GroupsPresenter(GroupsFragmentBase fragment){
+    public GroupsPresenter(GroupsFragmentBase fragment) {
         this.fragment = fragment;
         this.model = new GroupsModel();
     }
 
-    private void notifyViewCreated(int state){
+    public void notifyFragmentStarted() {
+        setupConnection();
+        setRegistration();
+    }
+
+    private void notifyViewCreated(int state) {
         fragment.showRequiredViews();
 
         switch (state) {
@@ -50,7 +56,7 @@ public class GroupsPresenter {
             groups.clear();
             if (task.isSuccessful()) {
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<String>) doc.get("users"), doc.get("imgUrl").toString());
+                    Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<DocumentReference>) doc.get("users"), doc.get("imgUrl").toString());
                     groups.add(group);
                 }
 
@@ -74,7 +80,7 @@ public class GroupsPresenter {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
-                    Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<String>) doc.get("users"), doc.get("imgUrl").toString());
+                    Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<DocumentReference>) doc.get("users"), doc.get("imgUrl").toString());
 
                     fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
                 }
@@ -90,11 +96,6 @@ public class GroupsPresenter {
     }
 
     public void resumeRegistration() {
-        setRegistration();
-    }
-
-    public void notifyFragmentStarted(){
-        setupConnection();
         setRegistration();
     }
 
