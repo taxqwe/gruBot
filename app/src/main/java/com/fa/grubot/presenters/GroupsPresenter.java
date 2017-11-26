@@ -1,9 +1,6 @@
 package com.fa.grubot.presenters;
 
 
-import android.content.Context;
-import android.util.Log;
-
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.models.GroupsModel;
 import com.fa.grubot.objects.group.Group;
@@ -11,17 +8,12 @@ import com.fa.grubot.util.Globals;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import static com.google.firebase.firestore.DocumentChange.Type.ADDED;
 
 public class GroupsPresenter {
 
@@ -31,7 +23,7 @@ public class GroupsPresenter {
     private ArrayList<Group> groups = new ArrayList<>();
 
     private CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("groups");
-    private EventListener eventListener;
+    private ListenerRegistration registration;
 
     public GroupsPresenter(GroupsFragmentBase fragment){
         this.fragment = fragment;
@@ -45,25 +37,23 @@ public class GroupsPresenter {
             case Globals.FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupRecyclerView(groups);
-                fragment.setupSwipeRefreshLayout();
                 break;
             case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
             case Globals.FragmentState.STATE_NO_DATA:
-                fragment.setupSwipeRefreshLayout();
                 break;
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void setupConnection() {
         collectionReference.get().addOnCompleteListener(task -> {
+            groups.clear();
             if (task.isSuccessful()) {
-                groups.clear();
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
                     Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<String>) doc.get("users"), doc.get("imgUrl").toString());
                     groups.add(group);
-                    Log.e("mytag", group.getName());
                 }
 
                 if (groups.isEmpty()) {
@@ -78,95 +68,64 @@ public class GroupsPresenter {
                 notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
             }
         });
+    }
 
-        new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (e == null) {
-                    for (DocumentChange dc : documentSnapshots.getDocumentChanges()){
-                        switch (dc.getType()) {
-                            case ADDED:
+    @SuppressWarnings("unchecked")
+    private void setRegistration() {
+        registration = collectionReference.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    DocumentSnapshot doc = dc.getDocument();
+                    Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<String>) doc.get("users"), doc.get("imgUrl").toString());
 
-                                break;
-                            case MODIFIED:
+                    fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
 
-                                break;
-                            case REMOVED:
+                    /*switch (dc.getType()) {
+                        case ADDED:
+                            boolean exists = false;
+                            for (Group item : groups) {
+                                if (item.getId().equals(group.getId()))
+                                    exists = true;
+                            }
 
-                                break;
-                        }
-                    }
+                            if (!exists)
+                                groups.add(dc.getNewIndex(), group);
+                            break;
+                        case MODIFIED:
+                            groups.set(dc.getNewIndex(), group);
+                            break;
+                        case REMOVED:
+                            groups.remove(dc.getOldIndex());
+                            break;
+                    }*/
                 }
+            } else {
+                fragment.setupLayouts(false, false);
+                notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
             }
-        };
-
-        collectionReference.addSnapshotListener(eventListener);
-        collectionReference.
+        });
     }
 
-    public void notifyFragmentStarted(Context context){
+    public void removeRegistration() {
+        registration.remove();
+    }
+
+    public void resumeRegistration() {
+        setRegistration();
+    }
+
+    public void notifyFragmentStarted(){
         setupConnection();
-        /*if (model.isNetworkAvailable(context))
-            getData(true);
-        else
-            fragment.setupLayouts(false, false);*/
+        setRegistration();
     }
 
-    private void getData(final boolean isFirst) {
-        Observable.just(model.loadGroups())
-                .filter(result -> result != null)
-                .subscribeOn(Schedulers.io())
-                .timeout(15, TimeUnit.SECONDS)
-                .doOnSubscribe(d -> {
-                    if (!isFirst)
-                        fragment.showLoadingView();
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(result -> {
-                    groups.clear();
-                    groups.addAll(result);
-                    if (groups.isEmpty()) {
-                        fragment.setupLayouts(true, false);
-                        notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
-                    } else {
-                        fragment.setupLayouts(true, true);
-                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
-                    }
-                })
-                .doOnError(error -> {
-                    fragment.setupLayouts(false, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                })
-                .subscribe();
-    }
-
-    public void onRefresh(Context context) {
-        model.isNetworkAvailable(context)
-                .doOnNext(result -> {
-                    if (result)
-                        getData(false);
-                    else {
-                        fragment.setupLayouts(false, false);
-                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                    }
-                })
-                .doOnError(error -> {
-                    fragment.setupLayouts(false, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                })
-                .subscribe();
-    }
-
-    public void onRetryBtnClick(Context context) {
-        model.isNetworkAvailable(context)
-                .doOnNext(result -> {
-                    if (result)
-                        getData(false);
-                })
-                .subscribe();
+    public void onRetryBtnClick() {
+        setupConnection();
+        setRegistration();
     }
 
     public void destroy() {
+        registration.remove();
         fragment = null;
         model = null;
     }

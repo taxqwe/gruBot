@@ -54,6 +54,8 @@ public class TemporaryDataHelper {
     public ArrayList<Action> getActionsByGroupAndType(int type, Group group) {
         ArrayList<Action> actions = new ArrayList<>();
 
+        return null;
+        /*
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
             for (Action action : announcementsList) {
                 if (action.getGroup().equals(group))
@@ -66,7 +68,7 @@ public class TemporaryDataHelper {
                     actions.add(action);
             }
             return actions;
-        }
+        }*/
     }
 
     public void addNewActionByType(int type, Action action) {

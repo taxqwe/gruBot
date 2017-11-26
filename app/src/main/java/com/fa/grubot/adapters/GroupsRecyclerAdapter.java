@@ -64,6 +64,29 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
         });
     }
 
+    public void removeItem(int position) {
+        groups.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void addItem(int position, Group group) {
+        boolean exists = false;
+        for (Group item : groups) {
+            if (item.getId().equals(group.getId()))
+                exists = true;
+        }
+
+        if (!exists) {
+            groups.add(position, group);
+            notifyItemInserted(position);
+        }
+    }
+
+    public void updateItem(int position, Group group) {
+        groups.set(position, group);
+        notifyItemChanged(position);
+    }
+
     @Override
     public int getItemCount() {
         return groups.size();

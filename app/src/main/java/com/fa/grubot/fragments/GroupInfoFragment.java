@@ -255,7 +255,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
             buttonsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
 
-        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons, group.getId());
+        //groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons, group.getId());
 
         groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);
