@@ -60,16 +60,20 @@ public class GroupsPresenter {
                     groups.add(group);
                 }
 
-                if (groups.isEmpty()) {
-                    fragment.setupLayouts(true, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
-                } else {
-                    fragment.setupLayouts(true, true);
-                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                if (fragment != null) {
+                    if (groups.isEmpty()) {
+                        fragment.setupLayouts(true, false);
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
+                    } else {
+                        fragment.setupLayouts(true, true);
+                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                    }
                 }
             } else {
-                fragment.setupLayouts(false, false);
-                notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                if (fragment != null) {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                }
             }
         });
     }
@@ -85,8 +89,10 @@ public class GroupsPresenter {
                     fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
                 }
             } else {
-                fragment.setupLayouts(false, false);
-                notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                if (fragment != null) {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                }
             }
         });
     }

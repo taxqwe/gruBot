@@ -38,7 +38,7 @@ public class GroupInfoPresenter {
     }
 
     public void notifyFragmentStarted(String groupId) {
-        documentReference = FirebaseFirestore.getInstance().document("groups/" + groupId + "/");
+        documentReference = FirebaseFirestore.getInstance().collection("groups").document(groupId);
         setupConnection();
         setRegistration();
     }
@@ -95,8 +95,8 @@ public class GroupInfoPresenter {
                     announcement = (ActionAnnouncement) setDataForAction(announcement);
                     items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(announcement));
                 }
-                buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", new ArrayList<>())));
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", items)));
+                buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", items)));
                 usersCount = group.getUsers().size();
                 items.clear();
                 setUsers(items, 0);
@@ -130,8 +130,10 @@ public class GroupInfoPresenter {
     private void setUsers(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items, int count) {
         if (count >= usersCount) {
             buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Список участников", items)));
-            fragment.setupLayouts(true);
-            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+            if (fragment != null) {
+                fragment.setupLayouts(true);
+                notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+            }
             return;
         }
 
@@ -147,8 +149,10 @@ public class GroupInfoPresenter {
                 items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
                 setUsers(items, count + 1);
             } else {
-                fragment.setupLayouts(false);
-                notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                if (fragment != null) {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                }
             }
         });
     }
