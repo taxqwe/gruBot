@@ -35,8 +35,6 @@ import io.reactivex.annotations.Nullable;
 public class GroupsFragment extends Fragment implements GroupsFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.recycler) transient RecyclerView groupsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
-    @Nullable @BindView(R.id.swipeRefreshLayoutNoData) transient SwipeRefreshLayout swipeRefreshLayoutNoData;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
@@ -118,22 +116,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
-    public void setupSwipeRefreshLayout() {
-        if (state == Globals.FragmentState.STATE_NO_DATA) {
-            swipeRefreshLayoutNoData.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-            swipeRefreshLayoutNoData.setOnRefreshListener(() -> {
-                presenter.onRefresh(getActivity());
-                onItemsLoadComplete();
-            });
-        } else {
-            swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-            swipeRefreshLayout.setOnRefreshListener(() -> {
-                presenter.onRefresh(getActivity());
-                onItemsLoadComplete();
-            });
-        }
-    }
-
     public void setupRecyclerView(ArrayList<Group> groups) {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         groupsView.setLayoutManager(mLayoutManager);
@@ -158,13 +140,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
     public void setupRetryButton() {
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
-    }
-
-    private void onItemsLoadComplete() {
-        if (state == Globals.FragmentState.STATE_NO_DATA)
-            swipeRefreshLayoutNoData.setRefreshing(false);
-        else
-            swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

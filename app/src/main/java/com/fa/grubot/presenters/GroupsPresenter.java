@@ -2,11 +2,19 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.models.GroupsModel;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -16,18 +24,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class GroupsPresenter {
+
     private GroupsFragmentBase fragment;
     private GroupsModel model;
 
     private ArrayList<Group> groups = new ArrayList<>();
 
+    private CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("groups");
+    private EventListener eventListener;
 
     public GroupsPresenter(GroupsFragmentBase fragment){
         this.fragment = fragment;
         this.model = new GroupsModel();
     }
 
-    public void notifyViewCreated(int state){
+    private void notifyViewCreated(int state){
         fragment.showRequiredViews();
 
         switch (state) {
@@ -45,21 +56,60 @@ public class GroupsPresenter {
         }
     }
 
-    public void notifyFragmentStarted(Context context){
-        model.isNetworkAvailable(context)
-                .doOnNext(result -> {
-                    if (result)
-                        getData(true);
-                    else {
-                        fragment.setupLayouts(false, false);
-                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+    private void setupConnection() {
+        collectionReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                groups.clear();
+                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+                    Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<String>) doc.get("users"), doc.get("imgUrl").toString());
+                    groups.add(group);
+                    Log.e("mytag", group.getName());
+                }
+
+                if (groups.isEmpty()) {
+                    fragment.setupLayouts(true, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
+                } else {
+                    fragment.setupLayouts(true, true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                }
+            } else {
+                fragment.setupLayouts(false, false);
+                notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+            }
+        });
+
+        new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                if (e == null) {
+                    for (DocumentChange dc : documentSnapshots.getDocumentChanges()){
+                        switch (dc.getType()) {
+                            case ADDED:
+
+                                break;
+                            case MODIFIED:
+
+                                break;
+                            case REMOVED:
+
+                                break;
+                        }
                     }
-                })
-                .doOnError(error -> {
-                    fragment.setupLayouts(false, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                })
-                .subscribe();
+                }
+            }
+        };
+
+        collectionReference.addSnapshotListener(eventListener);
+        collectionReference.
+    }
+
+    public void notifyFragmentStarted(Context context){
+        setupConnection();
+        /*if (model.isNetworkAvailable(context))
+            getData(true);
+        else
+            fragment.setupLayouts(false, false);*/
     }
 
     private void getData(final boolean isFirst) {
@@ -116,7 +166,7 @@ public class GroupsPresenter {
                 .subscribe();
     }
 
-    public void destroy(){
+    public void destroy() {
         fragment = null;
         model = null;
     }

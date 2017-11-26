@@ -4,19 +4,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Group implements Serializable {
-    private int id;
+    private String id;
     private String name;
-    private ArrayList<User> users;
+    private ArrayList<String> users;
     private String imgURL;
 
-    public Group(int id, String name, ArrayList<User> users, String imgURL) {
+    public Group(String id, String name, ArrayList<String> users, String imgURL) {
         this.id = id;
         this.name = name;
         this.users = users;
         this.imgURL = imgURL;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -28,7 +28,7 @@ public class Group implements Serializable {
         return imgURL;
     }
 
-    public ArrayList<User> getUsers() {
+    public ArrayList<String> getUsers() {
         return users;
     }
 }
