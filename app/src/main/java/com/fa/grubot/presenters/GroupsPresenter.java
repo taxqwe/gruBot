@@ -13,8 +13,6 @@ import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 
-import static com.google.firebase.firestore.DocumentChange.Type.ADDED;
-
 public class GroupsPresenter {
 
     private GroupsFragmentBase fragment;
@@ -79,25 +77,6 @@ public class GroupsPresenter {
                     Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<String>) doc.get("users"), doc.get("imgUrl").toString());
 
                     fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
-
-                    /*switch (dc.getType()) {
-                        case ADDED:
-                            boolean exists = false;
-                            for (Group item : groups) {
-                                if (item.getId().equals(group.getId()))
-                                    exists = true;
-                            }
-
-                            if (!exists)
-                                groups.add(dc.getNewIndex(), group);
-                            break;
-                        case MODIFIED:
-                            groups.set(dc.getNewIndex(), group);
-                            break;
-                        case REMOVED:
-                            groups.remove(dc.getOldIndex());
-                            break;
-                    }*/
                 }
             } else {
                 fragment.setupLayouts(false, false);

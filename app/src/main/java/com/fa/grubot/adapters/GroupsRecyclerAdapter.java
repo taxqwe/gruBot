@@ -70,21 +70,19 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     }
 
     public void addItem(int position, Group group) {
-        boolean exists = false;
-        for (Group item : groups) {
-            if (item.getId().equals(group.getId()))
-                exists = true;
-        }
-
-        if (!exists) {
-            groups.add(position, group);
-            notifyItemInserted(position);
-        }
+        groups.add(position, group);
+        notifyItemInserted(position);
     }
 
-    public void updateItem(int position, Group group) {
-        groups.set(position, group);
-        notifyItemChanged(position);
+    public void updateItem(int oldPosition, int newPosition, Group group) {
+        if (oldPosition == newPosition) {
+            groups.set(oldPosition, group);
+            notifyItemChanged(oldPosition);
+        } else {
+            groups.remove(oldPosition);
+            groups.add(newPosition, group);
+            notifyItemMoved(oldPosition, newPosition);
+        }
     }
 
     @Override

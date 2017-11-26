@@ -74,20 +74,20 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
     @Override
     public void onPause() {
-        presenter.removeRegistration();
         super.onPause();
+        //presenter.removeRegistration();
     }
 
     @Override
     public void onResume() {
-        presenter.resumeRegistration();
         super.onResume();
+        //presenter.resumeRegistration();
     }
 
     @Override
     public void onStop() {
-        presenter.removeRegistration();
         super.onStop();
+        //presenter.removeRegistration();
     }
 
     public void showRequiredViews() {
@@ -161,14 +161,14 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void handleListUpdate(DocumentChange.Type type, int index, int oldIndex, Group group) {
+    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Group group) {
         if (groupsAdapter != null) {
             switch (type) {
                 case ADDED:
-                    groupsAdapter.addItem(index, group);
+                    groupsAdapter.addItem(newIndex, group);
                     break;
                 case MODIFIED:
-                    groupsAdapter.updateItem(index, group);
+                    groupsAdapter.updateItem(oldIndex, newIndex, group);
                     break;
                 case REMOVED:
                     groupsAdapter.removeItem(oldIndex);
