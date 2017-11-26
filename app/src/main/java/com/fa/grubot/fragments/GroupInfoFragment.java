@@ -119,7 +119,6 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         progressBar.setVisibility(View.VISIBLE);
     }
 
-
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
             state = Globals.FragmentState.STATE_CONTENT;

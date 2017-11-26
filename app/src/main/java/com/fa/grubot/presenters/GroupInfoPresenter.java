@@ -2,6 +2,7 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
@@ -17,6 +18,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -96,7 +98,8 @@ public class GroupInfoPresenter {
                     items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(announcement));
                 }
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", items)));
-                buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", items)));
+                buttons.addAll(items);
+                buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", new ArrayList<>())));
                 usersCount = group.getUsers().size();
                 items.clear();
                 setUsers(items, 0);
@@ -130,6 +133,7 @@ public class GroupInfoPresenter {
     private void setUsers(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items, int count) {
         if (count >= usersCount) {
             buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Список участников", items)));
+            buttons.addAll(items);
             if (fragment != null) {
                 fragment.setupLayouts(true);
                 notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
