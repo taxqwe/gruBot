@@ -77,7 +77,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         presenter.notifyFragmentStarted(getActivity(), type);
 
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
     }

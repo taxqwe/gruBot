@@ -91,7 +91,6 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         presenter.notifyFragmentStarted(getActivity(), group);
 
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
     }

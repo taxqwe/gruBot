@@ -75,7 +75,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         presenter.notifyFragmentStarted(getActivity(), user);
 
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
     }

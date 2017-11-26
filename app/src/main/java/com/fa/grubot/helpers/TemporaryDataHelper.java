@@ -74,7 +74,7 @@ public class TemporaryDataHelper {
     }
 
     public ArrayList<User> getUsersByGroup(Group group) {
-        return group.getUsers();
+        return null; //group.getUsers();
     }
 
     public ArrayList<Group> getGroups() {
@@ -82,16 +82,16 @@ public class TemporaryDataHelper {
     }
 
     private void setActions() {
-        announcementsList.add(new ActionAnnouncement(1, groupsList.get(0), "Комлев Антон", "Собрание", new Date(),  placeholder));
-        announcementsList.add(new ActionAnnouncement(1, groupsList.get(0), "Комлев Антон", "Выходные дни", new Date(), placeholder));
-        announcementsList.add(new ActionAnnouncement(3, groupsList.get(2), "Чехов А. П.", "Поездка", new Date(), placeholder));
-        announcementsList.add(new ActionAnnouncement(3, groupsList.get(2), "Чехов А. П.", "Объявление", new Date(), placeholder));
-        announcementsList.add(new ActionAnnouncement(3, groupsList.get(2), "Чехов А. П.", "Собрание", new Date(), placeholder));
+        announcementsList.add(new ActionAnnouncement(1, null, "Комлев Антон", "Собрание", new Date(),  placeholder));
+        announcementsList.add(new ActionAnnouncement(1, null, "Комлев Антон", "Выходные дни", new Date(), placeholder));
+        announcementsList.add(new ActionAnnouncement(3, null, "Чехов А. П.", "Поездка", new Date(), placeholder));
+        announcementsList.add(new ActionAnnouncement(3, null, "Чехов А. П.", "Объявление", new Date(), placeholder));
+        announcementsList.add(new ActionAnnouncement(3, null, "Чехов А. П.", "Собрание", new Date(), placeholder));
 
-        votesList.add(new ActionVote(1, groupsList.get(0), "Комлев Антон", "Новый год", new Date(), options));
-        votesList.add(new ActionVote(2, groupsList.get(1), "Махин Семен", "Сбор денег", new Date(), options));
-        votesList.add(new ActionVote(2, groupsList.get(1), "Махин Семен", "Удовлетворенность чем-то", new Date(), options));
-        votesList.add(new ActionVote(2, groupsList.get(1), "Махин Семен", "Активность", new Date(), options));
+        votesList.add(new ActionVote(1, null, "Комлев Антон", "Новый год", new Date(), options));
+        votesList.add(new ActionVote(2, null, "Махин Семен", "Сбор денег", new Date(), options));
+        votesList.add(new ActionVote(2, null, "Махин Семен", "Удовлетворенность чем-то", new Date(), options));
+        votesList.add(new ActionVote(2, null, "Махин Семен", "Активность", new Date(), options));
     }
 
     private void setUsers() {
@@ -106,9 +106,9 @@ public class TemporaryDataHelper {
     }
 
     private void setGroups() {
-        groupsList.add(new Group(1, "ПИ4-1", new ArrayList<>(Arrays.asList(usersList.get(0), usersList.get(2), usersList.get(1))), "https://2static3.fjcdn.com/comments/Fun+fact+the+flat+topped+great+helm+is+a+piece+_3cb2af934364bbe51707d55061d6aacb.jpg"));
-        groupsList.add(new Group(2, "ПИ4-2", new ArrayList<>(Arrays.asList(usersList.get(6), usersList.get(3))),null));
-        groupsList.add(new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", new ArrayList<>(Arrays.asList(usersList.get(5), usersList.get(4), usersList.get(3))),null));
+        //groupsList.add(new Group(1, "ПИ4-1", new ArrayList<>(Arrays.asList(usersList.get(0), usersList.get(2), usersList.get(1))), "https://2static3.fjcdn.com/comments/Fun+fact+the+flat+topped+great+helm+is+a+piece+_3cb2af934364bbe51707d55061d6aacb.jpg"));
+        //groupsList.add(new Group(2, "ПИ4-2", new ArrayList<>(Arrays.asList(usersList.get(6), usersList.get(3))),null));
+        //groupsList.add(new Group(3, "ГРУППА НАМБА ВАН НА РУСИ", new ArrayList<>(Arrays.asList(usersList.get(5), usersList.get(4), usersList.get(3))),null));
     }
 
     public ArrayList<BranchOfDiscussions> getBranches() {
