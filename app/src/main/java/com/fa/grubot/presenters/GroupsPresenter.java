@@ -113,7 +113,7 @@ public class GroupsPresenter {
     }
 
     private void getData(final boolean isFirst) {
-        Observable.defer(() -> Observable.just(model.loadGroups()))
+        Observable.just(model.loadGroups())
                 .filter(result -> result != null)
                 .subscribeOn(Schedulers.io())
                 .timeout(15, TimeUnit.SECONDS)
@@ -123,12 +123,15 @@ public class GroupsPresenter {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(result -> {
-                    groups = result;
-                    if (groups.isEmpty())
+                    groups.clear();
+                    groups.addAll(result);
+                    if (groups.isEmpty()) {
                         fragment.setupLayouts(true, false);
-                    else
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
+                    } else {
                         fragment.setupLayouts(true, true);
-                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                    }
                 })
                 .doOnError(error -> {
                     fragment.setupLayouts(false, false);
@@ -138,18 +141,29 @@ public class GroupsPresenter {
     }
 
     public void onRefresh(Context context) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false);
-        } else {
-            fragment.setupLayouts(false, false);
-            notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(false);
+                    else {
+                        fragment.setupLayouts(false, false);
+                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    }
+                })
+                .doOnError(error -> {
+                    fragment.setupLayouts(false, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                })
+                .subscribe();
     }
 
     public void onRetryBtnClick(Context context) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false);
-        }
+        model.isNetworkAvailable(context)
+                .doOnNext(result -> {
+                    if (result)
+                        getData(false);
+                })
+                .subscribe();
     }
 
     public void destroy() {
