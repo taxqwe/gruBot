@@ -15,6 +15,7 @@ public class App extends Application {
     private boolean isBackstackEnabled = false;
     private boolean areAnimationsEnabled = false;
     private boolean isSlidrEnabled = true;
+    private User currentUser;
 
     @Override
     public void onCreate() {
@@ -51,8 +52,12 @@ public class App extends Application {
         isSlidrEnabled = slidrEnabled;
     }
 
+    public void setCurrentUser(User user) {
+        currentUser = user;
+    }
+
     public User getCurrentUser() {
-        return new User("0", "DOMINATOR48RUS", "The First One", "+71903322233", "NOONE CAN STOP ME", "http://www.netlore.ru/upload/files/1307/3_321.jpg");
+        return currentUser;
     }
 
     public SlidrConfig getSlidrConfig() {
