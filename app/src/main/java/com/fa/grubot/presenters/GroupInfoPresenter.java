@@ -32,6 +32,7 @@ public class GroupInfoPresenter {
     private transient DocumentReference documentReference;
     private transient ListenerRegistration registration;
     private Query usersQuery;
+    private Query announcementsQuery;
 
     public GroupInfoPresenter(GroupInfoFragmentBase fragment) {
         this.fragment = fragment;
@@ -41,6 +42,7 @@ public class GroupInfoPresenter {
     public void notifyFragmentStarted(String groupId) {
         documentReference = FirebaseFirestore.getInstance().collection("groups").document(groupId);
         usersQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("groups." + groupId, true);
+        announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("group", groupId);
         setupConnection();
         setRegistration();
     }
@@ -82,17 +84,20 @@ public class GroupInfoPresenter {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void setAnnouncements() {
         ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
-        FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("group", documentReference).get().addOnCompleteListener(task -> {
+        announcementsQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    ActionAnnouncement announcement = new ActionAnnouncement(doc.getId(),
-                                                                            (DocumentReference) doc.get("group"),
-                                                                            (DocumentReference) doc.get("author"),
-                                                                            doc.get("desc").toString(),
-                                                                            (Date) doc.get("date"),
-                                                                            doc.get("text").toString());
+                    ActionAnnouncement announcement =
+                            new ActionAnnouncement(
+                                    doc.get("group").toString(),
+                                    (DocumentReference) doc.get("author"),
+                                    doc.get("desc").toString(),
+                                    (Date) doc.get("date"),
+                                    doc.get("text").toString(),
+                                    (Map<String, Boolean>) doc.get("users"));
 
                     announcement = (ActionAnnouncement) setDataForAction(announcement);
                     items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(announcement));
@@ -114,12 +119,13 @@ public class GroupInfoPresenter {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
                 User user = new User(doc.getId(),
-                                    doc.get("username").toString(),
-                                    doc.get("fullname").toString(),
-                                    doc.get("phoneNumber").toString(),
-                                    doc.get("desc").toString(),
-                                    doc.get("imgUrl").toString());
+                        doc.get("username").toString(),
+                        doc.get("fullname").toString(),
+                        doc.get("phoneNumber").toString(),
+                        doc.get("desc").toString(),
+                        doc.get("imgUrl").toString());
                 action.setAuthorName(user.getFullname());
+                action.setId(group.getId());
             } else {
                 fragment.setupLayouts(false);
                 notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);

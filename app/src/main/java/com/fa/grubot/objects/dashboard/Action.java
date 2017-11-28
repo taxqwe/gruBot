@@ -7,13 +7,15 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 public class Action implements Serializable {
     private String id;
-    private DocumentReference group;
+    private String groupId;
     private DocumentReference author;
     private String desc;
     private Date date;
+    private Map<String, Boolean> users;
 
     private String authorName;
     private String groupName;
@@ -22,20 +24,24 @@ public class Action implements Serializable {
 
     }
 
-    public Action(String id, DocumentReference group, DocumentReference author, String desc, Date date) {
-        this.id = id;
-        this.group = group;
+    public Action(String groupId, DocumentReference author, String desc, Date date, Map<String, Boolean> users) {
+        this.groupId = groupId;
         this.author = author;
         this.desc = desc;
         this.date = date;
+        this.users = users;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getId() {
         return id;
     }
 
-    public DocumentReference getGroup() {
-        return group;
+    public String getGroup() {
+        return groupId;
     }
 
     public DocumentReference getAuthor() {
@@ -65,5 +71,9 @@ public class Action implements Serializable {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public Map<String, Boolean> getUsers() {
+        return users;
     }
 }

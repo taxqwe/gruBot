@@ -25,6 +25,7 @@ import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.adapters.VoteRecyclerAdapter;
+import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
@@ -33,11 +34,14 @@ import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -171,10 +175,13 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                         EditText desc = (EditText) dialog.findViewById(R.id.announcementDesc);
                         EditText text = (EditText) dialog.findViewById(R.id.announcementText);
 
-                        if (!desc.toString().isEmpty() && !text.toString().isEmpty()){
-                            //ActionAnnouncement actionAnnouncement = new ActionAnnouncement(1488, group, "Current User", desc.getText().toString(), new Date(), text.getText().toString());
-                            //App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_ANNOUNCEMENTS, actionAnnouncement);
-                            //groupInfoAdapter.insertItem(actionAnnouncement);
+                        if (!desc.toString().isEmpty() && !text.toString().isEmpty()) {
+                            DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
+                            ActionAnnouncement announcement = new ActionAnnouncement(group.getId(), userReference, desc.getText().toString(), System.currentTimeMillis(), text.getText().toString(), group.getUsers());
+
+                            FirebaseFirestore.getInstance().collection("announcements")
+                                    .add(announcement)
+                                    .addOnSuccessListener(aVoid -> Toast.makeText(getActivity(), "Успешно добавлено", Toast.LENGTH_LONG).show());
                         }
 
                         fam.close(true);
@@ -199,7 +206,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
             EditText desc = (EditText) materialDialog.getView().findViewById(R.id.voteDesc);
             LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-            VoteRecyclerAdapter voteAdapter = new VoteRecyclerAdapter(getActivity(), new ArrayList<VoteOption>(Collections.singletonList(new VoteOption())));
+            VoteRecyclerAdapter voteAdapter = new VoteRecyclerAdapter(getActivity(), new ArrayList<>(Collections.singletonList(new VoteOption())));
             voteRecycler.setLayoutManager(mLayoutManager);
             voteRecycler.setHasFixedSize(false);
 
