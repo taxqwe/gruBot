@@ -2,7 +2,6 @@ package com.fa.grubot.presenters;
 
 
 import android.content.Context;
-import android.util.Log;
 
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
@@ -18,9 +17,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 public class GroupInfoPresenter {
     private GroupInfoFragmentBase fragment;
@@ -70,7 +69,7 @@ public class GroupInfoPresenter {
         documentReference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
-                group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<DocumentReference>) doc.get("users"), doc.get("imgUrl").toString());
+                group = new Group(doc.getId(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(1, "Чат", new ArrayList<>())));
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Ветки осбуждений", new ArrayList<>())));
@@ -141,7 +140,7 @@ public class GroupInfoPresenter {
             return;
         }
 
-        group.getUsers().get(count).get().addOnCompleteListener(task -> {
+        /*group.getUsers().get(count).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
                 User user = new User(doc.getId(),
@@ -158,7 +157,7 @@ public class GroupInfoPresenter {
                     notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
-        });
+        });*/
     }
 
     @SuppressWarnings("unchecked")

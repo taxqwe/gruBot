@@ -7,16 +7,9 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
-import com.fa.grubot.objects.group.Group;
-import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
-import com.fa.grubot.util.Globals;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
 
 public class SplashActivity extends AppCompatActivity {
 
