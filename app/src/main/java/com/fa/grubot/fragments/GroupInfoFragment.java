@@ -179,8 +179,9 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
                         if (!desc.toString().isEmpty() && !text.toString().isEmpty()) {
                             MaterialDialog progress = new MaterialDialog.Builder(getActivity())
-                                    .title("Загрузка...")
+                                    .content("Пожалуйста, подождите")
                                     .progress(true, 0)
+                                    .cancelable(false)
                                     .show();
                             DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
                             ActionAnnouncement announcement = new ActionAnnouncement(group.getId(), userReference, desc.getText().toString(), new Date(), text.getText().toString(), group.getUsers());
