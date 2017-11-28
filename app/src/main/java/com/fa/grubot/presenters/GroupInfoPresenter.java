@@ -16,6 +16,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,8 +31,7 @@ public class GroupInfoPresenter {
 
     private transient DocumentReference documentReference;
     private transient ListenerRegistration registration;
-
-    private int usersCount;
+    private Query usersQuery;
 
     public GroupInfoPresenter(GroupInfoFragmentBase fragment) {
         this.fragment = fragment;
@@ -40,6 +40,7 @@ public class GroupInfoPresenter {
 
     public void notifyFragmentStarted(String groupId) {
         documentReference = FirebaseFirestore.getInstance().collection("groups").document(groupId);
+        usersQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("groups." + groupId, true);
         setupConnection();
         setRegistration();
     }
@@ -99,9 +100,7 @@ public class GroupInfoPresenter {
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", items)));
                 buttons.addAll(items);
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", new ArrayList<>())));
-                usersCount = group.getUsers().size();
-                items.clear();
-                setUsers(items, 0);
+                setUsers();
             } else {
                 fragment.setupLayouts(false);
                 notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
@@ -129,35 +128,34 @@ public class GroupInfoPresenter {
         return action;
     }
 
-    private void setUsers(ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items, int count) {
-        if (count >= usersCount) {
-            buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Список участников", items)));
-            buttons.addAll(items);
-            if (fragment != null) {
-                fragment.setupLayouts(true);
-                notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
-            }
-            return;
-        }
-
-        /*group.getUsers().get(count).get().addOnCompleteListener(task -> {
+    private void setUsers() {
+        ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
+        usersQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                DocumentSnapshot doc = task.getResult();
-                User user = new User(doc.getId(),
-                        doc.get("username").toString(),
-                        doc.get("fullname").toString(),
-                        doc.get("phoneNumber").toString(),
-                        doc.get("desc").toString(),
-                        doc.get("imgUrl").toString());
-                items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
-                setUsers(items, count + 1);
+                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+                    User user = new User(doc.getId(),
+                            doc.get("username").toString(),
+                            doc.get("fullname").toString(),
+                            doc.get("phoneNumber").toString(),
+                            doc.get("desc").toString(),
+                            doc.get("imgUrl").toString());
+                    items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(user));
+                }
+
+                buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Участники", items)));
+                buttons.addAll(items);
+
+                if (fragment != null) {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                }
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
                     notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
-        });*/
+        });
     }
 
     @SuppressWarnings("unchecked")
