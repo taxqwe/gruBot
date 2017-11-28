@@ -1,18 +1,19 @@
 package com.fa.grubot.presenters;
 
 
+import com.fa.grubot.App;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.models.GroupsModel;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class GroupsPresenter {
 
@@ -21,7 +22,7 @@ public class GroupsPresenter {
 
     private ArrayList<Group> groups = new ArrayList<>();
 
-    private CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("groups");
+    private Query groupsQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), true);
     private ListenerRegistration registration;
 
     public GroupsPresenter(GroupsFragmentBase fragment) {
@@ -52,11 +53,11 @@ public class GroupsPresenter {
 
     @SuppressWarnings("unchecked")
     private void setupConnection() {
-        collectionReference.get().addOnCompleteListener(task -> {
+        groupsQuery.get().addOnCompleteListener(task -> {
             groups.clear();
             if (task.isSuccessful()) {
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<DocumentReference>) doc.get("users"), doc.get("imgUrl").toString());
+                    Group group = new Group(doc.getId(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
                     groups.add(group);
                 }
 
@@ -80,11 +81,11 @@ public class GroupsPresenter {
 
     @SuppressWarnings("unchecked")
     private void setRegistration() {
-        registration = collectionReference.addSnapshotListener((documentSnapshots, e) -> {
+        registration = groupsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
-                    Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<DocumentReference>) doc.get("users"), doc.get("imgUrl").toString());
+                    Group group = new Group(doc.getId(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
                     fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
                 }
