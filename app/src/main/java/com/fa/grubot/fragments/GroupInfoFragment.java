@@ -2,6 +2,7 @@ package com.fa.grubot.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +34,7 @@ import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -176,12 +178,23 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                         EditText text = (EditText) dialog.findViewById(R.id.announcementText);
 
                         if (!desc.toString().isEmpty() && !text.toString().isEmpty()) {
+                            MaterialDialog progress = new MaterialDialog.Builder(getActivity())
+                                    .title("Загрузка...")
+                                    .progress(true, 0)
+                                    .show();
                             DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
-                            ActionAnnouncement announcement = new ActionAnnouncement(group.getId(), userReference, desc.getText().toString(), System.currentTimeMillis(), text.getText().toString(), group.getUsers());
+                            ActionAnnouncement announcement = new ActionAnnouncement(group.getId(), userReference, desc.getText().toString(), new Date(), text.getText().toString(), group.getUsers());
 
                             FirebaseFirestore.getInstance().collection("announcements")
                                     .add(announcement)
-                                    .addOnSuccessListener(aVoid -> Toast.makeText(getActivity(), "Успешно добавлено", Toast.LENGTH_LONG).show());
+                                    .addOnSuccessListener(aVoid -> {
+                                        progress.dismiss();
+                                        Toast.makeText(getActivity().getApplicationContext(), "Успешно добавлено", Toast.LENGTH_LONG).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        progress.dismiss();
+                                        Toast.makeText(getActivity().getApplicationContext(), "Ошибка добавления", Toast.LENGTH_LONG).show();
+                                    });
                         }
 
                         fam.close(true);

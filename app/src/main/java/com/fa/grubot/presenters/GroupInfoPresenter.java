@@ -43,6 +43,7 @@ public class GroupInfoPresenter {
         documentReference = FirebaseFirestore.getInstance().collection("groups").document(groupId);
         usersQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("groups." + groupId, true);
         announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("group", groupId);
+
         setupConnection();
         setRegistration();
     }
@@ -95,7 +96,8 @@ public class GroupInfoPresenter {
                                     doc.get("group").toString(),
                                     (DocumentReference) doc.get("author"),
                                     doc.get("desc").toString(),
-                                    (Date) doc.get("date"),
+                                    new Date(),
+                                    //(Date) doc.get("date"), TODO исправить
                                     doc.get("text").toString(),
                                     (Map<String, Boolean>) doc.get("users"));
 
