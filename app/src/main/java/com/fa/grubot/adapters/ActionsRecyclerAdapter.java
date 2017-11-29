@@ -13,6 +13,7 @@ import com.fa.grubot.R;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
+import com.fa.grubot.objects.group.Group;
 
 import java.util.ArrayList;
 
@@ -91,19 +92,30 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return (entries == null) ? 0 : entries.size();
+    }
+
     public void removeItem(int position) {
         entries.remove(position);
         notifyItemRemoved(position);
     }
 
-    public void restoreItem(Action entry, int position) {
-        entries.add(position, entry);
+    public void addItem(int position, Action action) {
+        entries.add(position, action);
         notifyItemInserted(position);
     }
 
-    @Override
-    public int getItemCount() {
-        return (entries == null) ? 0 : entries.size();
+    public void updateItem(int oldPosition, int newPosition, Action action) {
+        if (oldPosition == newPosition) {
+            entries.set(oldPosition, action);
+            notifyItemChanged(oldPosition);
+        } else {
+            entries.remove(oldPosition);
+            entries.add(newPosition, action);
+            notifyItemMoved(oldPosition, newPosition);
+        }
     }
 
     private int getColorFromDashboardEntry(Action entry){

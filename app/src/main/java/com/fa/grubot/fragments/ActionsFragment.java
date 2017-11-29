@@ -3,6 +3,7 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -23,8 +24,10 @@ import com.fa.grubot.adapters.ActionsRecyclerAdapter;
 import com.fa.grubot.helpers.RecyclerItemTouchHelper;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.ActionsPresenter;
 import com.fa.grubot.util.Globals;
+import com.google.firebase.firestore.DocumentChange;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,9 +45,9 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     public static final int TYPE_VOTES_ARCHIVE = 828;
 
     @Nullable @BindView(R.id.recycler) transient  RecyclerView actionsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
-    @Nullable @BindView(R.id.swipeRefreshLayoutNoData) transient SwipeRefreshLayout swipeRefreshLayoutNoData;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
+
+    @Nullable @BindView(R.id.root) transient CoordinatorLayout root;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
     @Nullable @BindView(R.id.content) transient View content;
@@ -73,23 +76,9 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         type = this.getArguments().getInt("type");
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyFragmentStarted(getActivity(), type);
+        presenter.notifyFragmentStarted(type);
 
         return v;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(false);
-            swipeRefreshLayout.destroyDrawingCache();
-            swipeRefreshLayout.clearAnimation();
-        } else {
-            swipeRefreshLayoutNoData.setRefreshing(false);
-            swipeRefreshLayoutNoData.destroyDrawingCache();
-            swipeRefreshLayoutNoData.clearAnimation();
-        }
     }
 
     @Override
@@ -132,22 +121,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
     }
 
-    public void setupSwipeRefreshLayout() {
-        if (state == Globals.FragmentState.STATE_NO_DATA) {
-            swipeRefreshLayoutNoData.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-            swipeRefreshLayoutNoData.setOnRefreshListener(() -> {
-                presenter.onRefresh(getActivity(), type);
-                onItemsLoadComplete();
-            });
-        } else {
-            swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-            swipeRefreshLayout.setOnRefreshListener(() -> {
-                presenter.onRefresh(getActivity(), type);
-                onItemsLoadComplete();
-            });
-        }
-    }
-
     public void setupRecyclerView(ArrayList<Action> newActions) {
         int spanCount = 1;
 
@@ -175,14 +148,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     public void setupRetryButton() {
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), type));
-    }
-
-    private void onItemsLoadComplete() {
-        if (state == Globals.FragmentState.STATE_NO_DATA)
-            swipeRefreshLayoutNoData.setRefreshing(false);
-        else
-            swipeRefreshLayout.setRefreshing(false);
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(type));
     }
 
     @Override
@@ -196,18 +162,34 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
 
             Snackbar snackbar;
             if (deletedItem instanceof ActionAnnouncement) {
-                snackbar = Snackbar.make(swipeRefreshLayout, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
+                snackbar = Snackbar.make(root, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
             } else {
-                snackbar = Snackbar.make(swipeRefreshLayout, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
+                snackbar = Snackbar.make(root, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
             }
 
             snackbar.setAction(android.R.string.cancel, view -> {
                 App.INSTANCE.getDataHelper().restoreActionFromArchive(type, deletedItem, deletedIndex);
-                actionsAdapter.restoreItem(deletedItem, deletedIndex);
+                //actionsAdapter.restoreItem(deletedItem, deletedIndex);
                 actionsView.smoothScrollToPosition(deletedIndex);
             });
             snackbar.setActionTextColor(Color.YELLOW);
             snackbar.show();
+        }
+    }
+
+    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Action action) {
+        if (actionsAdapter != null) {
+            switch (type) {
+                case ADDED:
+                    actionsAdapter.addItem(newIndex, action);
+                    break;
+                case MODIFIED:
+                    actionsAdapter.updateItem(oldIndex, newIndex, action);
+                    break;
+                case REMOVED:
+                    actionsAdapter.removeItem(oldIndex);
+                    break;
+            }
         }
     }
 
