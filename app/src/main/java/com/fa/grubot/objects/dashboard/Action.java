@@ -15,7 +15,7 @@ public class Action implements Serializable {
     private DocumentReference author;
     private String desc;
     private Date date;
-    private Map<String, Boolean> users;
+    private Map<String, String> users;
 
     private String authorName;
     private String groupName;
@@ -24,16 +24,15 @@ public class Action implements Serializable {
 
     }
 
-    public Action(String groupId, DocumentReference author, String desc, Date date, Map<String, Boolean> users) {
+    public Action(String id, String groupId, String groupName, DocumentReference author, String authorName, String desc, Date date, Map<String, String> users) {
+        this.id = id;
         this.groupId = groupId;
         this.author = author;
         this.desc = desc;
         this.date = date;
         this.users = users;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        this.authorName = authorName;
+        this.groupName = groupName;
     }
 
     public String getId() {
@@ -61,19 +60,11 @@ public class Action implements Serializable {
         return authorName;
     }
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
-
     public String getGroupName() {
         return groupName;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public Map<String, Boolean> getUsers() {
+    public Map<String, String> getUsers() {
         return users;
     }
 }

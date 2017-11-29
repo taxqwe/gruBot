@@ -1,15 +1,12 @@
 package com.fa.grubot.presenters;
 
 
-import android.content.Context;
-
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.models.ActionsModel;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.util.Globals;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -21,11 +18,6 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class ActionsPresenter {
     private ActionsFragmentBase fragment;
@@ -41,10 +33,20 @@ public class ActionsPresenter {
     }
 
     public void notifyFragmentStarted(int type) {
-        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS)
-            actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), true);
-        else
-            actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), true);
+        switch (type) {
+            case ActionsFragment.TYPE_ANNOUNCEMENTS:
+                actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
+                break;
+            case ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE:
+                actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
+                break;
+            case ActionsFragment.TYPE_VOTES:
+                actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
+                break;
+            case ActionsFragment.TYPE_VOTES_ARCHIVE:
+                actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
+                break;
+        }
 
         setupConnection(type);
         setRegistration(type);
@@ -71,16 +73,19 @@ public class ActionsPresenter {
             actions.clear();
             if (task.isSuccessful()) {
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
+                    if (type == ActionsFragment.TYPE_ANNOUNCEMENTS  || type == ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE) {
                         ActionAnnouncement announcement =
                                 new ActionAnnouncement(
+                                        doc.getId(),
                                         doc.get("group").toString(),
+                                        doc.get("groupName").toString(),
                                         (DocumentReference) doc.get("author"),
+                                        doc.get("authorName").toString(),
                                         doc.get("desc").toString(),
-                                        new Date(),
-                                        //(Date) doc.get("date"), TODO исправить
+                                        (Date) doc.get("date"),
                                         doc.get("text").toString(),
-                                        (Map<String, Boolean>) doc.get("users"));
+                                        (Map<String, String>) doc.get("users"));
+
                         actions.add(announcement);
                     } else {
                         //TODO Vote
@@ -111,17 +116,21 @@ public class ActionsPresenter {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
-                    if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
+                    if (type == ActionsFragment.TYPE_ANNOUNCEMENTS || type == ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE) {
                         ActionAnnouncement announcement =
                                 new ActionAnnouncement(
+                                        doc.getId(),
                                         doc.get("group").toString(),
+                                        doc.get("groupName").toString(),
                                         (DocumentReference) doc.get("author"),
+                                        doc.get("authorName").toString(),
                                         doc.get("desc").toString(),
-                                        new Date(),
-                                        //(Date) doc.get("date"), TODO исправить
+                                        (Date) doc.get("date"),
                                         doc.get("text").toString(),
-                                        (Map<String, Boolean>) doc.get("users"));
-                        fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), announcement);
+                                        (Map<String, String>) doc.get("users"));
+
+                        if (fragment != null)
+                            fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), announcement);
                     } else {
                         //TODO Vote
                     }
@@ -133,6 +142,54 @@ public class ActionsPresenter {
                 }
             }
         });
+    }
+
+    public void addActionToArchive(Action action, int type) {
+        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
+            addAnnouncementToArchive((ActionAnnouncement) action);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void addAnnouncementToArchive(ActionAnnouncement announcement) {
+        FirebaseFirestore.getInstance().collection("announcements")
+                .document(announcement.getId())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
+
+                    users.put(App.INSTANCE.getCurrentUser().getId(), "archive");
+
+                    FirebaseFirestore.getInstance().collection("announcements")
+                            .document(announcement.getId())
+                            .update("users", users)
+                            .addOnSuccessListener(aVoid -> {
+                                if (fragment != null)
+                                    fragment.showArchiveSnackbar(announcement);
+                            });
+                });
+    }
+
+    public void restoreActionFromArchive(Action action, int type) {
+        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
+            restoreAnnouncementFromArchive((ActionAnnouncement) action);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void restoreAnnouncementFromArchive(ActionAnnouncement announcement) {
+        FirebaseFirestore.getInstance().collection("announcements")
+                .document(announcement.getId())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
+
+                    users.put(App.INSTANCE.getCurrentUser().getId(), "new");
+
+                    FirebaseFirestore.getInstance().collection("announcements")
+                            .document(announcement.getId())
+                            .update("users", users);
+                });
     }
 
     public void onRetryBtnClick(int type) {

@@ -6,7 +6,6 @@ import android.content.Context;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.models.GroupInfoModel;
-import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
@@ -93,15 +92,16 @@ public class GroupInfoPresenter {
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
                     ActionAnnouncement announcement =
                             new ActionAnnouncement(
+                                    doc.getId(),
                                     doc.get("group").toString(),
+                                    doc.get("groupName").toString(),
                                     (DocumentReference) doc.get("author"),
+                                    doc.get("authorName").toString(),
                                     doc.get("desc").toString(),
-                                    new Date(),
-                                    //(Date) doc.get("date"), TODO исправить
+                                    (Date) doc.get("date"),
                                     doc.get("text").toString(),
-                                    (Map<String, Boolean>) doc.get("users"));
+                                    (Map<String, String>) doc.get("users"));
 
-                    announcement = (ActionAnnouncement) setDataForAction(announcement);
                     items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(announcement));
                 }
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", items)));
@@ -113,27 +113,6 @@ public class GroupInfoPresenter {
                 notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
             }
         });
-    }
-
-    private Action setDataForAction(Action action) {
-        action.setGroupName(group.getName());
-        action.getAuthor().get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot doc = task.getResult();
-                User user = new User(doc.getId(),
-                        doc.get("username").toString(),
-                        doc.get("fullname").toString(),
-                        doc.get("phoneNumber").toString(),
-                        doc.get("desc").toString(),
-                        doc.get("imgUrl").toString());
-                action.setAuthorName(user.getFullname());
-                action.setId(group.getId());
-            } else {
-                fragment.setupLayouts(false);
-                notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-            }
-        });
-        return action;
     }
 
     private void setUsers() {

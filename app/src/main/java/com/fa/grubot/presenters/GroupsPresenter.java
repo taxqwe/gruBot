@@ -87,7 +87,8 @@ public class GroupsPresenter {
                     DocumentSnapshot doc = dc.getDocument();
                     Group group = new Group(doc.getId(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
-                    fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
+                    if (fragment != null)
+                        fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
                 }
             } else {
                 if (fragment != null) {
@@ -96,14 +97,6 @@ public class GroupsPresenter {
                 }
             }
         });
-    }
-
-    public void removeRegistration() {
-        registration.remove();
-    }
-
-    public void resumeRegistration() {
-        setRegistration();
     }
 
     public void onRetryBtnClick() {

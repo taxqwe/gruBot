@@ -10,8 +10,8 @@ import java.util.Map;
 public class ActionVote extends Action {
     private ArrayList<String> options = new ArrayList<>();
 
-    public ActionVote(String group, DocumentReference author, String desc, Date date, ArrayList<VoteOption> options, Map<String, Boolean> users) {
-        super(group, author, desc, date, users);
+    public ActionVote(String id, String group, String groupName, DocumentReference author, String authorName, String desc, Date date, ArrayList<VoteOption> options, Map<String, String> users) {
+        super(id, group, groupName, author, authorName, desc, date, users);
 
         for (VoteOption option : options){
             this.options.add(option.getText());

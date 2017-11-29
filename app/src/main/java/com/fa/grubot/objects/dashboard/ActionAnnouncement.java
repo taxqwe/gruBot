@@ -8,8 +8,8 @@ import java.util.Map;
 public class ActionAnnouncement extends Action {
     private String text;
 
-    public ActionAnnouncement(String group, DocumentReference author, String desc, Date date, String text, Map<String, Boolean> users) {
-        super(group, author, desc, date, users);
+    public ActionAnnouncement(String id, String group, String groupName, DocumentReference author, String authorName, String desc, Date date, String text, Map<String, String> users) {
+        super(id, group, groupName, author, authorName, desc, date, users);
 
         this.text = text;
     }

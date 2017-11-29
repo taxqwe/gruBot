@@ -3,9 +3,7 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.fa.grubot.App;
@@ -23,8 +22,6 @@ import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.adapters.ActionsRecyclerAdapter;
 import com.fa.grubot.helpers.RecyclerItemTouchHelper;
 import com.fa.grubot.objects.dashboard.Action;
-import com.fa.grubot.objects.dashboard.ActionAnnouncement;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.ActionsPresenter;
 import com.fa.grubot.util.Globals;
 import com.google.firebase.firestore.DocumentChange;
@@ -47,7 +44,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Nullable @BindView(R.id.recycler) transient  RecyclerView actionsView;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
 
-    @Nullable @BindView(R.id.root) transient CoordinatorLayout root;
+    @Nullable @BindView(R.id.root) transient FrameLayout root;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
     @Nullable @BindView(R.id.content) transient View content;
@@ -74,9 +71,9 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         View v = inflater.inflate(R.layout.fragment_actions, container, false);
 
         type = this.getArguments().getInt("type");
+        presenter.notifyFragmentStarted(type);
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyFragmentStarted(type);
 
         return v;
     }
@@ -155,26 +152,23 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof ActionsRecyclerAdapter.ViewHolder) {
             final Action deletedItem = actions.get(viewHolder.getAdapterPosition());
-            final int deletedIndex = viewHolder.getAdapterPosition();
-
-            App.INSTANCE.getDataHelper().addActionToArchive(type, deletedItem);
-            actionsAdapter.removeItem(viewHolder.getAdapterPosition());
-
-            Snackbar snackbar;
-            if (deletedItem instanceof ActionAnnouncement) {
-                snackbar = Snackbar.make(root, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
-            } else {
-                snackbar = Snackbar.make(root, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
-            }
-
-            snackbar.setAction(android.R.string.cancel, view -> {
-                App.INSTANCE.getDataHelper().restoreActionFromArchive(type, deletedItem, deletedIndex);
-                //actionsAdapter.restoreItem(deletedItem, deletedIndex);
-                actionsView.smoothScrollToPosition(deletedIndex);
-            });
-            snackbar.setActionTextColor(Color.YELLOW);
-            snackbar.show();
+            presenter.addActionToArchive(deletedItem, type);
         }
+    }
+
+    public void showArchiveSnackbar(Action action) {
+        Snackbar snackbar;
+
+        if (type == TYPE_ANNOUNCEMENTS)
+            snackbar = Snackbar.make(root, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
+        else
+            snackbar = Snackbar.make(root, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
+
+        snackbar.setAction(android.R.string.cancel, view -> {
+            presenter.restoreActionFromArchive(action, type);
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
     }
 
     public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Action action) {

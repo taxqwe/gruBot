@@ -72,24 +72,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         Icepick.saveInstanceState(this, outState);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        //presenter.removeRegistration();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //presenter.resumeRegistration();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        //presenter.removeRegistration();
-    }
-
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
 

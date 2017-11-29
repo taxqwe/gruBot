@@ -13,7 +13,6 @@ import com.fa.grubot.R;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
-import com.fa.grubot.objects.group.Group;
 
 import java.util.ArrayList;
 

@@ -2,7 +2,6 @@ package com.fa.grubot.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,7 +25,6 @@ import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.adapters.VoteRecyclerAdapter;
-import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
@@ -34,7 +32,6 @@ import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,6 +41,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -183,8 +182,21 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                                     .progress(true, 0)
                                     .cancelable(false)
                                     .show();
+
                             DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
-                            ActionAnnouncement announcement = new ActionAnnouncement(group.getId(), userReference, desc.getText().toString(), new Date(), text.getText().toString(), group.getUsers());
+
+                            HashMap<String, Object> announcement = new HashMap<>();
+                            announcement.put("group", group.getId());
+                            announcement.put("groupName", group.getName());
+                            announcement.put("author", userReference);
+                            announcement.put("authorName", App.INSTANCE.getCurrentUser().getFullname());
+                            announcement.put("desc", desc.getText().toString());
+                            announcement.put("date", new Date());
+                            announcement.put("text", text.getText().toString());
+                            HashMap<String, String> users = new HashMap<>();
+                            for (Map.Entry<String, Boolean> user : group.getUsers().entrySet())
+                                users.put(user.getKey(), "new");
+                            announcement.put("users", users);
 
                             FirebaseFirestore.getInstance().collection("announcements")
                                     .add(announcement)
