@@ -104,6 +104,10 @@ public class GroupsPresenter {
         setRegistration();
     }
 
+    public void removeRegistration() {
+        registration.remove();
+    }
+
     public void destroy() {
         registration.remove();
         fragment = null;

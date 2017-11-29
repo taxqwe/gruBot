@@ -67,6 +67,18 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        presenter.removeRegistration();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        presenter.removeRegistration();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
