@@ -9,7 +9,7 @@ import android.support.v4.view.PagerAdapter;
 
 import com.fa.grubot.fragments.ActionsFragment;
 
-public class ActionsPagerAdapter extends FragmentStatePagerAdapter {
+public class ActionsPagerAdapter extends FragmentPagerAdapter {
 
     private int type;
 

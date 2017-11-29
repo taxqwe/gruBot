@@ -8,6 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,15 +68,30 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e("mytag", "onCreate");
         presenter = new ActionsPresenter(this);
+        setRetainInstance(true);
         View v = inflater.inflate(R.layout.fragment_actions, container, false);
 
+        actionsAdapter = null;
         type = this.getArguments().getInt("type");
         presenter.notifyFragmentStarted(type);
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
 
         return v;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.removeRegistration();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        presenter.removeRegistration();
     }
 
     @Override

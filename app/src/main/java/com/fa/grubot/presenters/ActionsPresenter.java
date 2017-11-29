@@ -197,7 +197,12 @@ public class ActionsPresenter {
         setRegistration(type);
     }
 
-    public void destroy(){
+    public void removeRegistration() {
+        registration.remove();
+    }
+
+    public void destroy() {
+        registration.remove();
         fragment = null;
         model = null;
     }
