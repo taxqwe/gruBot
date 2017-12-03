@@ -1,15 +1,15 @@
 package com.fa.grubot.objects.group;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Map;
 
 public class Group implements Serializable {
     private String id;
     private String name;
-    private ArrayList<String> users;
+    private Map<String, Boolean> users;
     private String imgURL;
 
-    public Group(String id, String name, ArrayList<String> users, String imgURL) {
+    public Group(String id, String name, Map<String, Boolean> users, String imgURL) {
         this.id = id;
         this.name = name;
         this.users = users;
@@ -28,7 +28,7 @@ public class Group implements Serializable {
         return imgURL;
     }
 
-    public ArrayList<String> getUsers() {
+    public Map<String, Boolean> getUsers() {
         return users;
     }
 }

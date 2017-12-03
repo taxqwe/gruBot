@@ -64,6 +64,27 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
         });
     }
 
+    public void removeItem(int position) {
+        groups.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void addItem(int position, Group group) {
+        groups.add(position, group);
+        notifyItemInserted(position);
+    }
+
+    public void updateItem(int oldPosition, int newPosition, Group group) {
+        if (oldPosition == newPosition) {
+            groups.set(oldPosition, group);
+            notifyItemChanged(oldPosition);
+        } else {
+            groups.remove(oldPosition);
+            groups.add(newPosition, group);
+            notifyItemMoved(oldPosition, newPosition);
+        }
+    }
+
     @Override
     public int getItemCount() {
         return groups.size();

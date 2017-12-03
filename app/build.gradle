@@ -56,8 +56,9 @@ dependencies {
     //butterknife
     compile 'com.jakewharton:butterknife:9.0.0-SNAPSHOT'
 
-    //slideable activity
+    //slidr
     compile 'com.r0adkll:slidableactivity:2.0.5'
+    //compile 'com.github.GGLabCenter:Slidr:master-SNAPSHOT'
 
     //dexter permissions
     compile 'com.karumi:dexter:4.2.0'

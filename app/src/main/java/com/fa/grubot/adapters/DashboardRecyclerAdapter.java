@@ -95,16 +95,37 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             case TYPE_ANNOUNCEMENT:
                 AnnouncementViewHolder announcementViewHolder = (AnnouncementViewHolder) holder;
                 DashboardAnnouncement announcement = (DashboardAnnouncement) item;
-                announcementViewHolder.newAnnouncementsCount.setText("Новых: " + announcement.getNewAnnouncementsCount());
-                announcementViewHolder.archiveAnnouncementsCount.setText("В архиве: " + announcement.getArchiveAnnouncementsCount());
-                announcementViewHolder.totalAnnouncementsCount.setText("Всего: " + announcement.getTotalAnnouncementsCount());
+                announcementViewHolder.newAnnouncementsCount.setText("Новых: " + announcement.getNewCount());
+                announcementViewHolder.archiveAnnouncementsCount.setText("В архиве: " + announcement.getArchiveCount());
+                announcementViewHolder.totalAnnouncementsCount.setText("Всего: " + announcement.getTotalCount());
                 break;
             case TYPE_VOTE:
                 VoteViewHolder voteViewHolder = (VoteViewHolder) holder;
                 DashboardVote vote = (DashboardVote) item;
-                voteViewHolder.newVotesCount.setText("Новых: " + vote.getNewVotesCount());
-                voteViewHolder.archiveVotesCount.setText("В архиве: " + vote.getArchiveVotesCount());
-                voteViewHolder.totalVotesCount.setText("Всего: " + vote.getTotalVotesCount());
+                voteViewHolder.newVotesCount.setText("Новых: " + vote.getNewCount());
+                voteViewHolder.archiveVotesCount.setText("В архиве: " + vote.getArchiveCount());
+                voteViewHolder.totalVotesCount.setText("Всего: " + vote.getTotalCount());
+                break;
+        }
+    }
+
+    public void updateItem(int count, int type) {
+        switch (type) {
+            case ActionsFragment.TYPE_ANNOUNCEMENTS:
+                items.get(0).updateNewCount(count);
+                notifyItemChanged(0);
+                break;
+            case ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE:
+                items.get(0).updateArchiveCount(count);
+                notifyItemChanged(0);
+                break;
+            case ActionsFragment.TYPE_VOTES:
+                items.get(1).updateNewCount(count);
+                notifyItemChanged(1);
+                break;
+            case ActionsFragment.TYPE_VOTES_ARCHIVE:
+                items.get(1).updateArchiveCount(count);
+                notifyItemChanged(1);
                 break;
         }
     }

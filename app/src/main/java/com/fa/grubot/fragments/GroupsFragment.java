@@ -2,7 +2,6 @@ package com.fa.grubot.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +21,7 @@ import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.GroupsPresenter;
 import com.fa.grubot.util.Globals;
+import com.google.firebase.firestore.DocumentChange;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -44,6 +44,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
     private transient Unbinder unbinder;
     private transient GroupsPresenter presenter;
+    private transient GroupsRecyclerAdapter groupsAdapter;
 
     private int state;
 
@@ -58,11 +59,23 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         presenter = new GroupsPresenter(this);
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
 
-        presenter.notifyFragmentStarted(getActivity());
+        presenter.notifyFragmentStarted();
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
 
         return v;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.removeRegistration();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        presenter.removeRegistration();
     }
 
     @Override
@@ -73,6 +86,9 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
@@ -87,23 +103,19 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         }
     }
 
-    public void showLoadingView() {
-        content.setVisibility(View.GONE);
-        noInternet.setVisibility(View.GONE);
-        noData.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
             if (isHasData)
                 state = Globals.FragmentState.STATE_CONTENT;
-            else
+            else {
                 state = Globals.FragmentState.STATE_NO_DATA;
+                groupsAdapter = null;
+            }
         }
-        else
+        else {
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            groupsAdapter = null;
+        }
     }
 
     public void setupToolbar() {
@@ -133,18 +145,43 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         if (App.INSTANCE.areAnimationsEnabled())
             groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
-        GroupsRecyclerAdapter groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
+        groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
         groupsView.setAdapter(groupsAdapter);
         groupsAdapter.notifyDataSetChanged();
     }
 
     public void setupRetryButton() {
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+    }
+
+    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Group group) {
+        if (groupsAdapter != null) {
+            switch (type) {
+                case ADDED:
+                    groupsAdapter.addItem(newIndex, group);
+                    break;
+                case MODIFIED:
+                    groupsAdapter.updateItem(oldIndex, newIndex, group);
+                    break;
+                case REMOVED:
+                    groupsAdapter.removeItem(oldIndex);
+                    break;
+            }
+        }
+    }
+
+    public boolean isListEmpty() {
+        return groupsAdapter == null || groupsAdapter.getItemCount() == 0;
+    }
+
+    public boolean isAdapterExists() {
+        return groupsAdapter != null;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        groupsAdapter = null;
         unbinder.unbind();
         presenter.destroy();
     }

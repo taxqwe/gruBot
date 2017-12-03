@@ -1,38 +1,44 @@
 package com.fa.grubot.presenters;
 
 
-import android.content.Context;
-
 import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.models.ProfileModel;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
 import com.fa.grubot.util.Globals;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class ProfilePresenter {
     private ProfileFragmentBase fragment;
     private ProfileModel model;
 
     private ArrayList<ProfileItem> items = new ArrayList<>();
+    private User localUser;
 
-    public ProfilePresenter(ProfileFragmentBase fragment){
+    private DocumentReference userReference;
+    private ListenerRegistration registration;
+
+    public ProfilePresenter(ProfileFragmentBase fragment) {
         this.fragment = fragment;
         this.model = new ProfileModel();
     }
 
-    public void notifyViewCreated(int state) {
+    public void notifyFragmentStarted(String id) {
+        userReference = FirebaseFirestore.getInstance().collection("users").document(id);
+        setRegistration();
+    }
+
+    private void notifyViewCreated(int state) {
         fragment.showRequiredViews();
+
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
-                fragment.setupToolbar();
-                fragment.setupRecyclerView(items);
+                fragment.setupToolbar(localUser);
+                fragment.setupRecyclerView(items, localUser);
                 break;
             case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
@@ -40,55 +46,60 @@ public class ProfilePresenter {
         }
     }
 
-    public void notifyFragmentStarted(Context context, User user) {
-        model.isNetworkAvailable(context)
-                .doOnNext(result -> {
-                    if (result)
-                        getData(true, user);
-                    else {
-                        fragment.setupLayouts(false);
-                        notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+    @SuppressWarnings("unchecked")
+    private void setRegistration() {
+        registration = userReference.addSnapshotListener((doc, e) -> {
+            if (e == null) {
+                User user = new User(doc.getId(),
+                        doc.get("username").toString(),
+                        doc.get("fullname").toString(),
+                        doc.get("phoneNumber").toString(),
+                        doc.get("desc").toString(),
+                        doc.get("imgUrl").toString());
+
+                ArrayList<String> changes = new ArrayList<>();
+                if (localUser != null) {
+                    if (!user.getUsername().equals(localUser.getUsername()))
+                        changes.add("username");
+                    if (!user.getFullname().equals(localUser.getFullname()))
+                        changes.add("fullname");
+                    if (!user.getPhoneNumber().equals(localUser.getPhoneNumber()))
+                        changes.add("phoneNumber");
+                    if (!user.getDesc().equals(localUser.getDesc()))
+                        changes.add("desc");
+                    if (!user.getAvatar().equals(localUser.getAvatar()))
+                        changes.add("avatar");
+                }
+
+                localUser = user;
+
+                if (fragment != null) {
+                    if (!fragment.isAdapterExists()) {
+                        fragment.setupLayouts(true);
+                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
                     }
-                })
-                .doOnError(error -> {
+
+                    fragment.handleProfileUpdate(user, changes);
+                }
+            } else {
+                if (fragment != null) {
                     fragment.setupLayouts(false);
                     notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                })
-                .subscribe();
+                }
+            }
+        });
     }
 
-    private void getData(final boolean isFirst, final User user) {
-        Observable.just(model.getItems(user))
-                .filter(result -> result != null)
-                .subscribeOn(Schedulers.io())
-                .timeout(15, TimeUnit.SECONDS)
-                .doOnSubscribe(d -> {
-                    if (!isFirst)
-                        fragment.showLoadingView();
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(result -> {
-                    items.clear();
-                    items.addAll(result);
-                    fragment.setupLayouts(true);
-                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
-                })
-                .doOnError(error -> {
-                    fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                })
-                .subscribe();
+    public void removeRegistration() {
+        registration.remove();
     }
 
-    public void onRetryBtnClick(Context context, User user) {
-        model.isNetworkAvailable(context)
-                .doOnNext(result -> {
-                    if (result)
-                        getData(false, user);
-                })
-                .subscribe();
+    public void onRetryBtnClick() {
+        setRegistration();
     }
-    public void destroy(){
+
+    public void destroy() {
+        removeRegistration();
         fragment = null;
         model = null;
     }

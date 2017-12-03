@@ -40,7 +40,7 @@ public class ChatModel {
                 .map(interval -> {
                             ChatMessage message = new ChatMessage(String.valueOf(interval),
                                     "message#" + interval + " : " + generateRandomString(3, 15),
-                                    new User(2,
+                                    new User("2",
                                             "PWND",
                                             "Комлев Антон",
                                             "123",
@@ -59,7 +59,7 @@ public class ChatModel {
     public ArrayList<ChatMessage> getCachedMessages() {
         ArrayList<ChatMessage> cachedMessages = new ArrayList<>();
         cachedMessages.add(new ChatMessage("-3", "Cached message #1",
-                new User(2,
+                new User("2",
                         "PWND",
                         "Комлев Антон",
                         "123",
@@ -67,7 +67,7 @@ public class ChatModel {
                         "https://img00.deviantart.net/fc89/i/2014/245/a/5/stalin_the_cat_23_by_kurogn-d7xngqa.jpg"),
                 new Date()));
         cachedMessages.add(new ChatMessage("-2", "Cached message #2",
-                new User(2,
+                new User("2",
                         "PWND",
                         "Комлев Антон",
                         "123",
@@ -75,7 +75,7 @@ public class ChatModel {
                         "https://img00.deviantart.net/fc89/i/2014/245/a/5/stalin_the_cat_23_by_kurogn-d7xngqa.jpg"),
                 new Date()));
         cachedMessages.add(new ChatMessage("-1", "Cached message #3",
-                new User(2,
+                new User("2",
                         "PWND",
                         "Комлев Антон",
                         "123",
