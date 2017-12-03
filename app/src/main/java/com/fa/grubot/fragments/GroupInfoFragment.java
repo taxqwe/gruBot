@@ -39,6 +39,7 @@ import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -232,7 +233,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
             EditText desc = (EditText) materialDialog.getView().findViewById(R.id.voteDesc);
             LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-            VoteRecyclerAdapter voteAdapter = new VoteRecyclerAdapter(getActivity(), new ArrayList<>(Collections.singletonList(new VoteOption())));
+            VoteRecyclerAdapter voteAdapter = new VoteRecyclerAdapter(new ArrayList<>());
             voteRecycler.setLayoutManager(mLayoutManager);
             voteRecycler.setHasFixedSize(false);
 
@@ -248,8 +249,8 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                 boolean hasEmpty = false;
                 ArrayList<VoteOption> options = voteAdapter.getOptions();
 
-                for (VoteOption option : options){
-                    if (option.getText().isEmpty()){
+                for (VoteOption option : options) {
+                    if (option.getText().isEmpty()) {
                         hasEmpty = true;
                         break;
                     }
@@ -263,9 +264,43 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                 if (hasEmpty)
                     Toast.makeText(getActivity(), "Все варианты выбора должны быть заполнены", Toast.LENGTH_SHORT).show();
                 else {
-                    //ActionVote actionVote = new ActionVote(1488, group, "Current user", desc.getText().toString(), new Date(), options);
-                    //App.INSTANCE.getDataHelper().addNewActionByType(ActionsFragment.TYPE_VOTES, actionVote);
-                    //groupInfoAdapter.insertItem(actionVote);
+                    MaterialDialog progress = new MaterialDialog.Builder(getActivity())
+                            .content("Пожалуйста, подождите")
+                            .progress(true, 0)
+                            .cancelable(false)
+                            .show();
+
+                    DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
+
+                    HashMap<String, Object> vote = new HashMap<>();
+                    vote.put("group", group.getId());
+                    vote.put("groupName", group.getName());
+                    vote.put("author", userReference);
+                    vote.put("authorName", App.INSTANCE.getCurrentUser().getFullname());
+                    vote.put("desc", desc.getText().toString());
+                    vote.put("date", new Date());
+
+                    HashMap<String, String> users = new HashMap<>();
+                    for (Map.Entry<String, Boolean> user : group.getUsers().entrySet())
+                        users.put(user.getKey(), "new");
+                    vote.put("users", users);
+
+                    HashMap<String, String> voteOptions = new HashMap<>();
+                    for (int i = 0; i < options.size(); i++) {
+                        voteOptions.put(String.valueOf(i), options.get(i).getText());
+                    }
+                    vote.put("voteOptions", voteOptions);
+
+                    FirebaseFirestore.getInstance().collection("votes")
+                            .add(vote)
+                            .addOnSuccessListener(aVoid -> {
+                                progress.dismiss();
+                                Toast.makeText(getActivity().getApplicationContext(), "Успешно добавлено", Toast.LENGTH_LONG).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                progress.dismiss();
+                                Toast.makeText(getActivity().getApplicationContext(), "Ошибка добавления", Toast.LENGTH_LONG).show();
+                            });
                     dialog.dismiss();
                     fam.close(true);
                 }

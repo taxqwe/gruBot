@@ -68,7 +68,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.e("mytag", "onCreate");
         presenter = new ActionsPresenter(this);
         setRetainInstance(true);
         View v = inflater.inflate(R.layout.fragment_actions, container, false);
@@ -114,13 +113,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
                 noData.setVisibility(View.VISIBLE);
                 break;
         }
-    }
-
-    public void showLoadingView() {
-        content.setVisibility(View.GONE);
-        noInternet.setVisibility(View.GONE);
-        noData.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){

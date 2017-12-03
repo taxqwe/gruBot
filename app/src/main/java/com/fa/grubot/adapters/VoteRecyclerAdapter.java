@@ -22,7 +22,6 @@ import butterknife.ButterKnife;
 
 public class VoteRecyclerAdapter extends RecyclerView.Adapter<VoteRecyclerAdapter.ViewHolder>{
 
-    private Context context;
     ArrayList<VoteOption> options;
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -61,8 +60,7 @@ public class VoteRecyclerAdapter extends RecyclerView.Adapter<VoteRecyclerAdapte
         }
     }
 
-    public VoteRecyclerAdapter(Context context, ArrayList<VoteOption> options) {
-        this.context = context;
+    public VoteRecyclerAdapter(ArrayList<VoteOption> options) {
         this.options = options;
     }
 
@@ -76,7 +74,6 @@ public class VoteRecyclerAdapter extends RecyclerView.Adapter<VoteRecyclerAdapte
     public void onBindViewHolder(final ViewHolder holder, int pos) {
         int position = holder.getAdapterPosition();
         VoteOption option = options.get(position);
-        Log.e("MyTAG", "onBind " + String.valueOf(position) + " " + option.getText());
 
         holder.voteOptionText.setTag(position);
         holder.voteOptionText.setText(options.get(position).getText());
@@ -90,7 +87,6 @@ public class VoteRecyclerAdapter extends RecyclerView.Adapter<VoteRecyclerAdapte
     public void insertOption(VoteOption option) {
         options.add(option);
         notifyItemInserted(options.size() - 1);
-        Log.e("MyTAG", "added " + String.valueOf(options.indexOf(option)) + " " + option.getText());
     }
     @Override
     public int getItemCount() {

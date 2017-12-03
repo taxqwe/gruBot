@@ -7,9 +7,11 @@ import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.models.GroupInfoModel;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
+import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.util.Globals;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,10 +30,11 @@ public class GroupInfoPresenter {
 
     private Group group;
 
-    private transient DocumentReference documentReference;
+    private transient DocumentReference groupReference;
     private transient ListenerRegistration registration;
     private Query usersQuery;
     private Query announcementsQuery;
+    private Query votesQuery;
 
     public GroupInfoPresenter(GroupInfoFragmentBase fragment) {
         this.fragment = fragment;
@@ -39,9 +42,10 @@ public class GroupInfoPresenter {
     }
 
     public void notifyFragmentStarted(String groupId) {
-        documentReference = FirebaseFirestore.getInstance().collection("groups").document(groupId);
+        groupReference = FirebaseFirestore.getInstance().collection("groups").document(groupId);
         usersQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("groups." + groupId, true);
         announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("group", groupId);
+        votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("group", groupId);
 
         setupConnection();
         setRegistration();
@@ -69,7 +73,7 @@ public class GroupInfoPresenter {
 
     @SuppressWarnings("unchecked")
     private void setGroup() {
-        documentReference.get().addOnCompleteListener(task -> {
+        groupReference.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
                 group = new Group(doc.getId(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
@@ -106,7 +110,40 @@ public class GroupInfoPresenter {
                 }
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", items)));
                 buttons.addAll(items);
-                buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", new ArrayList<>())));
+                setVotes();
+            } else {
+                fragment.setupLayouts(false);
+                notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setVotes() {
+        ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> items = new ArrayList<>();
+        votesQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+                    ArrayList<VoteOption> voteOptions = new ArrayList<>();
+                    for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
+                        voteOptions.add(new VoteOption(option.getValue()));
+
+                    ActionVote announcement =
+                            new ActionVote(
+                                    doc.getId(),
+                                    doc.get("group").toString(),
+                                    doc.get("groupName").toString(),
+                                    (DocumentReference) doc.get("author"),
+                                    doc.get("authorName").toString(),
+                                    doc.get("desc").toString(),
+                                    (Date) doc.get("date"),
+                                    voteOptions,
+                                    (Map<String, String>) doc.get("users"));
+
+                    items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(announcement));
+                }
+                buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", items)));
+                buttons.addAll(items);
                 setUsers();
             } else {
                 fragment.setupLayouts(false);
