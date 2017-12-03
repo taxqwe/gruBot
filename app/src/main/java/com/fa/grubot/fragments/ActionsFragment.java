@@ -126,8 +126,10 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
                 actionsAdapter = null;
             }
         }
-        else
+        else {
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            actionsAdapter = null;
+        }
     }
 
     public void setupRecyclerView(ArrayList<Action> newActions) {
@@ -210,6 +212,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        actionsAdapter = null;
         unbinder.unbind();
         presenter.destroy();
     }

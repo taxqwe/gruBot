@@ -50,7 +50,6 @@ public class ActionsPresenter {
                 break;
         }
 
-        //setupConnection(type);
         setRegistration(type);
     }
 
@@ -67,65 +66,6 @@ public class ActionsPresenter {
             case Globals.FragmentState.STATE_NO_DATA:
                 break;
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void setupConnection(int type) {
-        actionsQuery.get().addOnCompleteListener(task -> {
-            actions.clear();
-            if (task.isSuccessful()) {
-                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    if (type == ActionsFragment.TYPE_ANNOUNCEMENTS  || type == ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE) {
-                        ActionAnnouncement announcement =
-                                new ActionAnnouncement(
-                                        doc.getId(),
-                                        doc.get("group").toString(),
-                                        doc.get("groupName").toString(),
-                                        (DocumentReference) doc.get("author"),
-                                        doc.get("authorName").toString(),
-                                        doc.get("desc").toString(),
-                                        (Date) doc.get("date"),
-                                        doc.get("text").toString(),
-                                        (Map<String, String>) doc.get("users"));
-
-                        actions.add(announcement);
-                    } else {
-                        ArrayList<VoteOption> voteOptions = new ArrayList<>();
-                        for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
-                            voteOptions.add(new VoteOption(option.getValue()));
-
-                        ActionVote vote =
-                                new ActionVote(
-                                        doc.getId(),
-                                        doc.get("group").toString(),
-                                        doc.get("groupName").toString(),
-                                        (DocumentReference) doc.get("author"),
-                                        doc.get("authorName").toString(),
-                                        doc.get("desc").toString(),
-                                        (Date) doc.get("date"),
-                                        voteOptions,
-                                        (Map<String, String>) doc.get("users"));
-
-                        actions.add(vote);
-                    }
-                }
-
-                if (fragment != null) {
-                    if (actions.isEmpty()) {
-                        fragment.setupLayouts(true, false);
-                        notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
-                    } else {
-                        fragment.setupLayouts(true, true);
-                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
-                    }
-                }
-            } else {
-                if (fragment != null) {
-                    fragment.setupLayouts(false, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                }
-            }
-        });
     }
 
     @SuppressWarnings("unchecked")
@@ -170,11 +110,6 @@ public class ActionsPresenter {
                         }
 
                         fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), action);
-
-                        if (fragment.isListEmpty() && dc.getType() == DocumentChange.Type.REMOVED) {
-                            fragment.setupLayouts(true, false);
-                            notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
-                        }
                     }
                 }
 
@@ -280,7 +215,6 @@ public class ActionsPresenter {
     }
 
     public void onRetryBtnClick(int type) {
-        setupConnection(type);
         setRegistration(type);
     }
 

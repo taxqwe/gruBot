@@ -86,6 +86,9 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
@@ -112,11 +115,15 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         if (isNetworkAvailable) {
             if (isHasData)
                 state = Globals.FragmentState.STATE_CONTENT;
-            else
+            else {
                 state = Globals.FragmentState.STATE_NO_DATA;
+                groupsAdapter = null;
+            }
         }
-        else
+        else {
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            groupsAdapter = null;
+        }
     }
 
     public void setupToolbar() {
@@ -171,9 +178,18 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         }
     }
 
+    public boolean isListEmpty() {
+        return groupsAdapter == null || groupsAdapter.getItemCount() == 0;
+    }
+
+    public boolean isAdapterExists() {
+        return groupsAdapter != null;
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        groupsAdapter = null;
         unbinder.unbind();
         presenter.destroy();
     }

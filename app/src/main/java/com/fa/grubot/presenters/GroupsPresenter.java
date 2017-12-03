@@ -32,7 +32,6 @@ public class GroupsPresenter {
 
     public void notifyFragmentStarted() {
         fragment.setupToolbar();
-        setupConnection();
         setRegistration();
     }
 
@@ -52,34 +51,6 @@ public class GroupsPresenter {
     }
 
     @SuppressWarnings("unchecked")
-    private void setupConnection() {
-        groupsQuery.get().addOnCompleteListener(task -> {
-            groups.clear();
-            if (task.isSuccessful()) {
-                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    Group group = new Group(doc.getId(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
-                    groups.add(group);
-                }
-
-                if (fragment != null) {
-                    if (groups.isEmpty()) {
-                        fragment.setupLayouts(true, false);
-                        notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
-                    } else {
-                        fragment.setupLayouts(true, true);
-                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
-                    }
-                }
-            } else {
-                if (fragment != null) {
-                    fragment.setupLayouts(false, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                }
-            }
-        });
-    }
-
-    @SuppressWarnings("unchecked")
     private void setRegistration() {
         registration = groupsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
@@ -87,8 +58,19 @@ public class GroupsPresenter {
                     DocumentSnapshot doc = dc.getDocument();
                     Group group = new Group(doc.getId(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
-                    if (fragment != null)
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
+                            fragment.setupLayouts(true, true);
+                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        }
+
                         fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
+                    }
+                }
+
+                if (fragment != null && fragment.isListEmpty()) {
+                    fragment.setupLayouts(true, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
                 }
             } else {
                 if (fragment != null) {
@@ -100,7 +82,6 @@ public class GroupsPresenter {
     }
 
     public void onRetryBtnClick() {
-        setupConnection();
         setRegistration();
     }
 
