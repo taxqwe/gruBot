@@ -3,14 +3,12 @@ package com.fa.grubot;
 import android.app.Application;
 import android.graphics.Color;
 
-import com.fa.grubot.helpers.TemporaryDataHelper;
 import com.fa.grubot.objects.group.User;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 
 public class App extends Application {
     public static App INSTANCE;
-    private TemporaryDataHelper temporaryDataHelper;
 
     private boolean isBackstackEnabled = false;
     private boolean areAnimationsEnabled = false;
@@ -21,11 +19,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
-        temporaryDataHelper = new TemporaryDataHelper();
-    }
-
-    public TemporaryDataHelper getDataHelper() {
-        return temporaryDataHelper;
     }
 
     public boolean isBackstackEnabled() {
