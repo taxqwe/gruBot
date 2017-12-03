@@ -1,10 +1,18 @@
 package com.fa.grubot.abstractions;
 
+import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
+import com.google.firebase.firestore.DocumentChange;
 
 import java.util.ArrayList;
 
-public interface ProfileFragmentBase extends FragmentBase {
-    void setupRecyclerView(ArrayList<ProfileItem> groups);
+public interface ProfileFragmentBase {
+    void setupRecyclerView(ArrayList<ProfileItem> items, User user);
+    void handleProfileUpdate(User user, ArrayList<String> changes);
     void setupLayouts(boolean isNetworkAvailable);
+    void setupToolbar(User user);
+    void setupRetryButton();
+    void showRequiredViews();
+    boolean isAdapterExists();
 }

@@ -94,8 +94,7 @@ public class GroupInfoPresenter {
         announcementsQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    ActionAnnouncement announcement =
-                            new ActionAnnouncement(
+                    ActionAnnouncement announcement = new ActionAnnouncement(
                                     doc.getId(),
                                     doc.get("group").toString(),
                                     doc.get("groupName").toString(),
@@ -128,8 +127,7 @@ public class GroupInfoPresenter {
                     for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
                         voteOptions.add(new VoteOption(option.getValue()));
 
-                    ActionVote vote =
-                            new ActionVote(
+                    ActionVote vote = new ActionVote(
                                     doc.getId(),
                                     doc.get("group").toString(),
                                     doc.get("groupName").toString(),
@@ -190,7 +188,7 @@ public class GroupInfoPresenter {
                     DocumentSnapshot doc = dc.getDocument();
                     Group group = new Group(doc.getId(), doc.get("name").toString(), (ArrayList<String>) doc.get("users"), doc.get("imgUrl").toString());
 
-                    fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
+                    fragment.handleProfileUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
                 }
             } else {
                 fragment.setupLayouts(false, false);
