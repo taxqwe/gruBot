@@ -38,6 +38,9 @@ dependencies {
     compile 'com.android.support:cardview-v7:27.0.1'
     compile 'com.android.support:recyclerview-v7:27.0.1'
 
+    //firestore
+    compile 'com.google.firebase:firebase-firestore:11.6.0'
+
     //text drawable
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
@@ -53,8 +56,9 @@ dependencies {
     //butterknife
     compile 'com.jakewharton:butterknife:9.0.0-SNAPSHOT'
 
-    //slideable activity
+    //slidr
     compile 'com.r0adkll:slidableactivity:2.0.5'
+    //compile 'com.github.GGLabCenter:Slidr:master-SNAPSHOT'
 
     //dexter permissions
     compile 'com.karumi:dexter:4.2.0'
@@ -79,3 +83,6 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 }
+
+
+apply plugin: 'com.google.gms.google-services'
