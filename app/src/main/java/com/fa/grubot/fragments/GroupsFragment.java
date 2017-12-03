@@ -103,14 +103,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         }
     }
 
-    public void showLoadingView() {
-        content.setVisibility(View.GONE);
-        noInternet.setVisibility(View.GONE);
-        noData.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
             if (isHasData)

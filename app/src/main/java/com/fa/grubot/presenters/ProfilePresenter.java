@@ -63,8 +63,8 @@ public class ProfilePresenter {
                 .subscribeOn(Schedulers.io())
                 .timeout(15, TimeUnit.SECONDS)
                 .doOnSubscribe(d -> {
-                    if (!isFirst)
-                        fragment.showLoadingView();
+                    //if (!isFirst)
+                        //fragment.showLoadingView();
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(result -> {

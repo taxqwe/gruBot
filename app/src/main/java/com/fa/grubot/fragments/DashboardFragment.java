@@ -39,6 +39,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
     private transient Unbinder unbinder;
     private transient DashboardPresenter presenter;
+    private transient DashboardRecyclerAdapter dashboardAdapter;
 
     private int state;
 
@@ -53,10 +54,22 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         presenter = new DashboardPresenter(this);
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        presenter.notifyFragmentStarted(getActivity());
+        presenter.notifyFragmentStarted();
         unbinder = ButterKnife.bind(this, v);
 
         return v;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.removeRegistration();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        presenter.removeRegistration();
     }
 
     @Override
@@ -67,6 +80,8 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
@@ -77,17 +92,14 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
                 break;
         }
     }
-    public void showLoadingView() {
-        content.setVisibility(View.GONE);
-        noInternet.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-    }
 
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
             state = Globals.FragmentState.STATE_CONTENT;
-        else
+        else {
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            dashboardAdapter = null;
+        }
     }
 
     public void setupToolbar() {
@@ -110,18 +122,29 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         dashboardView.setLayoutManager(layoutManager);
         dashboardView.setHasFixedSize(false);
 
-        DashboardRecyclerAdapter groupsAdapter = new DashboardRecyclerAdapter(getActivity(), items);
-        dashboardView.setAdapter(groupsAdapter);
-        groupsAdapter.notifyDataSetChanged();
+        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), items);
+        dashboardView.setAdapter(dashboardAdapter);
+        dashboardAdapter.notifyDataSetChanged();
     }
 
     public void setupRetryButton() {
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+    }
+
+    public void handleListUpdate(int count, int type) {
+        if (dashboardAdapter != null) {
+            dashboardAdapter.updateItem(count, type);
+        }
+    }
+
+    public boolean isAdapterExists() {
+        return dashboardAdapter != null;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        dashboardAdapter = null;
         unbinder.unbind();
         presenter.destroy();
     }
