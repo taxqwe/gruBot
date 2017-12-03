@@ -1,35 +1,30 @@
 package com.fa.grubot.fragments;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.fa.grubot.App;
-import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ActionsFragmentBase;
 import com.fa.grubot.adapters.ActionsRecyclerAdapter;
 import com.fa.grubot.helpers.RecyclerItemTouchHelper;
 import com.fa.grubot.objects.dashboard.Action;
-import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.presenters.ActionsPresenter;
 import com.fa.grubot.util.Globals;
+import com.google.firebase.firestore.DocumentChange;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,10 +38,13 @@ import io.reactivex.annotations.Nullable;
 public class ActionsFragment extends Fragment implements ActionsFragmentBase, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, Serializable {
     public static final int TYPE_ANNOUNCEMENTS = 389;
     public static final int TYPE_VOTES = 827;
+    public static final int TYPE_ANNOUNCEMENTS_ARCHIVE = 390;
+    public static final int TYPE_VOTES_ARCHIVE = 828;
 
     @Nullable @BindView(R.id.recycler) transient  RecyclerView actionsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) transient  SwipeRefreshLayout swipeRefreshLayout;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
+
+    @Nullable @BindView(R.id.root) transient FrameLayout root;
 
     @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
     @Nullable @BindView(R.id.content) transient View content;
@@ -70,16 +68,28 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new ActionsPresenter(this);
+        setRetainInstance(true);
         View v = inflater.inflate(R.layout.fragment_actions, container, false);
 
+        actionsAdapter = null;
         type = this.getArguments().getInt("type");
+        presenter.notifyFragmentStarted(type);
         setHasOptionsMenu(true);
-        presenter.notifyFragmentStarted(getActivity(), type);
-
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.removeRegistration();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        presenter.removeRegistration();
     }
 
     @Override
@@ -89,65 +99,40 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     public void showRequiredViews() {
-        new Handler().postDelayed(() -> {
-            progressBar.setVisibility(View.GONE);
-
-            switch (state) {
-                case Globals.FragmentState.STATE_CONTENT:
-                    content.setVisibility(View.VISIBLE);
-                    break;
-                case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
-                    noInternet.setVisibility(View.VISIBLE);
-                    break;
-                case Globals.FragmentState.STATE_NO_DATA:
-                    noData.setVisibility(View.VISIBLE);
-                    break;
-            }
-        }, App.INSTANCE.getDelayTime());
-    }
-
-    public void showLoadingView() {
-        content.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
         noData.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+        content.setVisibility(View.GONE);
+
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_DATA:
+                noData.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData){
         if (isNetworkAvailable) {
             if (isHasData)
                 state = Globals.FragmentState.STATE_CONTENT;
-            else
+            else {
                 state = Globals.FragmentState.STATE_NO_DATA;
+                actionsAdapter = null;
+            }
         }
-        else
+        else {
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            actionsAdapter = null;
+        }
     }
 
-    public void setupToolbar() {
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
-        toolbar.setVisibility(View.VISIBLE);
-        String title;
-        if (type == TYPE_ANNOUNCEMENTS)
-            title = "Объявления";
-        else
-            title = "Голосования";
-
-        toolbar.setTitle(title);
-        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
-        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-    }
-
-    public void setupSwipeRefreshLayout() {
-        swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            presenter.onRefresh(getActivity(), type);
-            onItemsLoadComplete();
-        });
-    }
-
-    public void setupRecyclerView(ArrayList<Action> actions){
+    public void setupRecyclerView(ArrayList<Action> newActions) {
         int spanCount = 1;
 
         if (getActivity().getResources().getConfiguration().orientation == 2)
@@ -159,70 +144,75 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         actionsView.setItemAnimator(new DefaultItemAnimator());
         actionsView.setHasFixedSize(false);
 
-        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
-        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(actionsView);
+        if (type == TYPE_ANNOUNCEMENTS || type == TYPE_VOTES) {
+            ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(actionsView);
+        }
 
         if (App.INSTANCE.areAnimationsEnabled())
             actionsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
-        this.actions = actions;
-        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), actions);
+        this.actions = newActions;
+        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), newActions);
         actionsView.setAdapter(actionsAdapter);
         actionsAdapter.notifyDataSetChanged();
     }
 
-    public void setupRetryButton(){
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), type));
-    }
-
-    public void reloadFragment(){
-        Fragment currentFragment = this;
-        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
-        fragTransaction.detach(currentFragment);
-        fragTransaction.attach(currentFragment);
-        fragTransaction.commit();
-    }
-
-    private void onItemsLoadComplete() {
-        swipeRefreshLayout.setRefreshing(false);
+    public void setupRetryButton() {
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(type));
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof ActionsRecyclerAdapter.ViewHolder) {
             final Action deletedItem = actions.get(viewHolder.getAdapterPosition());
-            final int deletedIndex = viewHolder.getAdapterPosition();
-
-            actionsAdapter.removeItem(viewHolder.getAdapterPosition());
-
-            Snackbar snackbar;
-            if (deletedItem instanceof ActionAnnouncement) {
-                snackbar = Snackbar.make(swipeRefreshLayout, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
-            } else {
-                snackbar = Snackbar.make(swipeRefreshLayout, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
-            }
-            snackbar.setAction(android.R.string.cancel, view -> {
-                if (actions.indexOf(deletedItem) == -1) {
-                    actionsAdapter.restoreItem(deletedItem, deletedIndex);
-                    actionsView.smoothScrollToPosition(deletedIndex);
-                }
-            });
-            snackbar.setActionTextColor(Color.YELLOW);
-            snackbar.show();
+            presenter.addActionToArchive(deletedItem, type);
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
+    public void showArchiveSnackbar(Action action) {
+        Snackbar snackbar;
+
+        if (type == TYPE_ANNOUNCEMENTS)
+            snackbar = Snackbar.make(root, "Объявление отправлено в архив", Snackbar.LENGTH_LONG);
+        else
+            snackbar = Snackbar.make(root, "Голосование отправлено в архив", Snackbar.LENGTH_LONG);
+
+        snackbar.setAction(android.R.string.cancel, view -> {
+            presenter.restoreActionFromArchive(action, type);
+        });
+        snackbar.setActionTextColor(Color.YELLOW);
+        snackbar.show();
+    }
+
+    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Action action) {
+        if (actionsAdapter != null) {
+            switch (type) {
+                case ADDED:
+                    actionsAdapter.addItem(newIndex, action);
+                    break;
+                case MODIFIED:
+                    actionsAdapter.updateItem(oldIndex, newIndex, action);
+                    break;
+                case REMOVED:
+                    actionsAdapter.removeItem(oldIndex);
+                    break;
+            }
+        }
+    }
+
+    public boolean isListEmpty() {
+        return actionsAdapter == null || actionsAdapter.getItemCount() == 0;
+    }
+
+    public boolean isAdapterExists() {
+        return actionsAdapter != null;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        actionsAdapter = null;
         unbinder.unbind();
         presenter.destroy();
     }

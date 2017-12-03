@@ -37,10 +37,13 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
     private Context context;
     private ArrayList<GroupInfoRecyclerItem> buttons;
 
-    public GroupInfoRecyclerAdapter(Context context, ArrayList<GroupInfoRecyclerItem> buttons) {
+    private String groupId;
+
+    public GroupInfoRecyclerAdapter(Context context, ArrayList<GroupInfoRecyclerItem> buttons, String groupId) {
         super(context);
         this.context = context;
         this.buttons = buttons;
+        this.groupId = groupId;
 
         setItems(buttons);
     }
@@ -76,7 +79,8 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 case 2:
                     buttonText.getRootView().setOnClickListener(v -> {
                         Intent intent = new Intent(context, BranchesActivity.class);
-                        intent.putExtra("groupId", 0);
+
+                        intent.putExtra("groupId", groupId);
                         context.startActivity(intent);
                         ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
                     });
@@ -103,9 +107,9 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             Action entry = visibleItems.get(position).entry;
 
             entryDate.setText(entry.getDate());
-            entryAuthor.setText(entry.getAuthor());
+            entryAuthor.setText(entry.getAuthorName());
             entryDesc.setText(entry.getDesc());
-            entryGroup.setText(entry.getGroup().getName());
+            entryGroup.setText(entry.getGroupName());
             viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
 
             if (entry instanceof ActionAnnouncement) {
@@ -121,7 +125,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 entryTypeText.setText("Голосование");
                 viewForeground.setOnClickListener(v -> {
                     new MaterialDialog.Builder(context)
-                            .title(entry.getGroup().getName() + ": " + entry.getDesc())
+                            .title(entry.getGroupName() + ": " + entry.getDesc())
                             .items(((ActionVote) entry).getOptions())
                             .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
                                 /**
@@ -187,12 +191,13 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             this.user = user;
         }
 
-        public boolean isHeader() {
+        private boolean isHeader() {
             return (button != null);
         }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_HEADER:

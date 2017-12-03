@@ -16,4 +16,8 @@ public class ProfileItem {
     public String getText() {
         return text;
     }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

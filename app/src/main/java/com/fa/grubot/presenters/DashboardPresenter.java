@@ -1,32 +1,50 @@
 package com.fa.grubot.presenters;
 
 
-import android.content.Context;
-
+import com.fa.grubot.App;
 import com.fa.grubot.abstractions.DashboardFragmentBase;
+import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.models.DashboardModel;
+import com.fa.grubot.objects.dashboard.DashboardAnnouncement;
 import com.fa.grubot.objects.dashboard.DashboardItem;
+import com.fa.grubot.objects.dashboard.DashboardVote;
 import com.fa.grubot.util.Globals;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import java.util.Arrays;
 
 public class DashboardPresenter {
     private DashboardFragmentBase fragment;
     private DashboardModel model;
 
-    private ArrayList<DashboardItem> items;
+    private ArrayList<DashboardItem> items = new ArrayList<DashboardItem>(Arrays.asList(new DashboardAnnouncement(0, 0), new DashboardVote(0, 0)));
+
+    private Query announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
+    private Query archiveAnnouncementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
+
+    private Query votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
+    private Query archiveVotesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
+
+    private ListenerRegistration announcementsRegistrations;
+    private ListenerRegistration archiveAnnouncementsRegistrations;
+    private ListenerRegistration votesRegistrations;
+    private ListenerRegistration archiveVotesRegistrations;
 
     public DashboardPresenter(DashboardFragmentBase fragment){
         this.fragment = fragment;
         this.model = new DashboardModel();
     }
 
-    public void notifyViewCreated(int state) {
+    public void notifyFragmentStarted() {
+        fragment.setupToolbar();
+        setRegistration();
+    }
+
+    private void notifyViewCreated(int state) {
         fragment.showRequiredViews();
 
         switch (state) {
@@ -40,41 +58,147 @@ public class DashboardPresenter {
         }
     }
 
-    public void notifyFragmentStarted(Context context) {
-        if (model.isNetworkAvailable(context))
-            getData(true);
-        else
-            fragment.setupLayouts(false);
-    }
+    @SuppressWarnings("unchecked")
+    private void setRegistration() {
+        announcementsRegistrations = announcementsQuery.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    int count = 0;
 
-    private void getData(final boolean isFirst) {
-        Observable.defer(() -> Observable.just(model.getItems()))
-                .filter(result -> result != null)
-                .subscribeOn(Schedulers.io())
-                .timeout(15, TimeUnit.SECONDS)
-                .doOnSubscribe(d -> {
-                    if (!isFirst)
-                        fragment.showLoadingView();
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(result -> {
-                    items = result;
-                    fragment.setupLayouts(true);
-                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
-                })
-                .doOnError(error -> {
+                    switch (dc.getType()) {
+                        case ADDED:
+                            count++;
+                            break;
+                        case REMOVED:
+                            count--;
+                            break;
+                    }
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        }
+
+                        fragment.handleListUpdate(count, ActionsFragment.TYPE_ANNOUNCEMENTS);
+                    }
+                }
+            } else {
+                if (fragment != null) {
                     fragment.setupLayouts(false);
                     notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
-                })
-                .subscribe();
+                }
+            }
+        });
+
+        archiveAnnouncementsRegistrations = archiveAnnouncementsQuery.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    int count = 0;
+
+                    switch (dc.getType()) {
+                        case ADDED:
+                            count++;
+                            break;
+                        case REMOVED:
+                            count--;
+                            break;
+                    }
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        }
+
+                        fragment.handleListUpdate(count, ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE);
+                    }
+                }
+            } else {
+                if (fragment != null) {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                }
+            }
+        });
+
+        votesRegistrations = votesQuery.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    int count = 0;
+
+                    switch (dc.getType()) {
+                        case ADDED:
+                            count++;
+                            break;
+                        case REMOVED:
+                            count--;
+                            break;
+                    }
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        }
+
+                        fragment.handleListUpdate(count, ActionsFragment.TYPE_VOTES);
+                    }
+                }
+            } else {
+                if (fragment != null) {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                }
+            }
+        });
+
+        archiveVotesRegistrations = archiveVotesQuery.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    int count = 0;
+
+                    switch (dc.getType()) {
+                        case ADDED:
+                            count++;
+                            break;
+                        case REMOVED:
+                            count--;
+                            break;
+                    }
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        }
+
+                        fragment.handleListUpdate(count, ActionsFragment.TYPE_VOTES_ARCHIVE);
+                    }
+                }
+            } else {
+                if (fragment != null) {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                }
+            }
+        });
     }
 
-    public void onRetryBtnClick(Context context) {
-        if (model.isNetworkAvailable(context)) {
-            getData(false);
-        }
+
+    public void onRetryBtnClick() {
+        setRegistration();
     }
-    public void destroy(){
+
+    public void removeRegistration() {
+        announcementsRegistrations.remove();
+        archiveAnnouncementsRegistrations.remove();
+        votesRegistrations.remove();
+        archiveVotesRegistrations.remove();
+    }
+
+    public void destroy() {
+        removeRegistration();
         fragment = null;
         model = null;
     }

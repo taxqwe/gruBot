@@ -6,14 +6,14 @@ import java.io.Serializable;
 
 public class User implements IUser, Serializable {
 
-    private int id;
+    private String id;
     private String username;
     private String fullname;
     private String phoneNumber;
     private String desc;
     private String imgUrl;
 
-    public User(int id, String username, String fullname, String phoneNumber, String desc, String imgUrl) {
+    public User(String id, String username, String fullname, String phoneNumber, String desc, String imgUrl) {
         this.id = id;
         this.username = username;
         this.fullname = fullname;
@@ -29,7 +29,7 @@ public class User implements IUser, Serializable {
 
     @Override
     public String getId() {
-        return String.valueOf(id);
+        return id;
     }
 
     @Override

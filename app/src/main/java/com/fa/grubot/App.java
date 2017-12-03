@@ -3,29 +3,22 @@ package com.fa.grubot;
 import android.app.Application;
 import android.graphics.Color;
 
-import com.fa.grubot.helpers.TemporaryDataHelper;
 import com.fa.grubot.objects.group.User;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 
 public class App extends Application {
     public static App INSTANCE;
-    private TemporaryDataHelper temporaryDataHelper;
 
     private boolean isBackstackEnabled = false;
     private boolean areAnimationsEnabled = false;
     private boolean isSlidrEnabled = true;
+    private User currentUser;
 
-    private int delayTime = 0;
     @Override
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
-        temporaryDataHelper = new TemporaryDataHelper();
-    }
-
-    public TemporaryDataHelper getDataHelper() {
-        return temporaryDataHelper;
     }
 
     public boolean isBackstackEnabled() {
@@ -52,12 +45,12 @@ public class App extends Application {
         isSlidrEnabled = slidrEnabled;
     }
 
-    public int getDelayTime() {
-        return delayTime;
+    public void setCurrentUser(User user) {
+        currentUser = user;
     }
 
     public User getCurrentUser() {
-        return new User(0, "DOMINATOR48RUS", "The First One", "+71903322233", "NOONE CAN STOP ME", "http://www.netlore.ru/upload/files/1307/3_321.jpg");
+        return currentUser;
     }
 
     public SlidrConfig getSlidrConfig() {

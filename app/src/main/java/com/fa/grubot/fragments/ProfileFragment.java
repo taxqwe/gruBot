@@ -1,10 +1,9 @@
 package com.fa.grubot.fragments;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -43,6 +42,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
 
     @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
     @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
+    @Nullable @BindView(R.id.toolbar_layout) transient CollapsingToolbarLayout toolbarLayout;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
     @Nullable @BindView(R.id.userImage) transient ImageView userImage;
     @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
@@ -54,7 +54,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     private transient Unbinder unbinder;
     private transient ProfilePresenter presenter;
 
-    private User user;
+    private transient ProfileRecyclerAdapter profileItemsAdapter;
 
     private int state;
 
@@ -70,14 +70,24 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         hideMainToolbar();
-        user = (User) this.getArguments().getSerializable("user");
+        User user = (User) this.getArguments().getSerializable("user");
         setHasOptionsMenu(true);
-        presenter.notifyFragmentStarted(getActivity(), user);
-
+        presenter.notifyFragmentStarted(user.getId());
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyViewCreated(state);
 
         return v;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.removeRegistration();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        presenter.removeRegistration();
     }
 
     @Override
@@ -87,36 +97,29 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     }
 
     public void showRequiredViews() {
-        new Handler().postDelayed(() -> {
-            progressBar.setVisibility(View.GONE);
-
-            switch (state) {
-                case Globals.FragmentState.STATE_CONTENT:
-                    appBarLayout.setExpanded(true);
-                    collapsingToolbar.setVisibility(View.VISIBLE);
-                    content.setVisibility(View.VISIBLE);
-                    break;
-                case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
-                    appBarLayout.setExpanded(false);
-                    noInternet.setVisibility(View.VISIBLE);
-                    break;
-            }
-        }, App.INSTANCE.getDelayTime());
-    }
-
-    public void showLoadingView() {
-        content.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
-        appBarLayout.setExpanded(false);
-        progressBar.setVisibility(View.VISIBLE);
-    }
+        content.setVisibility(View.GONE);
 
+        switch (state) {
+            case Globals.FragmentState.STATE_CONTENT:
+                appBarLayout.setExpanded(true);
+                collapsingToolbar.setVisibility(View.VISIBLE);
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+                appBarLayout.setExpanded(false);
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
 
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
             state = Globals.FragmentState.STATE_CONTENT;
-        else
+        else {
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+        }
     }
 
     private void hideMainToolbar() {
@@ -128,7 +131,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
-    public void setupToolbar() {
+    public void setupToolbar(User user) {
         ((AppCompatActivity) getActivity()).setSupportActionBar(collapsingToolbar);
         String title = user.getFullname();
 
@@ -147,7 +150,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         }
     }
 
-    public void setupRecyclerView(ArrayList<ProfileItem> items) {
+    public void setupRecyclerView(ArrayList<ProfileItem> items, User user) {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         itemsView.setLayoutManager(mLayoutManager);
         itemsView.setHasFixedSize(false);
@@ -161,13 +164,45 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         if (App.INSTANCE.areAnimationsEnabled())
             itemsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
-        ProfileRecyclerAdapter groupsAdapter = new ProfileRecyclerAdapter(getActivity(), items, user);
-        itemsView.setAdapter(groupsAdapter);
-        groupsAdapter.notifyDataSetChanged();
+        profileItemsAdapter = new ProfileRecyclerAdapter(getActivity(), items, user);
+        itemsView.setAdapter(profileItemsAdapter);
+        profileItemsAdapter.notifyDataSetChanged();
     }
 
     public void setupRetryButton(){
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), user));
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+    }
+
+    public void handleProfileUpdate(User user, ArrayList<String> changes) {
+        if (profileItemsAdapter != null) {
+            if (changes.isEmpty()) {
+                ArrayList<ProfileItem> items = new ArrayList<>();
+                items.add(new ProfileItem(user.getFullname(), "Имя"));
+                items.add(new ProfileItem(user.getUsername(), "Логин"));
+                items.add(new ProfileItem(user.getPhoneNumber(), "Номер телефона"));
+                items.add(new ProfileItem(user.getDesc(), "Описание"));
+                profileItemsAdapter.addProfileItems(items);
+            } else {
+                if (changes.contains("fullname") || changes.contains("avatar")) {
+                    toolbarLayout.setTitle(user.getFullname());
+                }
+                if (changes.contains("avatar")) {
+                    ImageLoader imageLoader = new ImageLoader(this);
+                    if (user.getAvatar() != null) {
+                        imageLoader.loadToolbarImage(userImage, user.getAvatar());
+                    } else {
+                        imageLoader.loadToolbarImage(userImage, imageLoader.getUriOfDrawable(R.drawable.material_bg));
+                    }
+                }
+                if (changes.contains("fullname") || changes.contains("username") || changes.contains("desc") || changes.contains("phoneNumber")) {
+                    profileItemsAdapter.updateProfileItems(changes, user);
+                }
+            }
+        }
+    }
+
+    public boolean isAdapterExists() {
+        return profileItemsAdapter != null;
     }
 
     @Override
@@ -181,6 +216,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        profileItemsAdapter = null;
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setVisibility(View.VISIBLE);
         unbinder.unbind();
