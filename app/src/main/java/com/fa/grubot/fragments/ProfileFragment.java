@@ -3,6 +3,7 @@ package com.fa.grubot.fragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,13 +23,11 @@ import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.adapters.ProfileRecyclerAdapter;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
 import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
-import com.google.firebase.firestore.DocumentChange;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
 
     @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
     @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
+    @Nullable @BindView(R.id.toolbar_layout) transient CollapsingToolbarLayout toolbarLayout;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
     @Nullable @BindView(R.id.userImage) transient ImageView userImage;
     @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
@@ -184,9 +184,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
                 profileItemsAdapter.addProfileItems(items);
             } else {
                 if (changes.contains("fullname") || changes.contains("avatar")) {
-                    collapsingToolbar.setTitle("1");
-                    ((AppCompatActivity)getActivity()).setSupportActionBar(collapsingToolbar);
-                    //collapsingToolbar.setTitle(user.getFullname());
+                    toolbarLayout.setTitle(user.getFullname());
                 }
                 if (changes.contains("avatar")) {
                     ImageLoader imageLoader = new ImageLoader(this);

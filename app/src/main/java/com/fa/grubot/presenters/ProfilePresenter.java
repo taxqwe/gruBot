@@ -1,7 +1,6 @@
 package com.fa.grubot.presenters;
 
 
-import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.models.ProfileModel;
 import com.fa.grubot.objects.group.User;
@@ -12,7 +11,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ProfilePresenter {
     private ProfileFragmentBase fragment;
@@ -72,7 +70,7 @@ public class ProfilePresenter {
                     if (!user.getAvatar().equals(localUser.getAvatar()))
                         changes.add("avatar");
                 }
-                
+
                 localUser = user;
 
                 if (fragment != null) {

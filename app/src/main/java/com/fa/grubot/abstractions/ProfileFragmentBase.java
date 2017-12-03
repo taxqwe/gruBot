@@ -1,9 +1,7 @@
 package com.fa.grubot.abstractions;
 
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
-import com.google.firebase.firestore.DocumentChange;
 
 import java.util.ArrayList;
 
