@@ -128,7 +128,7 @@ public class GroupInfoPresenter {
                     for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
                         voteOptions.add(new VoteOption(option.getValue()));
 
-                    ActionVote announcement =
+                    ActionVote vote =
                             new ActionVote(
                                     doc.getId(),
                                     doc.get("group").toString(),
@@ -140,7 +140,7 @@ public class GroupInfoPresenter {
                                     voteOptions,
                                     (Map<String, String>) doc.get("users"));
 
-                    items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(announcement));
+                    items.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(vote));
                 }
                 buttons.add(new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", items)));
                 buttons.addAll(items);

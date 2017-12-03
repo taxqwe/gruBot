@@ -7,6 +7,8 @@ import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.models.ActionsModel;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.dashboard.ActionVote;
+import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.util.Globals;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -88,7 +90,23 @@ public class ActionsPresenter {
 
                         actions.add(announcement);
                     } else {
-                        //TODO Vote
+                        ArrayList<VoteOption> voteOptions = new ArrayList<>();
+                        for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
+                            voteOptions.add(new VoteOption(option.getValue()));
+
+                        ActionVote vote =
+                                new ActionVote(
+                                        doc.getId(),
+                                        doc.get("group").toString(),
+                                        doc.get("groupName").toString(),
+                                        (DocumentReference) doc.get("author"),
+                                        doc.get("authorName").toString(),
+                                        doc.get("desc").toString(),
+                                        (Date) doc.get("date"),
+                                        voteOptions,
+                                        (Map<String, String>) doc.get("users"));
+
+                        actions.add(vote);
                     }
                 }
 
@@ -116,9 +134,9 @@ public class ActionsPresenter {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
+                    Action action;
                     if (type == ActionsFragment.TYPE_ANNOUNCEMENTS || type == ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE) {
-                        ActionAnnouncement announcement =
-                                new ActionAnnouncement(
+                        action = new ActionAnnouncement(
                                         doc.getId(),
                                         doc.get("group").toString(),
                                         doc.get("groupName").toString(),
@@ -128,11 +146,31 @@ public class ActionsPresenter {
                                         (Date) doc.get("date"),
                                         doc.get("text").toString(),
                                         (Map<String, String>) doc.get("users"));
-
-                        if (fragment != null)
-                            fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), announcement);
                     } else {
-                        //TODO Vote
+                        ArrayList<VoteOption> voteOptions = new ArrayList<>();
+                        for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
+                            voteOptions.add(new VoteOption(option.getValue()));
+
+                        action = new ActionVote(
+                                        doc.getId(),
+                                        doc.get("group").toString(),
+                                        doc.get("groupName").toString(),
+                                        (DocumentReference) doc.get("author"),
+                                        doc.get("authorName").toString(),
+                                        doc.get("desc").toString(),
+                                        (Date) doc.get("date"),
+                                        voteOptions,
+                                        (Map<String, String>) doc.get("users"));
+                    }
+
+                    if (fragment != null) {
+                            fragment.setupLayouts(true, true);
+                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+
+                        fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), action);
+
+                            fragment.setupLayouts(true, false);
+                            notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
                     }
                 }
             } else {
@@ -147,6 +185,8 @@ public class ActionsPresenter {
     public void addActionToArchive(Action action, int type) {
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
             addAnnouncementToArchive((ActionAnnouncement) action);
+        } else  {
+            addVoteToArchive((ActionVote) action);
         }
     }
 
@@ -170,9 +210,31 @@ public class ActionsPresenter {
                 });
     }
 
+    @SuppressWarnings("unchecked")
+    private void addVoteToArchive(ActionVote vote) {
+        FirebaseFirestore.getInstance().collection("votes")
+                .document(vote.getId())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
+
+                    users.put(App.INSTANCE.getCurrentUser().getId(), "archive");
+
+                    FirebaseFirestore.getInstance().collection("votes")
+                            .document(vote.getId())
+                            .update("users", users)
+                            .addOnSuccessListener(aVoid -> {
+                                if (fragment != null)
+                                    fragment.showArchiveSnackbar(vote);
+                            });
+                });
+    }
+
     public void restoreActionFromArchive(Action action, int type) {
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
             restoreAnnouncementFromArchive((ActionAnnouncement) action);
+        } else {
+            restoreVoteFromArchive((ActionVote) action);
         }
     }
 
@@ -188,6 +250,22 @@ public class ActionsPresenter {
 
                     FirebaseFirestore.getInstance().collection("announcements")
                             .document(announcement.getId())
+                            .update("users", users);
+                });
+    }
+
+    @SuppressWarnings("unchecked")
+    private void restoreVoteFromArchive(ActionVote vote) {
+        FirebaseFirestore.getInstance().collection("votes")
+                .document(vote.getId())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
+
+                    users.put(App.INSTANCE.getCurrentUser().getId(), "new");
+
+                    FirebaseFirestore.getInstance().collection("votes")
+                            .document(vote.getId())
                             .update("users", users);
                 });
     }

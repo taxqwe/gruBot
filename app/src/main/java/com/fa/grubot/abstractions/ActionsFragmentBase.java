@@ -12,4 +12,6 @@ public interface ActionsFragmentBase {
     void showRequiredViews();
     void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Action action);
     void showArchiveSnackbar(Action action);
+    boolean isAdapterExists();
+    boolean isListEmpty();
 }

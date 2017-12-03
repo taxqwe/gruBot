@@ -101,6 +101,9 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
 
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
@@ -193,6 +196,14 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
                     break;
             }
         }
+    }
+
+    public boolean isListEmpty() {
+        return actionsAdapter.getItemCount() == 0;
+    }
+
+    public boolean isAdapterExists() {
+        return actionsAdapter != null;
     }
 
     @Override
