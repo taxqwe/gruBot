@@ -8,7 +8,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,8 +121,10 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         if (isNetworkAvailable) {
             if (isHasData)
                 state = Globals.FragmentState.STATE_CONTENT;
-            else
+            else {
                 state = Globals.FragmentState.STATE_NO_DATA;
+                actionsAdapter = null;
+            }
         }
         else
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
@@ -199,7 +200,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     public boolean isListEmpty() {
-        return actionsAdapter.getItemCount() == 0;
+        return actionsAdapter == null || actionsAdapter.getItemCount() == 0;
     }
 
     public boolean isAdapterExists() {

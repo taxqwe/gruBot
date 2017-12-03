@@ -39,8 +39,6 @@ import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

@@ -50,7 +50,7 @@ public class ActionsPresenter {
                 break;
         }
 
-        setupConnection(type);
+        //setupConnection(type);
         setRegistration(type);
     }
 
@@ -164,14 +164,23 @@ public class ActionsPresenter {
                     }
 
                     if (fragment != null) {
+                        if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
                             fragment.setupLayouts(true, true);
                             notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        }
 
                         fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), action);
 
+                        if (fragment.isListEmpty() && dc.getType() == DocumentChange.Type.REMOVED) {
                             fragment.setupLayouts(true, false);
                             notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
+                        }
                     }
+                }
+
+                if (fragment != null && fragment.isListEmpty()) {
+                    fragment.setupLayouts(true, false);
+                    notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
                 }
             } else {
                 if (fragment != null) {
