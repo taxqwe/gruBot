@@ -20,6 +20,7 @@ import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
+import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.util.Globals;
@@ -231,6 +232,41 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             return context.getResources().getColor(R.color.colorAnnouncement);
         else
             return context.getResources().getColor(R.color.colorVote);
+    }
+
+    public void removeActionItem(int position) {
+        //groups.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void addActionItem(int position, Action action) {
+        String type;
+        if (action instanceof ActionAnnouncement)
+            type = "Объявления";
+        else
+            type = "Голосования";
+
+        for (GroupInfoRecyclerItem item : buttons) {
+            if (item.isHeader() && item.button.getText().equals(type)) {
+                int actualPosition = buttons.indexOf(item) + position + 1;
+                buttons.add(actualPosition, new GroupInfoRecyclerItem(action));
+                item.button.addChild(new GroupInfoRecyclerItem(action));
+                setItems(buttons);
+                notifyItemInserted(actualPosition);
+                break;
+            }
+        }
+    }
+
+    public void updateActionItem(int oldPosition, int newPosition, Action action) {
+        if (oldPosition == newPosition) {
+            //groups.set(oldPosition, group);
+            notifyItemChanged(oldPosition);
+        } else {
+            //groups.remove(oldPosition);
+            //groups.add(newPosition, group);
+            notifyItemMoved(oldPosition, newPosition);
+        }
     }
 
     public void insertItem(Action entry) {

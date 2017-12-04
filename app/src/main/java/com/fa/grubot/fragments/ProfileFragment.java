@@ -57,6 +57,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     private transient ProfileRecyclerAdapter profileItemsAdapter;
 
     private int state;
+    private User user;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -70,12 +71,18 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         hideMainToolbar();
-        User user = (User) this.getArguments().getSerializable("user");
+        user = (User) this.getArguments().getSerializable("user");
         setHasOptionsMenu(true);
-        presenter.notifyFragmentStarted(user.getId());
         unbinder = ButterKnife.bind(this, v);
+        presenter.notifyFragmentStarted(user.getId());
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //presenter.notifyFragmentStarted(user.getId());
     }
 
     @Override

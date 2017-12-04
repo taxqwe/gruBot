@@ -20,7 +20,7 @@ public class ProfilePresenter {
     private User localUser;
 
     private DocumentReference userReference;
-    private ListenerRegistration registration;
+    private ListenerRegistration userRegistration;
 
     public ProfilePresenter(ProfileFragmentBase fragment) {
         this.fragment = fragment;
@@ -47,8 +47,8 @@ public class ProfilePresenter {
     }
 
     @SuppressWarnings("unchecked")
-    private void setRegistration() {
-        registration = userReference.addSnapshotListener((doc, e) -> {
+    public void setRegistration() {
+        userRegistration = userReference.addSnapshotListener((doc, e) -> {
             if (e == null) {
                 User user = new User(doc.getId(),
                         doc.get("username").toString(),
@@ -91,7 +91,7 @@ public class ProfilePresenter {
     }
 
     public void removeRegistration() {
-        registration.remove();
+        userRegistration.remove();
     }
 
     public void onRetryBtnClick() {

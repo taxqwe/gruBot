@@ -54,10 +54,16 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         presenter = new DashboardPresenter(this);
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        presenter.notifyFragmentStarted();
         unbinder = ButterKnife.bind(this, v);
+        presenter.notifyFragmentStarted();
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //presenter.notifyFragmentStarted();
     }
 
     @Override

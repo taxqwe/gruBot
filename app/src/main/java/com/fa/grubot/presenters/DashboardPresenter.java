@@ -29,10 +29,10 @@ public class DashboardPresenter {
     private Query votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
     private Query archiveVotesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
 
-    private ListenerRegistration announcementsRegistrations;
-    private ListenerRegistration archiveAnnouncementsRegistrations;
-    private ListenerRegistration votesRegistrations;
-    private ListenerRegistration archiveVotesRegistrations;
+    private ListenerRegistration announcementsRegistration;
+    private ListenerRegistration archiveAnnouncementsRegistration;
+    private ListenerRegistration votesRegistration;
+    private ListenerRegistration archiveVotesRegistration;
 
     public DashboardPresenter(DashboardFragmentBase fragment){
         this.fragment = fragment;
@@ -59,8 +59,8 @@ public class DashboardPresenter {
     }
 
     @SuppressWarnings("unchecked")
-    private void setRegistration() {
-        announcementsRegistrations = announcementsQuery.addSnapshotListener((documentSnapshots, e) -> {
+    public void setRegistration() {
+        announcementsRegistration = announcementsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
@@ -91,7 +91,7 @@ public class DashboardPresenter {
             }
         });
 
-        archiveAnnouncementsRegistrations = archiveAnnouncementsQuery.addSnapshotListener((documentSnapshots, e) -> {
+        archiveAnnouncementsRegistration = archiveAnnouncementsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
@@ -122,7 +122,7 @@ public class DashboardPresenter {
             }
         });
 
-        votesRegistrations = votesQuery.addSnapshotListener((documentSnapshots, e) -> {
+        votesRegistration = votesQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
@@ -153,7 +153,7 @@ public class DashboardPresenter {
             }
         });
 
-        archiveVotesRegistrations = archiveVotesQuery.addSnapshotListener((documentSnapshots, e) -> {
+        archiveVotesRegistration = archiveVotesQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
@@ -191,10 +191,10 @@ public class DashboardPresenter {
     }
 
     public void removeRegistration() {
-        announcementsRegistrations.remove();
-        archiveAnnouncementsRegistrations.remove();
-        votesRegistrations.remove();
-        archiveVotesRegistrations.remove();
+        announcementsRegistration.remove();
+        archiveAnnouncementsRegistration.remove();
+        votesRegistration.remove();
+        archiveVotesRegistration.remove();
     }
 
     public void destroy() {

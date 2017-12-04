@@ -59,11 +59,17 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         presenter = new GroupsPresenter(this);
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
 
-        presenter.notifyFragmentStarted();
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
+        presenter.notifyFragmentStarted();
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //presenter.notifyFragmentStarted();
     }
 
     @Override
