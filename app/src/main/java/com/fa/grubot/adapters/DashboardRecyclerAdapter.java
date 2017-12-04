@@ -143,4 +143,9 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     public int getItemCount() {
         return (items == null) ? 0 : items.size();
     }
+
+    public void clearItems() {
+        items.clear();
+        notifyDataSetChanged();
+    }
 }

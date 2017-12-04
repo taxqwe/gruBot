@@ -74,7 +74,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         user = (User) this.getArguments().getSerializable("user");
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyFragmentStarted(user.getId());
 
         return v;
     }
@@ -82,19 +81,21 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     @Override
     public void onResume() {
         super.onResume();
-        //presenter.notifyFragmentStarted(user.getId());
+        presenter.notifyFragmentStarted(user.getId());
     }
 
     @Override
     public void onPause() {
         super.onPause();
         presenter.removeRegistration();
+        profileItemsAdapter.clearItems();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         presenter.removeRegistration();
+        profileItemsAdapter.clearItems();
     }
 
     @Override

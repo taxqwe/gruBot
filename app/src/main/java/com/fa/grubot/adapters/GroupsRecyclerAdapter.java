@@ -64,6 +64,16 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
         });
     }
 
+    @Override
+    public int getItemCount() {
+        return (groups == null) ? 0 : groups.size();
+    }
+
+    public void clearItems() {
+        groups.clear();
+        notifyDataSetChanged();
+    }
+
     public void removeItem(int position) {
         groups.remove(position);
         notifyItemRemoved(position);
@@ -83,10 +93,5 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
             groups.add(newPosition, group);
             notifyItemMoved(oldPosition, newPosition);
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return groups.size();
     }
 }

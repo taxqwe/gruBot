@@ -61,7 +61,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyFragmentStarted();
 
         return v;
     }
@@ -69,19 +68,21 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     @Override
     public void onResume() {
         super.onResume();
-        //presenter.notifyFragmentStarted();
+        presenter.notifyFragmentStarted();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         presenter.removeRegistration();
+        groupsAdapter.clearItems();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         presenter.removeRegistration();
+        groupsAdapter.clearItems();
     }
 
     @Override

@@ -73,7 +73,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         type = this.getArguments().getInt("type");
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
-        presenter.notifyFragmentStarted(type);
 
         return v;
     }
@@ -81,19 +80,21 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public void onResume() {
         super.onResume();
-        //presenter.notifyFragmentStarted(type);
+        presenter.notifyFragmentStarted(type);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         presenter.removeRegistration();
+        actionsAdapter.clearItems();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         presenter.removeRegistration();
+        actionsAdapter.clearItems();
     }
 
     @Override

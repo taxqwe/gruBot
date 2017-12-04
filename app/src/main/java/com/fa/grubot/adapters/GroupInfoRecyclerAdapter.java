@@ -285,4 +285,9 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             }
         }
     }
+
+    public void clearItems() {
+        buttons.clear();
+        notifyDataSetChanged();
+    }
 }

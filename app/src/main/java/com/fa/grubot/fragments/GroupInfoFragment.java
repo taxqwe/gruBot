@@ -99,19 +99,21 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Override
     public void onResume() {
         super.onResume();
-        //presenter.notifyFragmentStarted(group);
+        presenter.notifyFragmentStarted(group);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         presenter.removeRegistration();
+        groupInfoAdapter.clearItems();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         presenter.removeRegistration();
+        groupInfoAdapter.clearItems();
     }
 
     @Override
