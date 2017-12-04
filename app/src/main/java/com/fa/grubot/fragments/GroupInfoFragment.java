@@ -105,21 +105,24 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
-        groupInfoAdapter.clearItems();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
-        groupInfoAdapter.clearItems();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        groupInfoAdapter.clearItems();
     }
 
     public void showRequiredViews() {

@@ -69,21 +69,24 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
-        dashboardAdapter.clearItems();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
-        dashboardAdapter.clearItems();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        dashboardAdapter.clearItems();
     }
 
     public void showRequiredViews() {

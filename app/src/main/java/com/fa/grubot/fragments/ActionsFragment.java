@@ -86,21 +86,25 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
-        actionsAdapter.clearItems();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
-        actionsAdapter.clearItems();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        if (actionsAdapter != null)
+            actionsAdapter.clearItems();
     }
 
     public void showRequiredViews() {
