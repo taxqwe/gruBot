@@ -21,8 +21,6 @@ public class DashboardPresenter {
     private DashboardFragmentBase fragment;
     private DashboardModel model;
 
-    private ArrayList<DashboardItem> items = new ArrayList<DashboardItem>(Arrays.asList(new DashboardAnnouncement(0, 0), new DashboardVote(0, 0)));
-
     private Query announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
     private Query archiveAnnouncementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
 
@@ -49,7 +47,10 @@ public class DashboardPresenter {
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
-                fragment.setupToolbar();
+                ArrayList<DashboardItem> items = new ArrayList<>(Arrays.asList(
+                        new DashboardAnnouncement(0, 0),
+                        new DashboardVote(0, 0)));
+
                 fragment.setupRecyclerView(items);
                 break;
             case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:

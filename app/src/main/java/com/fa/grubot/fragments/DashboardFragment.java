@@ -62,6 +62,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     @Override
     public void onResume() {
         super.onResume();
+        dashboardAdapter = null;
         presenter.notifyFragmentStarted();
     }
 
