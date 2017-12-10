@@ -14,9 +14,9 @@
         fab:menu_labels_ellipsize="end"
         fab:menu_labels_singleLine="true"
         fab:menu_backgroundColor="#ccffffff"
-        fab:menu_colorNormal="@color/waPrimary"
-        fab:menu_colorPressed="@color/waPrimaryDark"
-        fab:menu_colorRipple="@color/waAccent">
+        fab:menu_colorNormal="@color/waAccent"
+        fab:menu_colorPressed="@color/waPrimary"
+        fab:menu_colorRipple="@color/waPrimary">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_add_vote"

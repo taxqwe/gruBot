@@ -247,30 +247,34 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
     }
 
     public void addActionItem(int position, Action action) {
-        String type;
-        if (action instanceof ActionAnnouncement)
-            type = "Объявления";
-        else
-            type = "Голосования";
+        try {
+            String type;
+            if (action instanceof ActionAnnouncement)
+                type = "Объявления";
+            else
+                type = "Голосования";
 
-        int startPosition = 0;
-        int endPosition = 0;
-        for (int i = 0; i < buttons.size(); i++) {
-            if (buttons.get(i).isHeader() && buttons.get(i).button.getText().equals(type)) {
-                startPosition = i + 1;
-                endPosition = startPosition + buttons.get(i).button.getChildCount();
-                break;
+            int startPosition = 0;
+            int endPosition = 0;
+            for (int i = 0; i < buttons.size(); i++) {
+                if (buttons.get(i).isHeader() && buttons.get(i).button.getText().equals(type)) {
+                    startPosition = i + 1;
+                    endPosition = startPosition + buttons.get(i).button.getChildCount();
+                    break;
+                }
             }
+
+            ArrayList<GroupInfoRecyclerItem> actionsList = new ArrayList<>();
+            actionsList.addAll(buttons.subList(startPosition, endPosition));
+
+            actionsList.add(position, new GroupInfoRecyclerItem(action));
+            buttons.subList(startPosition, endPosition).clear();
+
+            buttons.get(startPosition - 1).button.addChild(new GroupInfoRecyclerItem(action));
+            buttons.addAll(startPosition, actionsList);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        ArrayList<GroupInfoRecyclerItem> actionsList = new ArrayList<>();
-        actionsList.addAll(buttons.subList(startPosition, endPosition));
-
-        actionsList.add(position, new GroupInfoRecyclerItem(action));
-        buttons.subList(startPosition, endPosition).clear();
-
-        buttons.get(startPosition - 1).button.addChild(new GroupInfoRecyclerItem(action));
-        buttons.addAll(startPosition, actionsList);
     }
 
     public void updateActionItem(int oldPosition, int newPosition, Action action) {
