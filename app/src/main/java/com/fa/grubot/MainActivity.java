@@ -5,6 +5,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.fragments.DashboardFragment;
@@ -97,16 +98,23 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
     @Override
     public void onBackPressed() {
-        if (!navController.popFragment()) {
-            super.onBackPressed();
+        if (navController.getCurrentStack().size() == 1 && navController.isRootFragment()) {
+            if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+                super.onBackPressed();
+                return;
+            } else {
+                Toast.makeText(getBaseContext(), "Нажмите еще раз для выхода", Toast.LENGTH_SHORT).show();
+            }
+            mBackPressed = System.currentTimeMillis();
+        } else {
+            navController.popFragment();
         }
     }
 
     @Override
     public void pushFragment(Fragment fragment) {
         if (navController != null) {
-            if (App.INSTANCE.isBackstackEnabled())
-                navController.pushFragment(fragment);
+            navController.pushFragment(fragment);
         }
     }
 

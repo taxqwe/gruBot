@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -52,24 +51,24 @@ import io.reactivex.annotations.Nullable;
 
 public class GroupInfoFragment extends BaseFragment implements GroupInfoFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
-    @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
-    @Nullable @BindView(R.id.groupImage) transient ImageView groupImage;
+    @Nullable @BindView(R.id.collapsingToolbar) Toolbar collapsingToolbar;
+    @Nullable @BindView(R.id.app_bar) AppBarLayout appBarLayout;
+    @Nullable @BindView(R.id.recycler) RecyclerView buttonsView;
+    @Nullable @BindView(R.id.groupImage) ImageView groupImage;
 
-    @Nullable @BindView(R.id.fam) transient FloatingActionMenu fam;
-    @Nullable @BindView(R.id.fab_add_announcement) transient FloatingActionButton announcementFab;
-    @Nullable @BindView(R.id.fab_add_vote) transient FloatingActionButton voteFab;
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
+    @Nullable @BindView(R.id.fam) FloatingActionMenu fam;
+    @Nullable @BindView(R.id.fab_add_announcement) FloatingActionButton announcementFab;
+    @Nullable @BindView(R.id.fab_add_vote) FloatingActionButton voteFab;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.content_fam) transient View content_fam;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.content_fam) View content_fam;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
 
-    private transient GroupInfoRecyclerAdapter groupInfoAdapter;
-    private transient GroupInfoPresenter presenter;
-    private transient Unbinder unbinder;
+    private GroupInfoRecyclerAdapter groupInfoAdapter;
+    private GroupInfoPresenter presenter;
+    private Unbinder unbinder;
 
     private int state;
     private int instance = 0;
@@ -388,14 +387,6 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
 
     public boolean isAdapterExists() {
         return groupInfoAdapter != null;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

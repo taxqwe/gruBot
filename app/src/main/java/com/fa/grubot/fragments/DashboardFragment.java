@@ -30,16 +30,16 @@ import io.reactivex.annotations.Nullable;
 
 public class DashboardFragment extends BaseFragment implements DashboardFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView dashboardView;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.recycler) RecyclerView dashboardView;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
 
-    private transient Unbinder unbinder;
-    private transient DashboardPresenter presenter;
-    private transient DashboardRecyclerAdapter dashboardAdapter;
+    private Unbinder unbinder;
+    private DashboardPresenter presenter;
+    private DashboardRecyclerAdapter dashboardAdapter;
 
     private int state;
     private int instance = 0;

@@ -39,21 +39,21 @@ import io.reactivex.annotations.Nullable;
 
 public class ProfileFragment extends BaseFragment implements ProfileFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
-    @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
-    @Nullable @BindView(R.id.toolbar_layout) transient CollapsingToolbarLayout toolbarLayout;
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
-    @Nullable @BindView(R.id.userImage) transient ImageView userImage;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
+    @Nullable @BindView(R.id.collapsingToolbar) Toolbar collapsingToolbar;
+    @Nullable @BindView(R.id.app_bar) AppBarLayout appBarLayout;
+    @Nullable @BindView(R.id.toolbar_layout) CollapsingToolbarLayout toolbarLayout;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.userImage) ImageView userImage;
+    @Nullable @BindView(R.id.recycler) RecyclerView itemsView;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.progressBar)  ProgressBar progressBar;
+    @Nullable @BindView(R.id.content)  View content;
+    @Nullable @BindView(R.id.noInternet)  View noInternet;
 
-    private transient Unbinder unbinder;
-    private transient ProfilePresenter presenter;
+    private  Unbinder unbinder;
+    private  ProfilePresenter presenter;
 
-    private transient ProfileRecyclerAdapter profileItemsAdapter;
+    private  ProfileRecyclerAdapter profileItemsAdapter;
 
     private int state;
     private int instance = 0;
@@ -167,7 +167,7 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
             imageLoader.loadToolbarImage(userImage, imageLoader.getUriOfDrawable(R.drawable.material_bg));
         }
 
-        if (!user.getId().equals(App.INSTANCE.getCurrentUser().getId())) {
+        if (instance > 0) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         }

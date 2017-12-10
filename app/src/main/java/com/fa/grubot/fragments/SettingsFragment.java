@@ -17,7 +17,7 @@ import java.io.Serializable;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements Serializable {
 
-    private transient Toolbar toolbar;
+    private Toolbar toolbar;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

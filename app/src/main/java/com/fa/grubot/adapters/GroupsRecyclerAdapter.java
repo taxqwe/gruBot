@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.fragments.GroupInfoFragment;

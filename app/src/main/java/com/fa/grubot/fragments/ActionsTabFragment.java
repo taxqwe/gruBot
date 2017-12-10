@@ -5,7 +5,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,11 +24,11 @@ import static com.fa.grubot.fragments.ActionsFragment.TYPE_ANNOUNCEMENTS;
 
 public class ActionsTabFragment extends BaseFragment implements Serializable {
 
-    @BindView(R.id.viewPager) transient NoSwipeViewPager viewPager;
-    @BindView(R.id.tabs) transient TabLayout tabLayout;
-    @BindView(R.id.pagerToolbar) transient Toolbar pagerToolbar;
+    @BindView(R.id.viewPager) NoSwipeViewPager viewPager;
+    @BindView(R.id.tabs) TabLayout tabLayout;
+    @BindView(R.id.pagerToolbar) Toolbar pagerToolbar;
 
-    private transient Unbinder unbinder;
+    private Unbinder unbinder;
     private int instance = 0;
     private int type;
 
@@ -98,14 +97,6 @@ public class ActionsTabFragment extends BaseFragment implements Serializable {
         viewPager.setAdapter(actionsPagerAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

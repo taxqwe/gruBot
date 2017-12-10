@@ -41,19 +41,19 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     public static final int TYPE_ANNOUNCEMENTS_ARCHIVE = 390;
     public static final int TYPE_VOTES_ARCHIVE = 828;
 
-    @Nullable @BindView(R.id.recycler) transient  RecyclerView actionsView;
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
+    @Nullable @BindView(R.id.recycler) RecyclerView actionsView;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    @Nullable @BindView(R.id.root) transient FrameLayout root;
+    @Nullable @BindView(R.id.root) FrameLayout root;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
-    @Nullable @BindView(R.id.noData) transient View noData;
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
+    @Nullable @BindView(R.id.noData) View noData;
 
-    private transient Unbinder unbinder;
-    private transient ActionsPresenter presenter;
-    private transient ActionsRecyclerAdapter actionsAdapter;
+    private Unbinder unbinder;
+    private ActionsPresenter presenter;
+    private ActionsRecyclerAdapter actionsAdapter;
 
     private int state;
     private int type;
