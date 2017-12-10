@@ -3,7 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="waPrimary">#128c7e</color>
+
+    <color name="waPrimary">#0f7469</color>
     <color name="waPrimaryDark">#075e54</color>
     <color name="waAccent">#25d366</color>
 

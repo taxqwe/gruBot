@@ -16,7 +16,7 @@
         fab:menu_backgroundColor="#ccffffff"
         fab:menu_colorNormal="@color/waPrimary"
         fab:menu_colorPressed="@color/waPrimaryDark"
-        fab:menu_colorRipple="@color/waPrimaryDark">
+        fab:menu_colorRipple="@color/waAccent">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_add_vote"
