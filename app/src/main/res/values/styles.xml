@@ -23,8 +23,8 @@
     <style name="MenuButtonsStyle">
         <item name="android:fontFamily">@font/roboto_light</item>
         <item name="fab_size">mini</item>
-        <item name="fab_colorNormal">@color/waPrimary</item>
-        <item name="fab_colorPressed">@color/waPrimaryDark</item>
-        <item name="fab_colorRipple">@color/waPrimaryDark</item>
+        <item name="fab_colorNormal">@color/waAccent</item>
+        <item name="fab_colorPressed">@color/waPrimary</item>
+        <item name="fab_colorRipple">@color/waPrimary</item>
     </style>
 </resources>
