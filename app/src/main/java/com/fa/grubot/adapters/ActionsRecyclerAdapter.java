@@ -96,6 +96,15 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
         return (entries == null) ? 0 : entries.size();
     }
 
+    public ArrayList<Action> getItems() {
+        return entries;
+    }
+
+    public void clearItems() {
+        entries.clear();
+        notifyDataSetChanged();
+    }
+
     public void removeItem(int position) {
         entries.remove(position);
         notifyItemRemoved(position);

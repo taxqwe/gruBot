@@ -1,6 +1,5 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,22 +25,32 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.Icepick;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
-public class DashboardFragment extends Fragment implements DashboardFragmentBase, Serializable {
+public class DashboardFragment extends BaseFragment implements DashboardFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView dashboardView;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.recycler) RecyclerView dashboardView;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
 
-    private transient Unbinder unbinder;
-    private transient DashboardPresenter presenter;
-    private transient DashboardRecyclerAdapter dashboardAdapter;
+    private Unbinder unbinder;
+    private DashboardPresenter presenter;
+    private DashboardRecyclerAdapter dashboardAdapter;
 
     private int state;
+    private int instance = 0;
+
+    public static DashboardFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        DashboardFragment fragment = new DashboardFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -50,32 +59,45 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new DashboardPresenter(this);
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        presenter.notifyFragmentStarted();
+        instance = this.getArguments().getInt("instance");
         unbinder = ButterKnife.bind(this, v);
 
         return v;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        dashboardAdapter = null;
+        presenter.notifyFragmentStarted();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        if (dashboardAdapter != null)
+            dashboardAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -122,7 +144,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         dashboardView.setLayoutManager(layoutManager);
         dashboardView.setHasFixedSize(false);
 
-        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), items);
+        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), instance, fragmentNavigation, items);
         dashboardView.setAdapter(dashboardAdapter);
         dashboardAdapter.notifyDataSetChanged();
     }

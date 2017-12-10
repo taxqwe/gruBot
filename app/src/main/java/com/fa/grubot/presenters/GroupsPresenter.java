@@ -23,7 +23,7 @@ public class GroupsPresenter {
     private ArrayList<Group> groups = new ArrayList<>();
 
     private Query groupsQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), true);
-    private ListenerRegistration registration;
+    private ListenerRegistration groupsRegistration;
 
     public GroupsPresenter(GroupsFragmentBase fragment) {
         this.fragment = fragment;
@@ -51,8 +51,8 @@ public class GroupsPresenter {
     }
 
     @SuppressWarnings("unchecked")
-    private void setRegistration() {
-        registration = groupsQuery.addSnapshotListener((documentSnapshots, e) -> {
+    public void setRegistration() {
+        groupsRegistration = groupsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
@@ -86,11 +86,12 @@ public class GroupsPresenter {
     }
 
     public void removeRegistration() {
-        registration.remove();
+        if (groupsRegistration != null)
+            groupsRegistration.remove();
     }
 
     public void destroy() {
-        registration.remove();
+        removeRegistration();
         fragment = null;
         model = null;
     }

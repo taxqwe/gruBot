@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
+<android.support.v7.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
+    <android.support.v7.preference.PreferenceCategory
         android:title="@string/main_category_title">
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="animationsSwitch"
             android:title="@string/animations_switch_title"
             android:defaultValue="false" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="backstackSwitch"
             android:title="@string/backstack_switch_title"
             android:defaultValue="false" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="slidrSwitch"
             android:title="@string/slidr_switch_title"
             android:defaultValue="true" />
 
-    </PreferenceCategory>
-</PreferenceScreen>
+    </android.support.v7.preference.PreferenceCategory>
+</android.support.v7.preference.PreferenceScreen>

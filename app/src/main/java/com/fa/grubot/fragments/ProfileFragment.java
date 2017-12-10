@@ -1,7 +1,7 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -38,25 +37,36 @@ import butterknife.Unbinder;
 import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
-public class ProfileFragment extends Fragment implements ProfileFragmentBase, Serializable {
+public class ProfileFragment extends BaseFragment implements ProfileFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
-    @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
-    @Nullable @BindView(R.id.toolbar_layout) transient CollapsingToolbarLayout toolbarLayout;
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
-    @Nullable @BindView(R.id.userImage) transient ImageView userImage;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView itemsView;
+    @Nullable @BindView(R.id.collapsingToolbar) Toolbar collapsingToolbar;
+    @Nullable @BindView(R.id.app_bar) AppBarLayout appBarLayout;
+    @Nullable @BindView(R.id.toolbar_layout) CollapsingToolbarLayout toolbarLayout;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.userImage) ImageView userImage;
+    @Nullable @BindView(R.id.recycler) RecyclerView itemsView;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.progressBar)  ProgressBar progressBar;
+    @Nullable @BindView(R.id.content)  View content;
+    @Nullable @BindView(R.id.noInternet)  View noInternet;
 
-    private transient Unbinder unbinder;
-    private transient ProfilePresenter presenter;
+    private  Unbinder unbinder;
+    private  ProfilePresenter presenter;
 
-    private transient ProfileRecyclerAdapter profileItemsAdapter;
+    private  ProfileRecyclerAdapter profileItemsAdapter;
 
     private int state;
+    private int instance = 0;
+    private User user;
+
+    public static ProfileFragment newInstance(int instance, User user) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        args.putSerializable("user", user);
+        ProfileFragment fragment = new ProfileFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -65,35 +75,48 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new ProfilePresenter(this);
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         hideMainToolbar();
-        User user = (User) this.getArguments().getSerializable("user");
+        user = (User) this.getArguments().getSerializable("user");
+        instance = this.getArguments().getInt("instance");
+
         setHasOptionsMenu(true);
-        presenter.notifyFragmentStarted(user.getId());
         unbinder = ButterKnife.bind(this, v);
 
         return v;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.notifyFragmentStarted(user.getId());
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        if (profileItemsAdapter != null)
+            profileItemsAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -144,7 +167,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
             imageLoader.loadToolbarImage(userImage, imageLoader.getUriOfDrawable(R.drawable.material_bg));
         }
 
-        if (!user.getId().equals(App.INSTANCE.getCurrentUser().getId())) {
+        if (instance > 0) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -203,14 +226,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
 
     public boolean isAdapterExists() {
         return profileItemsAdapter != null;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

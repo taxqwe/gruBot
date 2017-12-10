@@ -1,9 +1,9 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,20 +41,19 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     public static final int TYPE_ANNOUNCEMENTS_ARCHIVE = 390;
     public static final int TYPE_VOTES_ARCHIVE = 828;
 
-    @Nullable @BindView(R.id.recycler) transient  RecyclerView actionsView;
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
+    @Nullable @BindView(R.id.recycler) RecyclerView actionsView;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    @Nullable @BindView(R.id.root) transient FrameLayout root;
+    @Nullable @BindView(R.id.root) FrameLayout root;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
-    @Nullable @BindView(R.id.noData) transient View noData;
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
+    @Nullable @BindView(R.id.noData) View noData;
 
-    private transient Unbinder unbinder;
-    private transient ActionsPresenter presenter;
-    private ArrayList<Action> actions;
-    private transient ActionsRecyclerAdapter actionsAdapter;
+    private Unbinder unbinder;
+    private ActionsPresenter presenter;
+    private ActionsRecyclerAdapter actionsAdapter;
 
     private int state;
     private int type;
@@ -71,9 +70,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         setRetainInstance(true);
         View v = inflater.inflate(R.layout.fragment_actions, container, false);
 
-        actionsAdapter = null;
         type = this.getArguments().getInt("type");
-        presenter.notifyFragmentStarted(type);
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
 
@@ -81,21 +78,33 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.notifyFragmentStarted(type);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        if (actionsAdapter != null)
+            actionsAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -132,7 +141,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         }
     }
 
-    public void setupRecyclerView(ArrayList<Action> newActions) {
+    public void setupRecyclerView(ArrayList<Action> actions) {
         int spanCount = 1;
 
         if (getActivity().getResources().getConfiguration().orientation == 2)
@@ -152,8 +161,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         if (App.INSTANCE.areAnimationsEnabled())
             actionsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
-        this.actions = newActions;
-        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), newActions);
+        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), actions);
         actionsView.setAdapter(actionsAdapter);
         actionsAdapter.notifyDataSetChanged();
     }
@@ -165,7 +173,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof ActionsRecyclerAdapter.ViewHolder) {
-            final Action deletedItem = actions.get(viewHolder.getAdapterPosition());
+            Action deletedItem = actionsAdapter.getItems().get(viewHolder.getAdapterPosition());
             presenter.addActionToArchive(deletedItem, type);
         }
     }
