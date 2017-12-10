@@ -234,7 +234,17 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             return context.getResources().getColor(R.color.colorVote);
     }
 
-    public void removeActionItem(int position) {
+    public void removeActionItem(int position, Action action) {
+        String type;
+        if (action instanceof ActionAnnouncement)
+            type = "Объявления";
+        else
+            type = "Голосования";
+
+        for (GroupInfoRecyclerItem item : buttons) {
+            //if (item.entry.getId().equals(action.getId()))
+
+        }
         //groups.remove(position);
         notifyItemRemoved(position);
     }
@@ -246,16 +256,24 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
         else
             type = "Голосования";
 
-        for (GroupInfoRecyclerItem item : buttons) {
-            if (item.isHeader() && item.button.getText().equals(type)) {
-                int actualPosition = buttons.indexOf(item) + position + 1;
-                buttons.add(actualPosition, new GroupInfoRecyclerItem(action));
-                item.button.addChild(new GroupInfoRecyclerItem(action));
-                setItems(buttons);
-                notifyItemInserted(actualPosition);
+        int startPosition = 0;
+        int endPosition = 0;
+        for (int i = 0; i < buttons.size(); i++) {
+            if (buttons.get(i).isHeader() && buttons.get(i).button.getText().equals(type)) {
+                startPosition = i + 1;
+                endPosition = startPosition + buttons.get(i).button.getChildCount();
                 break;
             }
         }
+
+        ArrayList<GroupInfoRecyclerItem> actionsList = new ArrayList<>();
+        actionsList.addAll(buttons.subList(startPosition, endPosition));
+
+        actionsList.add(position, new GroupInfoRecyclerItem(action));
+        buttons.subList(startPosition, endPosition).clear();
+
+        buttons.get(startPosition - 1).button.addChild(new GroupInfoRecyclerItem(action));
+        buttons.addAll(startPosition, actionsList);
     }
 
     public void updateActionItem(int oldPosition, int newPosition, Action action) {
