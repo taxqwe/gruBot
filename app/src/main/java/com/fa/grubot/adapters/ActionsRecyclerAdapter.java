@@ -15,6 +15,7 @@ import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,6 +95,15 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
     @Override
     public int getItemCount() {
         return (entries == null) ? 0 : entries.size();
+    }
+
+    public ArrayList<Action> getItems() {
+        return entries;
+    }
+
+    public void clearItems() {
+        entries.clear();
+        notifyDataSetChanged();
     }
 
     public void removeItem(int position) {

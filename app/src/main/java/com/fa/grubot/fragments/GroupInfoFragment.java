@@ -25,7 +25,9 @@ import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.adapters.VoteRecyclerAdapter;
+import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
 import com.fa.grubot.util.Globals;
@@ -88,10 +90,28 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
         setHasOptionsMenu(true);
         group = (Group) this.getArguments().getSerializable("group");
-        presenter.notifyFragmentStarted(group.getId());
         unbinder = ButterKnife.bind(this, v);
+        presenter.notifyFragmentStarted(group);
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.notifyFragmentStarted(group);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        terminateRegistration();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        terminateRegistration();
     }
 
     @Override
@@ -100,8 +120,15 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         Icepick.saveInstanceState(this, outState);
     }
 
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        groupInfoAdapter.clearItems();
+    }
+
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
@@ -116,18 +143,13 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         }
     }
 
-    public void showLoadingView() {
-        content.setVisibility(View.GONE);
-        noInternet.setVisibility(View.GONE);
-        appBarLayout.setExpanded(false);
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
             state = Globals.FragmentState.STATE_CONTENT;
-        else
+        else {
+            groupInfoAdapter = null;
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+        }
     }
 
     private void hideMainToolbar() {
@@ -325,14 +347,14 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     }
 
     public void setupRetryButton(){
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity(), group));
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Group group) {
+    public void handleActionsUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Action action) {
         if (groupInfoAdapter != null) {
             switch (type) {
                 case ADDED:
-                    //groupInfoAdapter.addItem(newIndex, group);
+                    groupInfoAdapter.addActionItem(newIndex, action);
                     break;
                 case MODIFIED:
                     //groupInfoAdapter.updateItem(oldIndex, newIndex, group);
@@ -342,6 +364,18 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                     break;
             }
         }
+    }
+
+    public void handleUsersUpdate(DocumentChange.Type type, int newIndex, int oldIndex, User user) {
+
+    }
+
+    public void handleUIUpdate(Group group) {
+
+    }
+
+    public boolean isAdapterExists() {
+        return groupInfoAdapter != null;
     }
 
     @Override
@@ -355,6 +389,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        groupInfoAdapter = null;
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setVisibility(View.VISIBLE);
         unbinder.unbind();

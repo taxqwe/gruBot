@@ -59,7 +59,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         presenter = new GroupsPresenter(this);
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
 
-        presenter.notifyFragmentStarted();
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
 
@@ -67,21 +66,32 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.notifyFragmentStarted();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        groupsAdapter.clearItems();
     }
 
     public void showRequiredViews() {

@@ -54,28 +54,39 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         presenter = new DashboardPresenter(this);
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        presenter.notifyFragmentStarted();
         unbinder = ButterKnife.bind(this, v);
 
         return v;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        dashboardAdapter = null;
+        presenter.notifyFragmentStarted();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        dashboardAdapter.clearItems();
     }
 
     public void showRequiredViews() {

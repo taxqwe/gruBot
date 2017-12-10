@@ -112,7 +112,16 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
                 holder.itemValue.setText(item.getValue());
                 break;
         }
+    }
 
+    @Override
+    public int getItemCount() {
+        return (items == null) ? 0 : items.size();
+    }
+
+    public void clearItems() {
+        items.clear();
+        notifyDataSetChanged();
     }
 
     public void addProfileItems(ArrayList<ProfileItem> items) {
@@ -140,10 +149,5 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
                 notifyItemChanged(i);
             }
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
     }
 }

@@ -57,6 +57,7 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     private transient ProfileRecyclerAdapter profileItemsAdapter;
 
     private int state;
+    private User user;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -70,30 +71,40 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         hideMainToolbar();
-        User user = (User) this.getArguments().getSerializable("user");
+        user = (User) this.getArguments().getSerializable("user");
         setHasOptionsMenu(true);
-        presenter.notifyFragmentStarted(user.getId());
         unbinder = ButterKnife.bind(this, v);
 
         return v;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.notifyFragmentStarted(user.getId());
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        profileItemsAdapter.clearItems();
     }
 
     public void showRequiredViews() {

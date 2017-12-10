@@ -53,7 +53,6 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
 
     private transient Unbinder unbinder;
     private transient ActionsPresenter presenter;
-    private ArrayList<Action> actions;
     private transient ActionsRecyclerAdapter actionsAdapter;
 
     private int state;
@@ -62,7 +61,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Icepick.restoreInstanceState(this, savedInstanceState);
+        //Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
     @Override
@@ -71,9 +70,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         setRetainInstance(true);
         View v = inflater.inflate(R.layout.fragment_actions, container, false);
 
-        actionsAdapter = null;
         type = this.getArguments().getInt("type");
-        presenter.notifyFragmentStarted(type);
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
 
@@ -81,21 +78,33 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.notifyFragmentStarted(type);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.removeRegistration();
+        terminateRegistration();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        if (actionsAdapter != null)
+            actionsAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -132,7 +141,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         }
     }
 
-    public void setupRecyclerView(ArrayList<Action> newActions) {
+    public void setupRecyclerView(ArrayList<Action> actions) {
         int spanCount = 1;
 
         if (getActivity().getResources().getConfiguration().orientation == 2)
@@ -152,8 +161,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         if (App.INSTANCE.areAnimationsEnabled())
             actionsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
-        this.actions = newActions;
-        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), newActions);
+        actionsAdapter = new ActionsRecyclerAdapter(getActivity(), actions);
         actionsView.setAdapter(actionsAdapter);
         actionsAdapter.notifyDataSetChanged();
     }
@@ -165,7 +173,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof ActionsRecyclerAdapter.ViewHolder) {
-            final Action deletedItem = actions.get(viewHolder.getAdapterPosition());
+            Action deletedItem = actionsAdapter.getItems().get(viewHolder.getAdapterPosition());
             presenter.addActionToArchive(deletedItem, type);
         }
     }

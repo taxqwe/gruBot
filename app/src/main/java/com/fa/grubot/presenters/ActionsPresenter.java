@@ -27,7 +27,7 @@ public class ActionsPresenter {
     private ArrayList<Action> actions = new ArrayList<>();
 
     private Query actionsQuery;
-    private ListenerRegistration registration;
+    private ListenerRegistration actionsRegistration;
 
     public ActionsPresenter(ActionsFragmentBase fragment){
         this.fragment = fragment;
@@ -69,8 +69,8 @@ public class ActionsPresenter {
     }
 
     @SuppressWarnings("unchecked")
-    private void setRegistration(int type) {
-        registration = actionsQuery.addSnapshotListener((documentSnapshots, e) -> {
+    public void setRegistration(int type) {
+        actionsRegistration = actionsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
@@ -219,11 +219,11 @@ public class ActionsPresenter {
     }
 
     public void removeRegistration() {
-        registration.remove();
+        actionsRegistration.remove();
     }
 
     public void destroy() {
-        registration.remove();
+        actionsRegistration.remove();
         fragment = null;
         model = null;
     }
