@@ -1,7 +1,6 @@
 package com.fa.grubot;
 
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -13,9 +12,9 @@ import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
-import com.fa.grubot.helpers.BottomNavigationViewHelper;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.tabhistory.FragNavTabHistoryController;
+import com.roughike.bottombar.BottomBar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,12 +23,12 @@ import io.reactivex.annotations.Nullable;
 
 public class MainActivity extends AppCompatActivity implements BaseFragment.FragmentNavigation, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
 
-    @Nullable @BindView(R.id.bottom_navigation) BottomNavigationView bottomNavigationView;
+    @Nullable @BindView(R.id.bottom_navigation) BottomBar bottomNavigationView;
 
     private final int TAB_SEARCH = FragNavController.TAB1;
     private final int TAB_PROFILE = FragNavController.TAB2;
     private final int TAB_DASHBOARD = FragNavController.TAB3;
-    private final int TAB_CHATS = FragNavController.TAB4;
+    private final int TAB_GROUPS = FragNavController.TAB4;
     private final int TAB_SETTINGS = FragNavController.TAB5;
 
     private FragNavController navController;
@@ -62,37 +61,35 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 .transactionListener(this)
                 .rootFragmentListener(this, 5)
                 .popStrategy(FragNavTabHistoryController.UNIQUE_TAB_HISTORY)
-                .switchController((index, transactionOptions) -> bottomNavigationView.setSelectedItemId(index))
+                .switchController((index, transactionOptions) -> bottomNavigationView.selectTabAtPosition(index))
                 .build();
 
-        BottomNavigationViewHelper.removeShiftMode(bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.action_search:
+        bottomNavigationView.setOnTabSelectListener(tabId -> {
+            switch (tabId) {
+                case R.id.tab_search:
                     navController.switchTab(TAB_SEARCH);
-                    return true;
-                case R.id.action_profile:
+                    break;
+                case R.id.tab_profile:
                     navController.switchTab(TAB_PROFILE);
-                    return true;
-                case R.id.action_dashboard:
+                    break;
+                case R.id.tab_dashboard:
                     navController.switchTab(TAB_DASHBOARD);
-                    return true;
-                case R.id.action_chats:
-                    navController.switchTab(TAB_CHATS);
-                    return true;
-                case R.id.action_settings:
+                    break;
+                case R.id.tab_groups:
+                    navController.switchTab(TAB_GROUPS);
+                    break;
+                case R.id.tab_settings:
                     navController.switchTab(TAB_SETTINGS);
-                    return true;
+                    break;
             }
-            return true;
         });
 
-        bottomNavigationView.setOnNavigationItemReselectedListener(item -> {
+        bottomNavigationView.setOnTabReselectListener(tabId -> {
             navController.clearStack();
         });
 
         if (savedInstanceState == null) {
-            bottomNavigationView.setSelectedItemId(R.id.action_dashboard);
+            bottomNavigationView.selectTabAtPosition(2);
         }
     }
 
@@ -144,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 return ProfileFragment.newInstance(0, App.INSTANCE.getCurrentUser());
             case TAB_DASHBOARD:
                 return DashboardFragment.newInstance(0);
-            case TAB_CHATS:
+            case TAB_GROUPS:
                 return GroupsFragment.newInstance(0);
             case TAB_SETTINGS:
                 return new SettingsFragment();
