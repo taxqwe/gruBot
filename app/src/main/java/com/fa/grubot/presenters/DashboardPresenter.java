@@ -192,10 +192,14 @@ public class DashboardPresenter {
     }
 
     public void removeRegistration() {
-        announcementsRegistration.remove();
-        archiveAnnouncementsRegistration.remove();
-        votesRegistration.remove();
-        archiveVotesRegistration.remove();
+        if (announcementsRegistration != null)
+            announcementsRegistration.remove();
+        if (archiveAnnouncementsRegistration != null)
+            archiveAnnouncementsRegistration.remove();
+        if (votesRegistration != null)
+            votesRegistration.remove();
+        if (archiveVotesRegistration != null)
+            archiveVotesRegistration.remove();
     }
 
     public void destroy() {

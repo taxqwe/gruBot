@@ -1,9 +1,9 @@
 package com.fa.grubot.adapters;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 
 import com.fa.grubot.fragments.ActionsFragment;
@@ -30,6 +30,7 @@ public class ActionsPagerAdapter extends FragmentPagerAdapter {
             args.putInt("type", ActionsFragment.TYPE_VOTES);
         actionsFragment.setArguments(args);
         currentActions = actionsFragment;
+
 
         ActionsFragment actionsArchiveFragment = new ActionsFragment();
         Bundle args1 = new Bundle();

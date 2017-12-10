@@ -219,11 +219,12 @@ public class ActionsPresenter {
     }
 
     public void removeRegistration() {
-        actionsRegistration.remove();
+        if (actionsRegistration != null)
+            actionsRegistration.remove();
     }
 
     public void destroy() {
-        actionsRegistration.remove();
+        removeRegistration();
         fragment = null;
         model = null;
     }

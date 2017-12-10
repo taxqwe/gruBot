@@ -1,6 +1,5 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -24,14 +23,24 @@ import icepick.Icepick;
 
 import static com.fa.grubot.fragments.ActionsFragment.TYPE_ANNOUNCEMENTS;
 
-public class ActionsTabFragment extends Fragment implements Serializable {
+public class ActionsTabFragment extends BaseFragment implements Serializable {
 
     @BindView(R.id.viewPager) transient NoSwipeViewPager viewPager;
     @BindView(R.id.tabs) transient TabLayout tabLayout;
     @BindView(R.id.pagerToolbar) transient Toolbar pagerToolbar;
 
     private transient Unbinder unbinder;
+    private int instance = 0;
     private int type;
+
+    public static ActionsTabFragment newInstance(int instance, int type) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        args.putInt("type", type);
+        ActionsTabFragment fragment = new ActionsTabFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -45,6 +54,7 @@ public class ActionsTabFragment extends Fragment implements Serializable {
 
         setHasOptionsMenu(true);
         type = this.getArguments().getInt("type");
+        instance = this.getArguments().getInt("instance");
         unbinder = ButterKnife.bind(this, v);
 
         hideMainToolbar();

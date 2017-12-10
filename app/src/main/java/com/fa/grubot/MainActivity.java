@@ -1,40 +1,37 @@
 package com.fa.grubot;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
+import android.view.MenuItem;
 
+import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.fragments.DashboardFragment;
 import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.helpers.BottomNavigationViewHelper;
-
-import java.util.HashMap;
-import java.util.Stack;
+import com.ncapdevi.fragnav.FragNavController;
+import com.ncapdevi.fragnav.tabhistory.FragNavTabHistoryController;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BaseFragment.FragmentNavigation, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
 
     @Nullable @BindView(R.id.bottom_navigation) BottomNavigationView bottomNavigationView;
 
-    private HashMap<String, Stack<Fragment>> mStacks;
-    public static final String TAB_SEARCH  = "tab_search";
-    public static final String TAB_PROFILE  = "tab_profile";
-    public static final String TAB_DASHBOARD  = "tab_dashboard";
-    public static final String TAB_CHATS  = "tab_chats";
-    public static final String TAB_SETTINGS  = "tab_settings";
+    private final int TAB_SEARCH = FragNavController.TAB1;
+    private final int TAB_PROFILE = FragNavController.TAB2;
+    private final int TAB_DASHBOARD = FragNavController.TAB3;
+    private final int TAB_CHATS = FragNavController.TAB4;
+    private final int TAB_SETTINGS = FragNavController.TAB5;
 
-    private String mCurrentTab;
+    private FragNavController navController;
 
     private static final int TIME_INTERVAL = 2000;
     private long mBackPressed;
@@ -47,151 +44,113 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        setupViews();
-        if (savedInstanceState != null) {
-            mCurrentTab = savedInstanceState.getString("currentTab");
-            mStacks = (HashMap<String, Stack<Fragment>>) savedInstanceState.getSerializable("stacks");
-        } else
-            selectedTab(TAB_DASHBOARD);
+        setupViews(savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("stacks", mStacks);
-        outState.putString("currentTab", mCurrentTab);
         Icepick.saveInstanceState(this, outState);
+        if (navController != null) {
+            navController.onSaveInstanceState(outState);
+        }
     }
 
-    private void setupViews() {
-        mStacks = new HashMap<>();
-        mStacks.put(TAB_SEARCH, new Stack<>());
-        mStacks.put(TAB_PROFILE, new Stack<>());
-        mStacks.put(TAB_DASHBOARD, new Stack<>());
-        mStacks.put(TAB_CHATS, new Stack<>());
-        mStacks.put(TAB_SETTINGS, new Stack<>());
+    private void setupViews(Bundle savedInstanceState) {
+        navController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.content)
+                .transactionListener(this)
+                .rootFragmentListener(this, 5)
+                .popStrategy(FragNavTabHistoryController.UNIQUE_TAB_HISTORY)
+                .switchController((index, transactionOptions) -> bottomNavigationView.setSelectedItemId(index))
+                .build();
 
-        bottomNavigationView.setSelectedItemId(R.id.action_dashboard);
         BottomNavigationViewHelper.removeShiftMode(bottomNavigationView);
-
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            if (!App.INSTANCE.isBackstackEnabled()) {
-                mStacks.get(TAB_SEARCH).clear();
-                mStacks.get(TAB_PROFILE).clear();
-                mStacks.get(TAB_DASHBOARD).clear();
-                mStacks.get(TAB_CHATS).clear();
-                mStacks.get(TAB_SETTINGS).clear();
-            }
-
             switch (item.getItemId()) {
                 case R.id.action_search:
-                    selectedTab(TAB_SEARCH);
+                    navController.switchTab(TAB_SEARCH);
                     return true;
                 case R.id.action_profile:
-                    selectedTab(TAB_PROFILE);
+                    navController.switchTab(TAB_PROFILE);
                     return true;
                 case R.id.action_dashboard:
-                    selectedTab(TAB_DASHBOARD);
+                    navController.switchTab(TAB_DASHBOARD);
                     return true;
                 case R.id.action_chats:
-                    selectedTab(TAB_CHATS);
+                    navController.switchTab(TAB_CHATS);
                     return true;
                 case R.id.action_settings:
-                    selectedTab(TAB_SETTINGS);
+                    navController.switchTab(TAB_SETTINGS);
                     return true;
             }
             return true;
         });
 
         bottomNavigationView.setOnNavigationItemReselectedListener(item -> {
-            if (mStacks.get(mCurrentTab).size() != 1) {
-                mStacks.get(mCurrentTab).clear();
-                switch (item.getItemId()) {
-                    case R.id.action_search:
-                        selectedTab(TAB_SEARCH);
-                        break;
-                    case R.id.action_profile:
-                        selectedTab(TAB_PROFILE);
-                        break;
-                    case R.id.action_dashboard:
-                        selectedTab(TAB_DASHBOARD);
-                        break;
-                    case R.id.action_chats:
-                        selectedTab(TAB_CHATS);
-                        break;
-                }
-            }
+            navController.clearStack();
         });
-    }
 
-    private void gotoFragment(Fragment selectedFragment) {
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.content, selectedFragment);
-        fragmentTransaction.commit();
-    }
-
-    private void selectedTab(String tabId) {
-        mCurrentTab = tabId;
-
-        if(mStacks.get(tabId).size() == 0) {
-            switch (tabId) {
-                case TAB_SEARCH:
-                    pushFragments(tabId, new WorkInProgressFragment(),true);
-                    break;
-                case TAB_PROFILE:
-                    Fragment fragment = new ProfileFragment();
-                    Bundle args = new Bundle();
-                    args.putSerializable("user", App.INSTANCE.getCurrentUser());
-                    fragment.setArguments(args);
-                    pushFragments(tabId, fragment,true);
-                    break;
-                case TAB_DASHBOARD:
-                    pushFragments(tabId, new DashboardFragment(),true);
-                    break;
-                case TAB_CHATS:
-                    pushFragments(tabId, new GroupsFragment(),true);
-                    break;
-                case TAB_SETTINGS:
-                    pushFragments(tabId, new SettingsFragment(),true);
-                    break;
-            }
-        } else {
-            pushFragments(tabId, mStacks.get(tabId).lastElement(),false);
+        if (savedInstanceState == null) {
+            bottomNavigationView.setSelectedItemId(R.id.action_dashboard);
         }
-    }
-
-    public void pushFragments(String tag, Fragment fragment, boolean shouldAdd){
-        if(shouldAdd)
-            mStacks.get(tag).push(fragment);
-        FragmentManager manager = getFragmentManager();
-        FragmentTransaction ft = manager.beginTransaction();
-        ft.replace(R.id.content, fragment);
-        ft.commit();
-    }
-
-    public void popFragments(){
-        Fragment fragment = mStacks.get(mCurrentTab).elementAt(mStacks.get(mCurrentTab).size() - 2);
-
-        mStacks.get(mCurrentTab).pop();
-
-        FragmentManager manager = getFragmentManager();
-        FragmentTransaction ft = manager.beginTransaction();
-        ft.replace(R.id.content, fragment);
-        ft.commit();
     }
 
     @Override
     public void onBackPressed() {
-        if(mStacks.get(mCurrentTab).size() == 1) {
-            if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
-                finish();
-                return;
-            } else {
-                Toast.makeText(getBaseContext(), "Нажмите еще раз кнопку 'назад' для выхода", Toast.LENGTH_SHORT).show();
-            }
-            mBackPressed = System.currentTimeMillis();
-        } else {
-            popFragments();
+        if (!navController.popFragment()) {
+            super.onBackPressed();
         }
+    }
+
+    @Override
+    public void pushFragment(Fragment fragment) {
+        if (navController != null) {
+            if (App.INSTANCE.isBackstackEnabled())
+                navController.pushFragment(fragment);
+        }
+    }
+
+    @Override
+    public void onTabTransaction(Fragment fragment, int index) {
+        // If we have a backstack, show the back button
+        if (getSupportActionBar() != null && navController != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(!navController.isRootFragment());
+        }
+    }
+
+    @Override
+    public void onFragmentTransaction(Fragment fragment, FragNavController.TransactionType transactionType) {
+        //do fragmentty stuff. Maybe change title, I'm not going to tell you how to live your life
+        // If we have a backstack, show the back button
+        if (getSupportActionBar() != null && navController != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(!navController.isRootFragment());
+        }
+    }
+
+    @Override
+    public Fragment getRootFragment(int index) {
+        switch (index) {
+            case TAB_SEARCH:
+                return new WorkInProgressFragment();
+            case TAB_PROFILE:
+                return ProfileFragment.newInstance(0, App.INSTANCE.getCurrentUser());
+            case TAB_DASHBOARD:
+                return DashboardFragment.newInstance(0);
+            case TAB_CHATS:
+                return GroupsFragment.newInstance(0);
+            case TAB_SETTINGS:
+                return new SettingsFragment();
+        }
+        throw new IllegalStateException("Need to send an index that we know");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                navController.popFragment();
+                break;
+        }
+        return true;
     }
 }

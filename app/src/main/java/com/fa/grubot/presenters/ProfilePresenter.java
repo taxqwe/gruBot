@@ -91,7 +91,8 @@ public class ProfilePresenter {
     }
 
     public void removeRegistration() {
-        userRegistration.remove();
+        if (userRegistration != null)
+            userRegistration.remove();
     }
 
     public void onRetryBtnClick() {

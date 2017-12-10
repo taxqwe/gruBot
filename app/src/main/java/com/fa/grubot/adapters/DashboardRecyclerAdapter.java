@@ -1,8 +1,6 @@
 package com.fa.grubot.adapters;
 
-import android.app.Fragment;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,10 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.fa.grubot.MainActivity;
+import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.fragments.ActionsTabFragment;
+import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.objects.dashboard.DashboardAnnouncement;
 import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.objects.dashboard.DashboardVote;
@@ -29,10 +28,14 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     private static final int TYPE_VOTE = 468;
 
     private Context context;
+    private int instance;
+    private BaseFragment.FragmentNavigation fragmentNavigation;
     private ArrayList<DashboardItem> items;
 
-    public DashboardRecyclerAdapter(Context context, ArrayList<DashboardItem> items) {
+    public DashboardRecyclerAdapter(Context context, int instance, BaseFragment.FragmentNavigation fragmentNavigation, ArrayList<DashboardItem> items) {
         this.context = context;
+        this.instance = instance;
+        this.fragmentNavigation = fragmentNavigation;
         this.items = items;
     }
 
@@ -47,11 +50,10 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             ButterKnife.bind(this, view);
 
             announcementsView.setOnClickListener(view1 -> {
-                Fragment fragment = new ActionsTabFragment();
-                Bundle args = new Bundle();
-                args.putInt("type", ActionsFragment.TYPE_ANNOUNCEMENTS);
-                fragment.setArguments(args);
-                ((MainActivity)context).pushFragments(MainActivity.TAB_DASHBOARD, fragment,true);
+                if (App.INSTANCE.isBackstackEnabled())
+                    fragmentNavigation.pushFragment(ActionsTabFragment.newInstance(instance + 1, ActionsFragment.TYPE_ANNOUNCEMENTS));
+                else
+                    fragmentNavigation.pushFragment(ActionsTabFragment.newInstance(0, ActionsFragment.TYPE_ANNOUNCEMENTS));
             });
         }
     }
@@ -67,11 +69,7 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             ButterKnife.bind(this, view);
 
             votesView.setOnClickListener(view1 -> {
-                Fragment fragment = new ActionsTabFragment();
-                Bundle args = new Bundle();
-                args.putInt("type", ActionsFragment.TYPE_VOTES);
-                fragment.setArguments(args);
-                ((MainActivity)context).pushFragments(MainActivity.TAB_DASHBOARD, fragment,true);
+                fragmentNavigation.pushFragment(ActionsTabFragment.newInstance(instance + 1, ActionsFragment.TYPE_VOTES));
             });
         }
     }

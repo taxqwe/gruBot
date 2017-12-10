@@ -1,6 +1,5 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -51,7 +50,7 @@ import butterknife.Unbinder;
 import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
-public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
+public class GroupInfoFragment extends BaseFragment implements GroupInfoFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
     @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
@@ -73,7 +72,17 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
     private transient Unbinder unbinder;
 
     private int state;
+    private int instance = 0;
     private Group group;
+
+    public static GroupInfoFragment newInstance(int instance, Group group) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        args.putSerializable("group", group);
+        GroupInfoFragment fragment = new GroupInfoFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -87,10 +96,12 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         View v = inflater.inflate(R.layout.fragment_group_info, container, false);
 
         hideMainToolbar();
-
         setHasOptionsMenu(true);
+
         group = (Group) this.getArguments().getSerializable("group");
+        instance = this.getArguments().getInt("instance");
         unbinder = ButterKnife.bind(this, v);
+
         presenter.notifyFragmentStarted(group);
 
         return v;
@@ -122,7 +133,8 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
     private void terminateRegistration() {
         presenter.removeRegistration();
-        groupInfoAdapter.clearItems();
+        if (groupInfoAdapter != null)
+            groupInfoAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -339,7 +351,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         if (App.INSTANCE.areAnimationsEnabled())
             buttonsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
-        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons, group.getId());
+        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), instance, fragmentNavigation, buttons, group.getId());
 
         groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);

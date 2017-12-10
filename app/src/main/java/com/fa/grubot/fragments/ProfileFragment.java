@@ -1,7 +1,7 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -38,7 +37,7 @@ import butterknife.Unbinder;
 import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
-public class ProfileFragment extends Fragment implements ProfileFragmentBase, Serializable {
+public class ProfileFragment extends BaseFragment implements ProfileFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
     @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
@@ -57,7 +56,17 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     private transient ProfileRecyclerAdapter profileItemsAdapter;
 
     private int state;
+    private int instance = 0;
     private User user;
+
+    public static ProfileFragment newInstance(int instance, User user) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        args.putSerializable("user", user);
+        ProfileFragment fragment = new ProfileFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -66,12 +75,14 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new ProfilePresenter(this);
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         hideMainToolbar();
         user = (User) this.getArguments().getSerializable("user");
+        instance = this.getArguments().getInt("instance");
+
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
 
@@ -104,7 +115,8 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
 
     private void terminateRegistration() {
         presenter.removeRegistration();
-        profileItemsAdapter.clearItems();
+        if (profileItemsAdapter != null)
+            profileItemsAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -214,14 +226,6 @@ public class ProfileFragment extends Fragment implements ProfileFragmentBase, Se
 
     public boolean isAdapterExists() {
         return profileItemsAdapter != null;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -1,10 +1,8 @@
 package com.fa.grubot.adapters;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,15 +10,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fa.grubot.App;
 import com.fa.grubot.BranchesActivity;
 import com.fa.grubot.ChatActivity;
-import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
+import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.util.Globals;
@@ -36,13 +34,17 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
     private static final int TYPE_USER = 1002;
 
     private Context context;
+    private int instance;
+    private BaseFragment.FragmentNavigation fragmentNavigation;
     private ArrayList<GroupInfoRecyclerItem> buttons;
 
     private String groupId;
 
-    public GroupInfoRecyclerAdapter(Context context, ArrayList<GroupInfoRecyclerItem> buttons, String groupId) {
+    public GroupInfoRecyclerAdapter(Context context, int instance, BaseFragment.FragmentNavigation fragmentNavigation, ArrayList<GroupInfoRecyclerItem> buttons, String groupId) {
         super(context);
         this.context = context;
+        this.instance = instance;
+        this.fragmentNavigation = fragmentNavigation;
         this.buttons = buttons;
         this.groupId = groupId;
 
@@ -160,11 +162,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, user.getFullname()));
 
             userImage.getRootView().setOnClickListener(view -> {
-                Fragment fragment = new ProfileFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("user", user);
-                fragment.setArguments(args);
-                ((MainActivity)context).pushFragments(MainActivity.TAB_CHATS, fragment,true);
+                fragmentNavigation.pushFragment(ProfileFragment.newInstance(instance + 1, user));
             });
         }
     }

@@ -1,6 +1,5 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,9 +29,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.Icepick;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
-public class GroupsFragment extends Fragment implements GroupsFragmentBase, Serializable {
+public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.recycler) transient RecyclerView groupsView;
     @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
@@ -47,6 +47,15 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     private transient GroupsRecyclerAdapter groupsAdapter;
 
     private int state;
+    private int instance = 0;
+
+    public static GroupsFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        GroupsFragment fragment = new GroupsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -55,12 +64,13 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupsPresenter(this);
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
 
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
+        instance = this.getArguments().getInt("instance");
 
         return v;
     }
@@ -91,7 +101,8 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
 
     private void terminateRegistration() {
         presenter.removeRegistration();
-        groupsAdapter.clearItems();
+        if (groupsAdapter != null)
+            groupsAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -155,7 +166,7 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         if (App.INSTANCE.areAnimationsEnabled())
             groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
-        groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
+        groupsAdapter = new GroupsRecyclerAdapter(getActivity(), instance, fragmentNavigation, groups);
         groupsView.setAdapter(groupsAdapter);
         groupsAdapter.notifyDataSetChanged();
     }

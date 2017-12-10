@@ -3,9 +3,7 @@ package com.fa.grubot.presenters;
 
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
-import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.models.GroupInfoModel;
-import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
@@ -198,10 +196,14 @@ public class GroupInfoPresenter {
     }
 
     public void removeRegistration() {
-        groupRegistration.remove();
-        usersRegistration.remove();
-        announcementsRegistration.remove();
-        votesRegistration.remove();
+        if (groupRegistration != null)
+            groupRegistration.remove();
+        if (usersRegistration != null)
+            usersRegistration.remove();
+        if (announcementsRegistration != null)
+            announcementsRegistration.remove();
+        if (votesRegistration != null)
+            votesRegistration.remove();
     }
 
     public void onRetryBtnClick() {

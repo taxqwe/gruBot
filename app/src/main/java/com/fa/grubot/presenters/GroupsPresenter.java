@@ -86,11 +86,12 @@ public class GroupsPresenter {
     }
 
     public void removeRegistration() {
-        groupsRegistration.remove();
+        if (groupsRegistration != null)
+            groupsRegistration.remove();
     }
 
     public void destroy() {
-        groupsRegistration.remove();
+        removeRegistration();
         fragment = null;
         model = null;
     }
