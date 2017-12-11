@@ -65,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 .build();
 
         bottomNavigationView.setOnTabSelectListener(tabId -> {
+            if (!App.INSTANCE.isBackstackEnabled())
+                navController.clearStack();
+
             switch (tabId) {
                 case R.id.tab_search:
                     navController.switchTab(TAB_SEARCH);
