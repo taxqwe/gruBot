@@ -1,10 +1,8 @@
 package com.fa.grubot.adapters;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,13 +12,12 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.BranchesActivity;
 import com.fa.grubot.ChatActivity;
-import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
+import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.util.Globals;
@@ -36,16 +33,17 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
     private static final int TYPE_USER = 1002;
 
     private Context context;
+    private int instance;
+    private BaseFragment.FragmentNavigation fragmentNavigation;
     private ArrayList<GroupInfoRecyclerItem> buttons;
-    private Group group;
 
+    private String groupId;
 
-    private int groupId;
-
-    public GroupInfoRecyclerAdapter(Context context, ArrayList<GroupInfoRecyclerItem> buttons,
-                                    int groupId) {
+    public GroupInfoRecyclerAdapter(Context context, int instance, BaseFragment.FragmentNavigation fragmentNavigation, ArrayList<GroupInfoRecyclerItem> buttons, String groupId) {
         super(context);
         this.context = context;
+        this.instance = instance;
+        this.fragmentNavigation = fragmentNavigation;
         this.buttons = buttons;
         this.groupId = groupId;
 
@@ -111,9 +109,9 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             Action entry = visibleItems.get(position).entry;
 
             entryDate.setText(entry.getDate());
-            entryAuthor.setText(entry.getAuthor());
+            entryAuthor.setText(entry.getAuthorName());
             entryDesc.setText(entry.getDesc());
-            entryGroup.setText(entry.getGroup().getName());
+            entryGroup.setText(entry.getGroupName());
             viewForeground.setBackgroundColor(getColorFromDashboardEntry(entry));
 
             if (entry instanceof ActionAnnouncement) {
@@ -129,7 +127,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 entryTypeText.setText("Голосование");
                 viewForeground.setOnClickListener(v -> {
                     new MaterialDialog.Builder(context)
-                            .title(entry.getGroup().getName() + ": " + entry.getDesc())
+                            .title(entry.getGroupName() + ": " + entry.getDesc())
                             .items(((ActionVote) entry).getOptions())
                             .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
                                 /**
@@ -163,11 +161,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, user.getFullname()));
 
             userImage.getRootView().setOnClickListener(view -> {
-                Fragment fragment = new ProfileFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("user", user);
-                fragment.setArguments(args);
-                ((MainActivity)context).pushFragments(MainActivity.TAB_CHATS, fragment,true);
+                fragmentNavigation.pushFragment(ProfileFragment.newInstance(instance + 1, user));
             });
         }
     }
@@ -195,12 +189,13 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             this.user = user;
         }
 
-        public boolean isHeader() {
+        private boolean isHeader() {
             return (button != null);
         }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_HEADER:
@@ -236,6 +231,63 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             return context.getResources().getColor(R.color.colorVote);
     }
 
+    public void removeActionItem(int position, Action action) {
+        String type;
+        if (action instanceof ActionAnnouncement)
+            type = "Объявления";
+        else
+            type = "Голосования";
+
+        for (GroupInfoRecyclerItem item : buttons) {
+            //if (item.entry.getId().equals(action.getId()))
+
+        }
+        //groups.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void addActionItem(int position, Action action) {
+        try {
+            String type;
+            if (action instanceof ActionAnnouncement)
+                type = "Объявления";
+            else
+                type = "Голосования";
+
+            int startPosition = 0;
+            int endPosition = 0;
+            for (int i = 0; i < buttons.size(); i++) {
+                if (buttons.get(i).isHeader() && buttons.get(i).button.getText().equals(type)) {
+                    startPosition = i + 1;
+                    endPosition = startPosition + buttons.get(i).button.getChildCount();
+                    break;
+                }
+            }
+
+            ArrayList<GroupInfoRecyclerItem> actionsList = new ArrayList<>();
+            actionsList.addAll(buttons.subList(startPosition, endPosition));
+
+            actionsList.add(position, new GroupInfoRecyclerItem(action));
+            buttons.subList(startPosition, endPosition).clear();
+
+            buttons.get(startPosition - 1).button.addChild(new GroupInfoRecyclerItem(action));
+            buttons.addAll(startPosition, actionsList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateActionItem(int oldPosition, int newPosition, Action action) {
+        if (oldPosition == newPosition) {
+            //groups.set(oldPosition, group);
+            notifyItemChanged(oldPosition);
+        } else {
+            //groups.remove(oldPosition);
+            //groups.add(newPosition, group);
+            notifyItemMoved(oldPosition, newPosition);
+        }
+    }
+
     public void insertItem(Action entry) {
         String type;
         if (entry instanceof ActionAnnouncement)
@@ -251,5 +303,10 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                 break;
             }
         }
+    }
+
+    public void clearItems() {
+        buttons.clear();
+        notifyDataSetChanged();
     }
 }

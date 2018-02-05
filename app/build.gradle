@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.1"
+    buildToolsVersion "27.0.2"
     defaultConfig {
         applicationId "com.fa.grubot"
         minSdkVersion 17
@@ -31,12 +31,16 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:27.0.1'
-    compile 'com.android.support:support-v13:27.0.1'
-    compile 'com.android.support:support-annotations:27.0.1';
-    compile 'com.android.support:design:27.0.1'
-    compile 'com.android.support:cardview-v7:27.0.1'
-    compile 'com.android.support:recyclerview-v7:27.0.1'
+    compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:support-v13:27.0.2'
+    compile 'com.android.support:preference-v14:27.0.2'
+    compile 'com.android.support:support-annotations:27.0.2';
+    compile 'com.android.support:design:27.0.2'
+    compile 'com.android.support:cardview-v7:27.0.2'
+    compile 'com.android.support:recyclerview-v7:27.0.2'
+
+    //firestore
+    compile 'com.google.firebase:firebase-firestore:11.6.2'
 
     //text drawable
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
@@ -53,14 +57,20 @@ dependencies {
     //butterknife
     compile 'com.jakewharton:butterknife:9.0.0-SNAPSHOT'
 
-    //slideable activity
-    compile 'com.r0adkll:slidableactivity:2.0.5'
+    //slidr
+    compile 'com.r0adkll:slidableactivity:2.0.6'
 
     //dexter permissions
     compile 'com.karumi:dexter:4.2.0'
 
     //icepick
     compile 'frankiesardo:icepick:3.2.0'
+
+    //bottomNavigationFragments
+    compile 'com.ncapdevi:frag-nav:2.4.0'
+
+    //bottomNavigationView
+    compile 'com.roughike:bottom-bar:2.3.1'
 
     //floatingActionMenu
     compile 'com.github.clans:fab:1.6.4'
@@ -79,3 +89,6 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
 }
+
+
+apply plugin: 'com.google.gms.google-services'

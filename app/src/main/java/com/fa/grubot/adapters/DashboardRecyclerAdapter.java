@@ -1,8 +1,6 @@
 package com.fa.grubot.adapters;
 
-import android.app.Fragment;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,10 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.fa.grubot.MainActivity;
+import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.fragments.ActionsTabFragment;
+import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.objects.dashboard.DashboardAnnouncement;
 import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.objects.dashboard.DashboardVote;
@@ -29,10 +28,14 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     private static final int TYPE_VOTE = 468;
 
     private Context context;
+    private int instance;
+    private BaseFragment.FragmentNavigation fragmentNavigation;
     private ArrayList<DashboardItem> items;
 
-    public DashboardRecyclerAdapter(Context context, ArrayList<DashboardItem> items) {
+    public DashboardRecyclerAdapter(Context context, int instance, BaseFragment.FragmentNavigation fragmentNavigation, ArrayList<DashboardItem> items) {
         this.context = context;
+        this.instance = instance;
+        this.fragmentNavigation = fragmentNavigation;
         this.items = items;
     }
 
@@ -47,11 +50,10 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             ButterKnife.bind(this, view);
 
             announcementsView.setOnClickListener(view1 -> {
-                Fragment fragment = new ActionsTabFragment();
-                Bundle args = new Bundle();
-                args.putInt("type", ActionsFragment.TYPE_ANNOUNCEMENTS);
-                fragment.setArguments(args);
-                ((MainActivity)context).pushFragments(MainActivity.TAB_DASHBOARD, fragment,true);
+                if (App.INSTANCE.isBackstackEnabled())
+                    fragmentNavigation.pushFragment(ActionsTabFragment.newInstance(instance + 1, ActionsFragment.TYPE_ANNOUNCEMENTS));
+                else
+                    fragmentNavigation.pushFragment(ActionsTabFragment.newInstance(0, ActionsFragment.TYPE_ANNOUNCEMENTS));
             });
         }
     }
@@ -67,11 +69,7 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             ButterKnife.bind(this, view);
 
             votesView.setOnClickListener(view1 -> {
-                Fragment fragment = new ActionsTabFragment();
-                Bundle args = new Bundle();
-                args.putInt("type", ActionsFragment.TYPE_VOTES);
-                fragment.setArguments(args);
-                ((MainActivity)context).pushFragments(MainActivity.TAB_DASHBOARD, fragment,true);
+                fragmentNavigation.pushFragment(ActionsTabFragment.newInstance(instance + 1, ActionsFragment.TYPE_VOTES));
             });
         }
     }
@@ -95,16 +93,37 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             case TYPE_ANNOUNCEMENT:
                 AnnouncementViewHolder announcementViewHolder = (AnnouncementViewHolder) holder;
                 DashboardAnnouncement announcement = (DashboardAnnouncement) item;
-                announcementViewHolder.newAnnouncementsCount.setText("Новых: " + announcement.getNewAnnouncementsCount());
-                announcementViewHolder.archiveAnnouncementsCount.setText("В архиве: " + announcement.getArchiveAnnouncementsCount());
-                announcementViewHolder.totalAnnouncementsCount.setText("Всего: " + announcement.getTotalAnnouncementsCount());
+                announcementViewHolder.newAnnouncementsCount.setText("Новых: " + announcement.getNewCount());
+                announcementViewHolder.archiveAnnouncementsCount.setText("В архиве: " + announcement.getArchiveCount());
+                announcementViewHolder.totalAnnouncementsCount.setText("Всего: " + announcement.getTotalCount());
                 break;
             case TYPE_VOTE:
                 VoteViewHolder voteViewHolder = (VoteViewHolder) holder;
                 DashboardVote vote = (DashboardVote) item;
-                voteViewHolder.newVotesCount.setText("Новых: " + vote.getNewVotesCount());
-                voteViewHolder.archiveVotesCount.setText("В архиве: " + vote.getArchiveVotesCount());
-                voteViewHolder.totalVotesCount.setText("Всего: " + vote.getTotalVotesCount());
+                voteViewHolder.newVotesCount.setText("Новых: " + vote.getNewCount());
+                voteViewHolder.archiveVotesCount.setText("В архиве: " + vote.getArchiveCount());
+                voteViewHolder.totalVotesCount.setText("Всего: " + vote.getTotalCount());
+                break;
+        }
+    }
+
+    public void updateItem(int count, int type) {
+        switch (type) {
+            case ActionsFragment.TYPE_ANNOUNCEMENTS:
+                items.get(0).updateNewCount(count);
+                notifyItemChanged(0);
+                break;
+            case ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE:
+                items.get(0).updateArchiveCount(count);
+                notifyItemChanged(0);
+                break;
+            case ActionsFragment.TYPE_VOTES:
+                items.get(1).updateNewCount(count);
+                notifyItemChanged(1);
+                break;
+            case ActionsFragment.TYPE_VOTES_ARCHIVE:
+                items.get(1).updateArchiveCount(count);
+                notifyItemChanged(1);
                 break;
         }
     }
@@ -121,5 +140,10 @@ public class DashboardRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public int getItemCount() {
         return (items == null) ? 0 : items.size();
+    }
+
+    public void clearItems() {
+        items.clear();
+        notifyDataSetChanged();
     }
 }

@@ -112,11 +112,42 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
                 holder.itemValue.setText(item.getValue());
                 break;
         }
-
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return (items == null) ? 0 : items.size();
+    }
+
+    public void clearItems() {
+        items.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addProfileItems(ArrayList<ProfileItem> items) {
+        this.items = items;
+        notifyDataSetChanged();
+    }
+
+    public void updateProfileItems(ArrayList<String> changes, User user) {
+        //TODO что-то сделать с этим дерьмом
+        if (changes.contains("fullname"))
+            updateItem("Имя", user.getFullname());
+        if (changes.contains("username"))
+            updateItem("Логин", user.getUsername());
+        if (changes.contains("phoneNumber"))
+            updateItem("Номер телефона", user.getPhoneNumber());
+        if (changes.contains("desc"))
+            updateItem("Описание", user.getDesc());
+    }
+
+    private void updateItem(String itemName, String newValue) {
+        for (int i = 0; i < items.size(); i++) {
+            ProfileItem item = items.get(i);
+            if (item.getText().equals(itemName)) {
+                items.get(i).setValue(newValue);
+                notifyItemChanged(i);
+            }
+        }
     }
 }

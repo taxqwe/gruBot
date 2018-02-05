@@ -1,9 +1,9 @@
 package com.fa.grubot;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fa.grubot.fragments.ChatFragment;
@@ -18,7 +18,7 @@ public class ChatActivity extends AppCompatActivity {
         if (App.INSTANCE.isSlidrEnabled())
             Slidr.attach(this, App.INSTANCE.getSlidrConfig());
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         ChatFragment fragment = new ChatFragment();

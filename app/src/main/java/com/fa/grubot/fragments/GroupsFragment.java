@@ -1,8 +1,6 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +20,7 @@ import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.GroupsPresenter;
 import com.fa.grubot.util.Globals;
+import com.google.firebase.firestore.DocumentChange;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,24 +29,33 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.Icepick;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
-public class GroupsFragment extends Fragment implements GroupsFragmentBase, Serializable {
+public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.recycler) transient RecyclerView groupsView;
-    @Nullable @BindView(R.id.swipeRefreshLayout) transient SwipeRefreshLayout swipeRefreshLayout;
-    @Nullable @BindView(R.id.swipeRefreshLayoutNoData) transient SwipeRefreshLayout swipeRefreshLayoutNoData;
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
+    @Nullable @BindView(R.id.recycler) RecyclerView groupsView;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
-    @Nullable @BindView(R.id.noData) transient View noData;
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
+    @Nullable @BindView(R.id.noData) View noData;
 
-    private transient Unbinder unbinder;
-    private transient GroupsPresenter presenter;
+    private Unbinder unbinder;
+    private GroupsPresenter presenter;
+    private GroupsRecyclerAdapter groupsAdapter;
 
     private int state;
+    private int instance = 0;
+
+    public static GroupsFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        GroupsFragment fragment = new GroupsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -56,15 +64,33 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new GroupsPresenter(this);
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
 
-        presenter.notifyFragmentStarted(getActivity());
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
+        instance = this.getArguments().getInt("instance");
 
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.notifyFragmentStarted();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        terminateRegistration();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        terminateRegistration();
     }
 
     @Override
@@ -73,8 +99,17 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         Icepick.saveInstanceState(this, outState);
     }
 
+    private void terminateRegistration() {
+        presenter.removeRegistration();
+        if (groupsAdapter != null)
+            groupsAdapter.clearItems();
+    }
+
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
 
         switch (state) {
             case Globals.FragmentState.STATE_CONTENT:
@@ -89,23 +124,19 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         }
     }
 
-    public void showLoadingView() {
-        content.setVisibility(View.GONE);
-        noInternet.setVisibility(View.GONE);
-        noData.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
             if (isHasData)
                 state = Globals.FragmentState.STATE_CONTENT;
-            else
+            else {
                 state = Globals.FragmentState.STATE_NO_DATA;
+                groupsAdapter = null;
+            }
         }
-        else
+        else {
             state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            groupsAdapter = null;
+        }
     }
 
     public void setupToolbar() {
@@ -116,22 +147,6 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         ((MainActivity)getActivity()).setSupportActionBar(toolbar);
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
-    }
-
-    public void setupSwipeRefreshLayout() {
-        if (state == Globals.FragmentState.STATE_NO_DATA) {
-            swipeRefreshLayoutNoData.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-            swipeRefreshLayoutNoData.setOnRefreshListener(() -> {
-                presenter.onRefresh(getActivity());
-                onItemsLoadComplete();
-            });
-        } else {
-            swipeRefreshLayout.setColorSchemeResources(R.color.blue, R.color.purple, R.color.green, R.color.orange);
-            swipeRefreshLayout.setOnRefreshListener(() -> {
-                presenter.onRefresh(getActivity());
-                onItemsLoadComplete();
-            });
-        }
     }
 
     public void setupRecyclerView(ArrayList<Group> groups) {
@@ -151,25 +166,43 @@ public class GroupsFragment extends Fragment implements GroupsFragmentBase, Seri
         if (App.INSTANCE.areAnimationsEnabled())
             groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
-        GroupsRecyclerAdapter groupsAdapter = new GroupsRecyclerAdapter(getActivity(), groups);
+        groupsAdapter = new GroupsRecyclerAdapter(getActivity(), instance, fragmentNavigation, groups);
         groupsView.setAdapter(groupsAdapter);
         groupsAdapter.notifyDataSetChanged();
     }
 
     public void setupRetryButton() {
-        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick(getActivity()));
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    private void onItemsLoadComplete() {
-        if (state == Globals.FragmentState.STATE_NO_DATA)
-            swipeRefreshLayoutNoData.setRefreshing(false);
-        else
-            swipeRefreshLayout.setRefreshing(false);
+    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Group group) {
+        if (groupsAdapter != null) {
+            switch (type) {
+                case ADDED:
+                    groupsAdapter.addItem(newIndex, group);
+                    break;
+                case MODIFIED:
+                    groupsAdapter.updateItem(oldIndex, newIndex, group);
+                    break;
+                case REMOVED:
+                    groupsAdapter.removeItem(oldIndex);
+                    break;
+            }
+        }
+    }
+
+    public boolean isListEmpty() {
+        return groupsAdapter == null || groupsAdapter.getItemCount() == 0;
+    }
+
+    public boolean isAdapterExists() {
+        return groupsAdapter != null;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        groupsAdapter = null;
         unbinder.unbind();
         presenter.destroy();
     }
