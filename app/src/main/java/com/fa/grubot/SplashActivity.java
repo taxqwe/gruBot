@@ -22,10 +22,10 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void loadCurrentUser() {
-        FirebaseFirestore.getInstance().collection("users").document("rPcwOpbwWWPMwf0UGz1W").get().addOnCompleteListener(task -> {
+        FirebaseFirestore.getInstance().collection("users").document("annuPgfWWzI92i7Y7dld").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot doc = task.getResult();
-                User user = new User(doc.getId(),
+                User user = new User(doc.get("userId").toString(),
                         doc.get("username").toString(),
                         doc.get("fullname").toString(),
                         doc.get("phoneNumber").toString(),

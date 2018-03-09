@@ -63,6 +63,11 @@ public class DashboardPresenter {
     public void setRegistration() {
         announcementsRegistration = announcementsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
 
@@ -94,6 +99,11 @@ public class DashboardPresenter {
 
         archiveAnnouncementsRegistration = archiveAnnouncementsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
 
@@ -125,6 +135,11 @@ public class DashboardPresenter {
 
         votesRegistration = votesQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
 
@@ -156,6 +171,11 @@ public class DashboardPresenter {
 
         archiveVotesRegistration = archiveVotesQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
 

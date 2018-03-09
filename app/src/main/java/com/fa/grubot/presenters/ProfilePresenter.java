@@ -6,9 +6,12 @@ import com.fa.grubot.models.ProfileModel;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
 import com.fa.grubot.util.Globals;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 
@@ -19,7 +22,7 @@ public class ProfilePresenter {
     private ArrayList<ProfileItem> items = new ArrayList<>();
     private User localUser;
 
-    private DocumentReference userReference;
+    private Query userQuery;
     private ListenerRegistration userRegistration;
 
     public ProfilePresenter(ProfileFragmentBase fragment) {
@@ -27,8 +30,8 @@ public class ProfilePresenter {
         this.model = new ProfileModel();
     }
 
-    public void notifyFragmentStarted(String id) {
-        userReference = FirebaseFirestore.getInstance().collection("users").document(id);
+    public void notifyFragmentStarted(String userId) {
+        userQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("userId", Long.valueOf(userId));
         setRegistration();
     }
 
@@ -48,38 +51,41 @@ public class ProfilePresenter {
 
     @SuppressWarnings("unchecked")
     public void setRegistration() {
-        userRegistration = userReference.addSnapshotListener((doc, e) -> {
+        userRegistration = userQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
-                User user = new User(doc.getId(),
-                        doc.get("username").toString(),
-                        doc.get("fullname").toString(),
-                        doc.get("phoneNumber").toString(),
-                        doc.get("desc").toString(),
-                        doc.get("imgUrl").toString());
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    DocumentSnapshot doc = dc.getDocument();
+                    User user = new User(doc.get("userId").toString(),
+                            doc.get("username").toString(),
+                            doc.get("fullname").toString(),
+                            doc.get("phoneNumber").toString(),
+                            doc.get("desc").toString(),
+                            doc.get("imgUrl").toString());
 
-                ArrayList<String> changes = new ArrayList<>();
-                if (localUser != null) {
-                    if (!user.getUsername().equals(localUser.getUsername()))
-                        changes.add("username");
-                    if (!user.getFullname().equals(localUser.getFullname()))
-                        changes.add("fullname");
-                    if (!user.getPhoneNumber().equals(localUser.getPhoneNumber()))
-                        changes.add("phoneNumber");
-                    if (!user.getDesc().equals(localUser.getDesc()))
-                        changes.add("desc");
-                    if (!user.getAvatar().equals(localUser.getAvatar()))
-                        changes.add("avatar");
-                }
-
-                localUser = user;
-
-                if (fragment != null) {
-                    if (!fragment.isAdapterExists()) {
-                        fragment.setupLayouts(true);
-                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                    ArrayList<String> changes = new ArrayList<>();
+                    if (localUser != null) {
+                        if (!user.getUsername().equals(localUser.getUsername()))
+                            changes.add("username");
+                        if (!user.getFullname().equals(localUser.getFullname()))
+                            changes.add("fullname");
+                        if (!user.getPhoneNumber().equals(localUser.getPhoneNumber()))
+                            changes.add("phoneNumber");
+                        if (!user.getDesc().equals(localUser.getDesc()))
+                            changes.add("desc");
+                        if (!user.getAvatar().equals(localUser.getAvatar()))
+                            changes.add("avatar");
                     }
 
-                    fragment.handleProfileUpdate(user, changes);
+                    localUser = user;
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                        }
+
+                        fragment.handleProfileUpdate(user, changes);
+                    }
                 }
             } else {
                 if (fragment != null) {
