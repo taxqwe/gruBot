@@ -215,12 +215,10 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                                     .cancelable(false)
                                     .show();
 
-                            DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
-
                             HashMap<String, Object> announcement = new HashMap<>();
                             announcement.put("group", group.getId());
                             announcement.put("groupName", group.getName());
-                            announcement.put("author", userReference);
+                            announcement.put("author", App.INSTANCE.getCurrentUser().getId());
                             announcement.put("authorName", App.INSTANCE.getCurrentUser().getFullname());
                             announcement.put("desc", desc.getText().toString());
                             announcement.put("date", new Date());
