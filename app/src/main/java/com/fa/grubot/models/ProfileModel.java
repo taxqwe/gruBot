@@ -18,9 +18,8 @@ public class ProfileModel {
     public ArrayList<ProfileItem> getItems(User user){
         ArrayList<ProfileItem> items = new ArrayList<>();
         items.add(new ProfileItem(user.getFullname(), "Имя"));
-        items.add(new ProfileItem(user.getUsername(), "Логин"));
+        items.add(new ProfileItem(user.getUserName(), "Логин"));
         items.add(new ProfileItem(user.getPhoneNumber(), "Номер телефона"));
-        items.add(new ProfileItem(user.getDesc(), "Описание"));
 
         return items;
     }

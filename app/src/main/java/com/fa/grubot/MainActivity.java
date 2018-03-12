@@ -3,6 +3,7 @@ package com.fa.grubot;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -12,6 +13,9 @@ import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
+import com.fa.grubot.objects.group.CurrentUser;
+import com.github.badoualy.telegram.api.Kotlogram;
+import com.github.badoualy.telegram.tl.api.TLUser;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.tabhistory.FragNavTabHistoryController;
 import com.roughike.bottombar.BottomBar;
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         ButterKnife.bind(this);
 
         setupViews(savedInstanceState);
+        TLUser currentUser = App.INSTANCE.getCurrentUser().getTelegramUser();
+        Toast.makeText(this, "Welcome back " + currentUser.getFirstName() + " " + currentUser.getLastName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -54,6 +60,12 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         if (navController != null) {
             navController.onSaveInstanceState(outState);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        App.INSTANCE.closeTelegramClient();
+        super.onDestroy();
     }
 
     private void setupViews(Bundle savedInstanceState) {
@@ -141,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             case TAB_SEARCH:
                 return new WorkInProgressFragment();
             case TAB_PROFILE:
-                return ProfileFragment.newInstance(0, App.INSTANCE.getCurrentUser());
+                return ProfileFragment.newInstance(0, App.INSTANCE.getCurrentUser(), null);
             case TAB_DASHBOARD:
                 return DashboardFragment.newInstance(0);
             case TAB_GROUPS:

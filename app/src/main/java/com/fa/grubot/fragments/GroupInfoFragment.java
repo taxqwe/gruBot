@@ -28,12 +28,11 @@ import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
@@ -142,12 +141,12 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
         content.setVisibility(View.GONE);
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 appBarLayout.setExpanded(true);
                 content.setVisibility(View.VISIBLE);
                 content_fam.setVisibility(View.VISIBLE);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 appBarLayout.setExpanded(false);
                 noInternet.setVisibility(View.VISIBLE);
                 break;
@@ -156,10 +155,10 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
 
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
-            state = Globals.FragmentState.STATE_CONTENT;
+            state = FragmentState.STATE_CONTENT;
         else {
             groupInfoAdapter = null;
-            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            state = FragmentState.STATE_NO_INTERNET_CONNECTION;
         }
     }
 
@@ -218,8 +217,8 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                             HashMap<String, Object> announcement = new HashMap<>();
                             announcement.put("group", group.getId());
                             announcement.put("groupName", group.getName());
-                            announcement.put("author", App.INSTANCE.getCurrentUser().getId());
-                            announcement.put("authorName", App.INSTANCE.getCurrentUser().getFullname());
+                            announcement.put("author", App.INSTANCE.getCurrentUser().getTelegramUser().getId());
+                            announcement.put("authorName", App.INSTANCE.getCurrentUser().getTelegramUser().getFirstName() + " " + App.INSTANCE.getCurrentUser().getTelegramUser().getLastName());
                             announcement.put("desc", desc.getText().toString());
                             announcement.put("date", new Date());
                             announcement.put("text", text.getText().toString());
@@ -299,13 +298,11 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                             .cancelable(false)
                             .show();
 
-                    DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
-
                     HashMap<String, Object> vote = new HashMap<>();
                     vote.put("group", group.getId());
                     vote.put("groupName", group.getName());
-                    vote.put("author", userReference);
-                    vote.put("authorName", App.INSTANCE.getCurrentUser().getFullname());
+                    vote.put("author", App.INSTANCE.getCurrentUser().getTelegramUser().getId());
+                    vote.put("authorName", App.INSTANCE.getCurrentUser().getTelegramUser().getFirstName() + " " + App.INSTANCE.getCurrentUser().getTelegramUser().getLastName());
                     vote.put("desc", desc.getText().toString());
                     vote.put("date", new Date());
 

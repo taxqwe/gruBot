@@ -5,9 +5,8 @@ import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.models.ProfileModel;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -39,11 +38,11 @@ public class ProfilePresenter {
         fragment.showRequiredViews();
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 fragment.setupToolbar(localUser);
                 fragment.setupRecyclerView(items, localUser);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
         }
@@ -64,15 +63,13 @@ public class ProfilePresenter {
 
                     ArrayList<String> changes = new ArrayList<>();
                     if (localUser != null) {
-                        if (!user.getUsername().equals(localUser.getUsername()))
+                        if (!user.getUserName().equals(localUser.getUserName()))
                             changes.add("username");
                         if (!user.getFullname().equals(localUser.getFullname()))
                             changes.add("fullname");
                         if (!user.getPhoneNumber().equals(localUser.getPhoneNumber()))
                             changes.add("phoneNumber");
-                        if (!user.getDesc().equals(localUser.getDesc()))
-                            changes.add("desc");
-                        if (!user.getAvatar().equals(localUser.getAvatar()))
+                        if (!user.getImgUrl().equals(localUser.getImgUrl()))
                             changes.add("avatar");
                     }
 
@@ -81,7 +78,7 @@ public class ProfilePresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
                             fragment.setupLayouts(true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
                         fragment.handleProfileUpdate(user, changes);
@@ -90,7 +87,7 @@ public class ProfilePresenter {
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });

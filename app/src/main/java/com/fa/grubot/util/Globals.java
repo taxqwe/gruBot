@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
@@ -62,11 +63,14 @@ public class Globals {
                     .timeout(15, TimeUnit.SECONDS)
                     .observeOn(AndroidSchedulers.mainThread());
         }
-     }
+    }
 
-    public static class FragmentState {
-        public static final int STATE_NO_INTERNET_CONNECTION = 61;
-        public static final int STATE_NO_DATA = 52;
-        public static final int STATE_CONTENT = 44;
+    public static MaterialDialog getLoadingDialog(Context context) {
+        return new MaterialDialog.Builder(context)
+                .content("Загрузка...")
+                .progress(true, 0)
+                .progressIndeterminateStyle(false)
+                .cancelable(false)
+                .build();
     }
 }

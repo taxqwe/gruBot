@@ -83,7 +83,7 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
                 Glide.with(context).load(R.drawable.ic_phone_black_36dp).apply(new RequestOptions().override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)).into(holder.itemImage);
                 holder.itemText.setText(item.getText());
                 holder.itemValue.setText(item.getValue());
-                if (!user.getId().equals(App.INSTANCE.getCurrentUser().getId())) {
+                if (!user.getUserId().equals(App.INSTANCE.getCurrentUser().getTelegramUser().getId())) {
                     holder.itemImage.getRootView().setOnClickListener(view -> {
                         Dexter.withActivity((MainActivity) context)
                                 .withPermission(Manifest.permission.CALL_PHONE)
@@ -134,11 +134,11 @@ public class ProfileRecyclerAdapter extends RecyclerView.Adapter<ProfileRecycler
         if (changes.contains("fullname"))
             updateItem("Имя", user.getFullname());
         if (changes.contains("username"))
-            updateItem("Логин", user.getUsername());
+            updateItem("Логин", user.getUserName());
         if (changes.contains("phoneNumber"))
             updateItem("Номер телефона", user.getPhoneNumber());
         if (changes.contains("desc"))
-            updateItem("Описание", user.getDesc());
+            updateItem("Описание", "");
     }
 
     private void updateItem(String itemName, String newValue) {

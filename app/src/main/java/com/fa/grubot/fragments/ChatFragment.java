@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatFragmentBase;
 import com.fa.grubot.objects.chat.ChatMessage;
@@ -105,14 +104,15 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
 
         ImageLoader imageLoader = new com.fa.grubot.util.ImageLoader(this);
 
-        messageAdapter = new MessagesListAdapter<>(App.INSTANCE.getCurrentUser().getId(), imageLoader); // sender id must be equals id of loggined user
+        messageAdapter = new MessagesListAdapter<>(null, imageLoader); // sender id must be equals id of loggined user
         messagesListView.setAdapter(messageAdapter);
 
         inputView.setInputListener(input -> {
             // validate and send message here
             ChatMessage message = new ChatMessage("2",
                     inputView.getInputEditText().getText().toString(),
-                    App.INSTANCE.getCurrentUser(), new Date());
+                    null,
+                    new Date());
             messageAdapter.addToStart(message, true);
             presenter.sendMessage(message);
             return true;

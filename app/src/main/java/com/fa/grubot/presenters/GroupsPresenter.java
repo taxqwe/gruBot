@@ -5,7 +5,7 @@ import com.fa.grubot.App;
 import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.models.GroupsModel;
 import com.fa.grubot.objects.group.Group;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,7 +22,7 @@ public class GroupsPresenter {
 
     private ArrayList<Group> groups = new ArrayList<>();
 
-    private Query groupsQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), true);
+    private Query groupsQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), true);
     private ListenerRegistration groupsRegistration;
 
     public GroupsPresenter(GroupsFragmentBase fragment) {
@@ -39,13 +39,13 @@ public class GroupsPresenter {
         fragment.showRequiredViews();
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 fragment.setupRecyclerView(groups);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
-            case Globals.FragmentState.STATE_NO_DATA:
+            case FragmentState.STATE_NO_DATA:
                 break;
         }
     }
@@ -61,7 +61,7 @@ public class GroupsPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
                             fragment.setupLayouts(true, true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
                         fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
@@ -70,12 +70,12 @@ public class GroupsPresenter {
 
                 if (fragment != null && fragment.isListEmpty()) {
                     fragment.setupLayouts(true, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
+                    notifyViewCreated(FragmentState.STATE_NO_DATA);
                 }
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });

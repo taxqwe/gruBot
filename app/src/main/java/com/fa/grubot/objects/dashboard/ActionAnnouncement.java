@@ -1,7 +1,5 @@
 package com.fa.grubot.objects.dashboard;
 
-import com.google.firebase.firestore.DocumentReference;
-
 import java.util.Date;
 import java.util.Map;
 

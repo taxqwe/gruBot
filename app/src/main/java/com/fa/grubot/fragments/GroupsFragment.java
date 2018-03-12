@@ -19,7 +19,7 @@ import com.fa.grubot.abstractions.GroupsFragmentBase;
 import com.fa.grubot.adapters.GroupsRecyclerAdapter;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.presenters.GroupsPresenter;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
 
 import java.io.Serializable;
@@ -112,13 +112,13 @@ public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, 
         content.setVisibility(View.GONE);
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 content.setVisibility(View.VISIBLE);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 noInternet.setVisibility(View.VISIBLE);
                 break;
-            case Globals.FragmentState.STATE_NO_DATA:
+            case FragmentState.STATE_NO_DATA:
                 noData.setVisibility(View.VISIBLE);
                 break;
         }
@@ -127,14 +127,14 @@ public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, 
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
             if (isHasData)
-                state = Globals.FragmentState.STATE_CONTENT;
+                state = FragmentState.STATE_CONTENT;
             else {
-                state = Globals.FragmentState.STATE_NO_DATA;
+                state = FragmentState.STATE_NO_DATA;
                 groupsAdapter = null;
             }
         }
         else {
-            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            state = FragmentState.STATE_NO_INTERNET_CONNECTION;
             groupsAdapter = null;
         }
     }

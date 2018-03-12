@@ -1,7 +1,6 @@
 package com.fa.grubot.objects.dashboard;
 
 import com.fa.grubot.objects.misc.VoteOption;
-import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
 import java.util.Date;

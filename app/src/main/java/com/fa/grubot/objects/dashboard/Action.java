@@ -1,7 +1,5 @@
 package com.fa.grubot.objects.dashboard;
 
-import com.google.firebase.firestore.DocumentReference;
-
 import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;

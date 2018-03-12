@@ -9,9 +9,8 @@ import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.misc.VoteOption;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -37,16 +36,16 @@ public class ActionsPresenter {
     public void notifyFragmentStarted(int type) {
         switch (type) {
             case ActionsFragment.TYPE_ANNOUNCEMENTS:
-                actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
+                actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "new");
                 break;
             case ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE:
-                actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
+                actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "archive");
                 break;
             case ActionsFragment.TYPE_VOTES:
-                actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
+                actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "new");
                 break;
             case ActionsFragment.TYPE_VOTES_ARCHIVE:
-                actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
+                actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "archive");
                 break;
         }
 
@@ -57,13 +56,13 @@ public class ActionsPresenter {
         fragment.showRequiredViews();
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 fragment.setupRecyclerView(actions);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
-            case Globals.FragmentState.STATE_NO_DATA:
+            case FragmentState.STATE_NO_DATA:
                 break;
         }
     }
@@ -106,7 +105,7 @@ public class ActionsPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
                             fragment.setupLayouts(true, true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
                         fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), action);
@@ -115,12 +114,12 @@ public class ActionsPresenter {
 
                 if (fragment != null && fragment.isListEmpty()) {
                     fragment.setupLayouts(true, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_DATA);
+                    notifyViewCreated(FragmentState.STATE_NO_DATA);
                 }
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false, false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
@@ -142,7 +141,7 @@ public class ActionsPresenter {
                 .addOnSuccessListener(documentSnapshot -> {
                     Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
 
-                    users.put(App.INSTANCE.getCurrentUser().getId(), "archive");
+                    users.put(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), "archive");
 
                     FirebaseFirestore.getInstance().collection("announcements")
                             .document(announcement.getId())
@@ -162,7 +161,7 @@ public class ActionsPresenter {
                 .addOnSuccessListener(documentSnapshot -> {
                     Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
 
-                    users.put(App.INSTANCE.getCurrentUser().getId(), "archive");
+                    users.put(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), "archive");
 
                     FirebaseFirestore.getInstance().collection("votes")
                             .document(vote.getId())
@@ -190,7 +189,7 @@ public class ActionsPresenter {
                 .addOnSuccessListener(documentSnapshot -> {
                     Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
 
-                    users.put(App.INSTANCE.getCurrentUser().getId(), "new");
+                    users.put(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), "new");
 
                     FirebaseFirestore.getInstance().collection("announcements")
                             .document(announcement.getId())
@@ -206,7 +205,7 @@ public class ActionsPresenter {
                 .addOnSuccessListener(documentSnapshot -> {
                     Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
 
-                    users.put(App.INSTANCE.getCurrentUser().getId(), "new");
+                    users.put(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), "new");
 
                     FirebaseFirestore.getInstance().collection("votes")
                             .document(vote.getId())
