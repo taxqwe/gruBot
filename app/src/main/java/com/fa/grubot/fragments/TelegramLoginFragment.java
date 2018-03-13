@@ -134,20 +134,16 @@ public class TelegramLoginFragment extends Fragment implements TelegramLoginFrag
         protected Object doInBackground(Void... params) {
             Object returnObject;
 
-            TelegramClient client = INSTANCE.getTelegramClient();
-
-            if (client.isClosed())
-                client = INSTANCE.getNewTelegramClient();
+            TelegramClient client = INSTANCE.getNewTelegramClient();
 
             try {
                 returnObject = client.authSendCode(false, phoneNumber, true);
-                INSTANCE.setTelegramClient(client);
             } catch (RpcErrorException e) {
                 returnObject = e;
             } catch (Exception e) {
                 returnObject = e;
             } finally {
-                //client.close();
+                INSTANCE.closeTelegramClient();
             }
 
             return returnObject;
