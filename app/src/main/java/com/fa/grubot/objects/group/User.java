@@ -1,55 +1,46 @@
 package com.fa.grubot.objects.group;
 
-import com.stfalcon.chatkit.commons.models.IUser;
-
 import java.io.Serializable;
 
-public class User implements IUser, Serializable {
+public class User implements Serializable {
 
-    private String id;
-    private String username;
+    private String userId;
+    private String userType;
     private String fullname;
+    private String userName;
     private String phoneNumber;
-    private String desc;
     private String imgUrl;
 
-    public User(String id, String username, String fullname, String phoneNumber, String desc, String imgUrl) {
-        this.id = id;
-        this.username = username;
+    public User(String userId, String userType, String fullname, String userName, String phoneNumber, String imgUrl) {
+        this.userId = userId;
+        this.userType = userType;
         this.fullname = fullname;
+        this.userName = userName;
         this.phoneNumber = phoneNumber;
-        this.desc = desc;
         this.imgUrl = imgUrl;
     }
 
-    @Override
-    public String getAvatar() {
-        return imgUrl;
+    public String getUserId() {
+        return userId;
     }
 
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getName() {
-        return fullname;
-    }
-
-    public String getUsername() {
-        return username;
+    public String getUserType() {
+        return userType;
     }
 
     public String getFullname() {
         return fullname;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getImgUrl() {
+        return imgUrl;
     }
 }

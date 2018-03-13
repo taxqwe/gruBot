@@ -1,6 +1,5 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -30,12 +28,11 @@ import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.presenters.GroupInfoPresenter;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 import com.fa.grubot.util.ImageLoader;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
@@ -51,29 +48,39 @@ import butterknife.Unbinder;
 import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
-public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase, Serializable {
+public class GroupInfoFragment extends BaseFragment implements GroupInfoFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.collapsingToolbar) transient Toolbar collapsingToolbar;
-    @Nullable @BindView(R.id.app_bar) transient AppBarLayout appBarLayout;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView buttonsView;
-    @Nullable @BindView(R.id.groupImage) transient ImageView groupImage;
+    @Nullable @BindView(R.id.collapsingToolbar) Toolbar collapsingToolbar;
+    @Nullable @BindView(R.id.app_bar) AppBarLayout appBarLayout;
+    @Nullable @BindView(R.id.recycler) RecyclerView buttonsView;
+    @Nullable @BindView(R.id.groupImage) ImageView groupImage;
 
-    @Nullable @BindView(R.id.fam) transient FloatingActionMenu fam;
-    @Nullable @BindView(R.id.fab_add_announcement) transient FloatingActionButton announcementFab;
-    @Nullable @BindView(R.id.fab_add_vote) transient FloatingActionButton voteFab;
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
+    @Nullable @BindView(R.id.fam) FloatingActionMenu fam;
+    @Nullable @BindView(R.id.fab_add_announcement) FloatingActionButton announcementFab;
+    @Nullable @BindView(R.id.fab_add_vote) FloatingActionButton voteFab;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.content_fam) transient View content_fam;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.content_fam) View content_fam;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
 
-    private transient GroupInfoRecyclerAdapter groupInfoAdapter;
-    private transient GroupInfoPresenter presenter;
-    private transient Unbinder unbinder;
+    private GroupInfoRecyclerAdapter groupInfoAdapter;
+    private GroupInfoPresenter presenter;
+    private Unbinder unbinder;
 
     private int state;
+    private int instance = 0;
     private Group group;
+
+    public static GroupInfoFragment newInstance(int instance, Group group) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        args.putSerializable("group", group);
+        GroupInfoFragment fragment = new GroupInfoFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -87,10 +94,12 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         View v = inflater.inflate(R.layout.fragment_group_info, container, false);
 
         hideMainToolbar();
-
         setHasOptionsMenu(true);
+
         group = (Group) this.getArguments().getSerializable("group");
+        instance = this.getArguments().getInt("instance");
         unbinder = ButterKnife.bind(this, v);
+
         presenter.notifyFragmentStarted(group);
 
         return v;
@@ -122,7 +131,8 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
     private void terminateRegistration() {
         presenter.removeRegistration();
-        groupInfoAdapter.clearItems();
+        if (groupInfoAdapter != null)
+            groupInfoAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -131,12 +141,12 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         content.setVisibility(View.GONE);
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 appBarLayout.setExpanded(true);
                 content.setVisibility(View.VISIBLE);
                 content_fam.setVisibility(View.VISIBLE);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 appBarLayout.setExpanded(false);
                 noInternet.setVisibility(View.VISIBLE);
                 break;
@@ -145,10 +155,10 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
-            state = Globals.FragmentState.STATE_CONTENT;
+            state = FragmentState.STATE_CONTENT;
         else {
             groupInfoAdapter = null;
-            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            state = FragmentState.STATE_NO_INTERNET_CONNECTION;
         }
     }
 
@@ -204,13 +214,11 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                                     .cancelable(false)
                                     .show();
 
-                            DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
-
                             HashMap<String, Object> announcement = new HashMap<>();
                             announcement.put("group", group.getId());
                             announcement.put("groupName", group.getName());
-                            announcement.put("author", userReference);
-                            announcement.put("authorName", App.INSTANCE.getCurrentUser().getFullname());
+                            announcement.put("author", App.INSTANCE.getCurrentUser().getTelegramUser().getId());
+                            announcement.put("authorName", App.INSTANCE.getCurrentUser().getTelegramUser().getFirstName() + " " + App.INSTANCE.getCurrentUser().getTelegramUser().getLastName());
                             announcement.put("desc", desc.getText().toString());
                             announcement.put("date", new Date());
                             announcement.put("text", text.getText().toString());
@@ -290,13 +298,11 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
                             .cancelable(false)
                             .show();
 
-                    DocumentReference userReference = FirebaseFirestore.getInstance().collection("users").document(App.INSTANCE.getCurrentUser().getId());
-
                     HashMap<String, Object> vote = new HashMap<>();
                     vote.put("group", group.getId());
                     vote.put("groupName", group.getName());
-                    vote.put("author", userReference);
-                    vote.put("authorName", App.INSTANCE.getCurrentUser().getFullname());
+                    vote.put("author", App.INSTANCE.getCurrentUser().getTelegramUser().getId());
+                    vote.put("authorName", App.INSTANCE.getCurrentUser().getTelegramUser().getFirstName() + " " + App.INSTANCE.getCurrentUser().getTelegramUser().getLastName());
                     vote.put("desc", desc.getText().toString());
                     vote.put("date", new Date());
 
@@ -339,7 +345,7 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
         if (App.INSTANCE.areAnimationsEnabled())
             buttonsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
 
-        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), buttons, group.getId());
+        groupInfoAdapter = new GroupInfoRecyclerAdapter(getActivity(), instance, fragmentNavigation, buttons, group.getId());
 
         groupInfoAdapter.setMode(ExpandableRecyclerAdapter.MODE_ACCORDION);
         buttonsView.setAdapter(groupInfoAdapter);
@@ -376,14 +382,6 @@ public class GroupInfoFragment extends Fragment implements GroupInfoFragmentBase
 
     public boolean isAdapterExists() {
         return groupInfoAdapter != null;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home)
-            getActivity().onBackPressed();
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.fa.grubot.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +16,7 @@ import com.fa.grubot.abstractions.DashboardFragmentBase;
 import com.fa.grubot.adapters.DashboardRecyclerAdapter;
 import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.presenters.DashboardPresenter;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,22 +25,32 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.Icepick;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
-public class DashboardFragment extends Fragment implements DashboardFragmentBase, Serializable {
+public class DashboardFragment extends BaseFragment implements DashboardFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.retryBtn) transient Button retryBtn;
-    @Nullable @BindView(R.id.recycler) transient RecyclerView dashboardView;
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+    @Nullable @BindView(R.id.recycler) RecyclerView dashboardView;
 
-    @Nullable @BindView(R.id.progressBar) transient ProgressBar progressBar;
-    @Nullable @BindView(R.id.content) transient View content;
-    @Nullable @BindView(R.id.noInternet) transient View noInternet;
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
 
-    private transient Unbinder unbinder;
-    private transient DashboardPresenter presenter;
-    private transient DashboardRecyclerAdapter dashboardAdapter;
+    private Unbinder unbinder;
+    private DashboardPresenter presenter;
+    private DashboardRecyclerAdapter dashboardAdapter;
 
     private int state;
+    private int instance = 0;
+
+    public static DashboardFragment newInstance(int instance) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        DashboardFragment fragment = new DashboardFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -50,10 +59,11 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         presenter = new DashboardPresenter(this);
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
+        instance = this.getArguments().getInt("instance");
         unbinder = ButterKnife.bind(this, v);
 
         return v;
@@ -86,7 +96,8 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
     private void terminateRegistration() {
         presenter.removeRegistration();
-        dashboardAdapter.clearItems();
+        if (dashboardAdapter != null)
+            dashboardAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -95,10 +106,10 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         content.setVisibility(View.GONE);
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 content.setVisibility(View.VISIBLE);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 noInternet.setVisibility(View.VISIBLE);
                 break;
         }
@@ -106,9 +117,9 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
 
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
-            state = Globals.FragmentState.STATE_CONTENT;
+            state = FragmentState.STATE_CONTENT;
         else {
-            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            state = FragmentState.STATE_NO_INTERNET_CONNECTION;
             dashboardAdapter = null;
         }
     }
@@ -133,7 +144,7 @@ public class DashboardFragment extends Fragment implements DashboardFragmentBase
         dashboardView.setLayoutManager(layoutManager);
         dashboardView.setHasFixedSize(false);
 
-        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), items);
+        dashboardAdapter = new DashboardRecyclerAdapter(getActivity(), instance, fragmentNavigation, items);
         dashboardView.setAdapter(dashboardAdapter);
         dashboardAdapter.notifyDataSetChanged();
     }

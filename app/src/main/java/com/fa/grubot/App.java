@@ -1,11 +1,20 @@
 package com.fa.grubot;
 
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Color;
 
-import com.fa.grubot.objects.group.User;
+import com.fa.grubot.objects.group.CurrentUser;
+import com.fa.grubot.util.TmApiStorage;
+import com.github.badoualy.telegram.api.Kotlogram;
+import com.github.badoualy.telegram.api.TelegramApp;
+import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.mtproto.model.DataCenter;
+import com.github.badoualy.telegram.tl.api.TLUser;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
+
+import java.io.File;
 
 public class App extends Application {
     public static App INSTANCE;
@@ -13,12 +22,57 @@ public class App extends Application {
     private boolean isBackstackEnabled = false;
     private boolean areAnimationsEnabled = false;
     private boolean isSlidrEnabled = true;
-    private User currentUser;
+
+    private TelegramClient telegramClient;
+    private CurrentUser currentUser;
+
+    private static final int API_ID = ;
+    private static final String API_HASH = "";
+
+    private static final String APP_VERSION = "1.0";
+    private static final String MODEL = "Dev";
+    private static final String SYSTEM_VERSION = "Dev";
+    private static final String LANG_CODE = "en";
+
+    private File authKeyFile;
+    private File nearestDcFile;
+
+    private TelegramApp application;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        authKeyFile = new File(this.getApplicationContext().getFilesDir(), "auth.key");
+        nearestDcFile = new File(this.getApplicationContext().getFilesDir(), "dc.save");
+
+        application = new TelegramApp(API_ID, API_HASH, MODEL, SYSTEM_VERSION, APP_VERSION, LANG_CODE);
         INSTANCE = this;
+    }
+
+    public TelegramClient getNewTelegramClient() {
+        telegramClient = Kotlogram.getDefaultClient(application, new TmApiStorage(authKeyFile, nearestDcFile));
+        return telegramClient;
+    }
+
+    public void setTelegramClient(TelegramClient client) {
+        this.telegramClient = client;
+    }
+
+    public TelegramClient getTelegramClient() {
+        return telegramClient;
+    }
+
+    public void closeTelegramClient() {
+        telegramClient.close(false);
+    }
+
+    public void setCurrentUser(CurrentUser user) {
+        this.currentUser = user;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
     }
 
     public boolean isBackstackEnabled() {
@@ -43,14 +97,6 @@ public class App extends Application {
 
     public void setSlidrEnabled(boolean slidrEnabled) {
         isSlidrEnabled = slidrEnabled;
-    }
-
-    public void setCurrentUser(User user) {
-        currentUser = user;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
     }
 
     public SlidrConfig getSlidrConfig() {

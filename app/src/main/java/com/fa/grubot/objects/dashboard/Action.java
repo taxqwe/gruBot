@@ -1,7 +1,5 @@
 package com.fa.grubot.objects.dashboard;
 
-import com.google.firebase.firestore.DocumentReference;
-
 import java.io.Serializable;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -12,7 +10,7 @@ import java.util.Map;
 public class Action implements Serializable {
     private String id;
     private String groupId;
-    private DocumentReference author;
+    private String author;
     private String desc;
     private Date date;
     private Map<String, String> users;
@@ -24,7 +22,7 @@ public class Action implements Serializable {
 
     }
 
-    public Action(String id, String groupId, String groupName, DocumentReference author, String authorName, String desc, Date date, Map<String, String> users) {
+    public Action(String id, String groupId, String groupName, String author, String authorName, String desc, Date date, Map<String, String> users) {
         this.id = id;
         this.groupId = groupId;
         this.author = author;
@@ -43,7 +41,7 @@ public class Action implements Serializable {
         return groupId;
     }
 
-    public DocumentReference getAuthor() {
+    public String getAuthor() {
         return author;
     }
 

@@ -3,18 +3,15 @@ package com.fa.grubot.presenters;
 
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
-import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.models.GroupInfoModel;
-import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
 import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -38,7 +35,7 @@ public class GroupInfoPresenter {
 
     private Group localGroup;
 
-    private DocumentReference groupReference;
+    private Query groupQuery;
     private Query usersQuery;
     private Query announcementsQuery;
     private Query votesQuery;
@@ -55,7 +52,7 @@ public class GroupInfoPresenter {
 
     public void notifyFragmentStarted(Group group) {
         String groupId = group.getId();
-        groupReference = FirebaseFirestore.getInstance().collection("groups").document(groupId);
+        groupQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("chatId", groupId);
         usersQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("groups." + groupId, true);
         announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("group", groupId);
         votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("group", groupId);
@@ -67,12 +64,12 @@ public class GroupInfoPresenter {
         fragment.showRequiredViews();
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 fragment.setupToolbar();
                 fragment.setupFab();
                 fragment.setupRecyclerView(buttons);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
         }
@@ -80,22 +77,25 @@ public class GroupInfoPresenter {
 
     @SuppressWarnings("unchecked")
     public void setRegistration() {
-        groupRegistration = groupReference.addSnapshotListener((doc, e) -> {
+        groupRegistration = groupQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
-                Group group = new Group(doc.getId(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    DocumentSnapshot doc = dc.getDocument();
+                    Group group = new Group(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
-                if (fragment != null) {
-                    if (!fragment.isAdapterExists()) {
-                        fragment.setupLayouts(true);
-                        notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(FragmentState.STATE_CONTENT);
+                        }
+
+                        fragment.handleUIUpdate(group);
                     }
-
-                    fragment.handleUIUpdate(group);
                 }
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
@@ -108,7 +108,7 @@ public class GroupInfoPresenter {
                                 doc.getId(),
                                 doc.get("group").toString(),
                                 doc.get("groupName").toString(),
-                                (DocumentReference) doc.get("author"),
+                                doc.get("author").toString(),
                                 doc.get("authorName").toString(),
                                 doc.get("desc").toString(),
                                 (Date) doc.get("date"),
@@ -118,7 +118,7 @@ public class GroupInfoPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
                             fragment.setupLayouts(true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
                         fragment.handleActionsUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), announcement);
@@ -127,7 +127,7 @@ public class GroupInfoPresenter {
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
@@ -144,7 +144,7 @@ public class GroupInfoPresenter {
                                 doc.getId(),
                                 doc.get("group").toString(),
                                 doc.get("groupName").toString(),
-                                (DocumentReference) doc.get("author"),
+                                doc.get("author").toString(),
                                 doc.get("authorName").toString(),
                                 doc.get("desc").toString(),
                                 (Date) doc.get("date"),
@@ -154,7 +154,7 @@ public class GroupInfoPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
                             fragment.setupLayouts(true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
                         fragment.handleActionsUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), vote);
@@ -163,7 +163,7 @@ public class GroupInfoPresenter {
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
@@ -172,7 +172,7 @@ public class GroupInfoPresenter {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
-                    User user = new User(doc.getId(),
+                    User user = new User( doc.get("userId").toString(),
                             doc.get("username").toString(),
                             doc.get("fullname").toString(),
                             doc.get("phoneNumber").toString(),
@@ -182,7 +182,7 @@ public class GroupInfoPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
                             fragment.setupLayouts(true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
                         fragment.handleUsersUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), user);
@@ -191,17 +191,21 @@ public class GroupInfoPresenter {
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
     }
 
     public void removeRegistration() {
-        groupRegistration.remove();
-        usersRegistration.remove();
-        announcementsRegistration.remove();
-        votesRegistration.remove();
+        if (groupRegistration != null)
+            groupRegistration.remove();
+        if (usersRegistration != null)
+            usersRegistration.remove();
+        if (announcementsRegistration != null)
+            announcementsRegistration.remove();
+        if (votesRegistration != null)
+            votesRegistration.remove();
     }
 
     public void onRetryBtnClick() {
