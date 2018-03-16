@@ -26,7 +26,7 @@ public class App extends Application {
     private TelegramClient telegramClient;
     private CurrentUser currentUser;
 
-    private static final int API_ID = 0;
+    private static final int API_ID = ;
     private static final String API_HASH = "";
 
     private static final String APP_VERSION = "1.0";
@@ -51,12 +51,16 @@ public class App extends Application {
     }
 
     public TelegramClient getNewTelegramClient() {
+        if (telegramClient != null && !telegramClient.isClosed())
+            closeTelegramClient();
+
         telegramClient = Kotlogram.getDefaultClient(application, new TmApiStorage(authKeyFile, nearestDcFile));
         return telegramClient;
     }
 
     public void closeTelegramClient() {
-        telegramClient.close(false);
+        if (telegramClient != null)
+            telegramClient.close(false);
     }
 
     public void setCurrentUser(CurrentUser user) {

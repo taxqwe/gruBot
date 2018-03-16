@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.fa.grubot.R;
 import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.fragments.GroupInfoFragment;
-import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.objects.Chat;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
@@ -19,12 +19,12 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAdapter.ViewHolder>{
+public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecyclerAdapter.ViewHolder>{
 
     private Context context;
     private int instance;
     private BaseFragment.FragmentNavigation fragmentNavigation;
-    private final ArrayList<Group> groups;
+    private final ArrayList<Chat> chats;
 
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.groupName) TextView groupName;
@@ -36,11 +36,11 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
         }
     }
 
-    public GroupsRecyclerAdapter(Context context, int instance, BaseFragment.FragmentNavigation fragmentNavigation, ArrayList<Group> groups) {
+    public ChatsListRecyclerAdapter(Context context, int instance, BaseFragment.FragmentNavigation fragmentNavigation, ArrayList<Chat> chats) {
         this.context = context;
         this.instance = instance;
         this.fragmentNavigation = fragmentNavigation;
-        this.groups = groups;
+        this.chats = chats;
     }
 
     @Override
@@ -52,43 +52,43 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int pos) {
         final int position = holder.getAdapterPosition();
-        Group group = groups.get(position);
+        Chat chat = chats.get(position);
 
-        holder.groupName.setText(group.getName());
-        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, group.getName()));
+        holder.groupName.setText(chat.getName());
+        holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, chat.getName()));
 
         holder.groupImage.getRootView().setOnClickListener(v -> {
-            fragmentNavigation.pushFragment(GroupInfoFragment.newInstance(instance + 1, group));
+            fragmentNavigation.pushFragment(GroupInfoFragment.newInstance(instance + 1, chat));
         });
     }
 
     @Override
     public int getItemCount() {
-        return (groups == null) ? 0 : groups.size();
+        return (chats == null) ? 0 : chats.size();
     }
 
     public void clearItems() {
-        groups.clear();
+        chats.clear();
         notifyDataSetChanged();
     }
 
     public void removeItem(int position) {
-        groups.remove(position);
+        chats.remove(position);
         notifyItemRemoved(position);
     }
 
-    public void addItem(int position, Group group) {
-        groups.add(position, group);
+    public void addItem(int position, Chat chat) {
+        chats.add(position, chat);
         notifyItemInserted(position);
     }
 
-    public void updateItem(int oldPosition, int newPosition, Group group) {
+    public void updateItem(int oldPosition, int newPosition, Chat chat) {
         if (oldPosition == newPosition) {
-            groups.set(oldPosition, group);
+            chats.set(oldPosition, chat);
             notifyItemChanged(oldPosition);
         } else {
-            groups.remove(oldPosition);
-            groups.add(newPosition, group);
+            chats.remove(oldPosition);
+            chats.add(newPosition, chat);
             notifyItemMoved(oldPosition, newPosition);
         }
     }

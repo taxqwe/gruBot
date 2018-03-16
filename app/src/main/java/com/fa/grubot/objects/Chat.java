@@ -1,19 +1,19 @@
-package com.fa.grubot.objects.group;
+package com.fa.grubot.objects;
 
 import java.io.Serializable;
 import java.util.Map;
 
-public class Group implements Serializable {
+public class Chat implements Serializable {
     private String id;
     private String name;
     private Map<String, Boolean> users;
-    private String imgURL;
+    private String lastMessage;
 
-    public Group(String id, String name, Map<String, Boolean> users, String imgURL) {
+    public Chat(String id, String name, Map<String, Boolean> users, String lastMessage) {
         this.id = id;
         this.name = name;
+        this.lastMessage = lastMessage;
         this.users = users;
-        this.imgURL = imgURL;
     }
 
     public String getId() {
@@ -24,11 +24,15 @@ public class Group implements Serializable {
         return name;
     }
 
-    public String getImgURL() {
-        return imgURL;
-    }
-
     public Map<String, Boolean> getUsers() {
         return users;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setUsers(Map<String, Boolean> users) {
+        this.users = users;
     }
 }

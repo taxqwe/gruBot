@@ -2,9 +2,9 @@ package com.fa.grubot.presenters;
 
 
 import com.fa.grubot.App;
-import com.fa.grubot.abstractions.GroupsFragmentBase;
-import com.fa.grubot.models.GroupsModel;
-import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.abstractions.ChatsListFragmentBase;
+import com.fa.grubot.models.ChatsListModel;
+import com.fa.grubot.objects.Chat;
 import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -15,19 +15,19 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class GroupsPresenter {
+public class ChatsListPresenter {
 
-    private GroupsFragmentBase fragment;
-    private GroupsModel model;
+    private ChatsListFragmentBase fragment;
+    private ChatsListModel model;
 
-    private ArrayList<Group> groups = new ArrayList<>();
+    private ArrayList<Chat> chats = new ArrayList<>();
 
-    private Query groupsQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), true);
+    private Query groupsQuery = FirebaseFirestore.getInstance().collection("chats").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), true);
     private ListenerRegistration groupsRegistration;
 
-    public GroupsPresenter(GroupsFragmentBase fragment) {
+    public ChatsListPresenter(ChatsListFragmentBase fragment) {
         this.fragment = fragment;
-        this.model = new GroupsModel();
+        this.model = new ChatsListModel();
     }
 
     public void notifyFragmentStarted() {
@@ -40,7 +40,7 @@ public class GroupsPresenter {
 
         switch (state) {
             case FragmentState.STATE_CONTENT:
-                fragment.setupRecyclerView(groups);
+                fragment.setupRecyclerView(chats);
                 break;
             case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
@@ -56,7 +56,7 @@ public class GroupsPresenter {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
-                    Group group = new Group(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
+                    Chat chat = new Chat(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
                     if (fragment != null) {
                         if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
@@ -64,7 +64,7 @@ public class GroupsPresenter {
                             notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
-                        fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
+                        fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), chat);
                     }
                 }
 

@@ -3,18 +3,15 @@ package com.fa.grubot;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.fragments.DashboardFragment;
-import com.fa.grubot.fragments.GroupsFragment;
+import com.fa.grubot.fragments.ChatsListFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
-import com.fa.grubot.objects.group.CurrentUser;
-import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.tabhistory.FragNavTabHistoryController;
@@ -157,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
             case TAB_DASHBOARD:
                 return DashboardFragment.newInstance(0);
             case TAB_GROUPS:
-                return GroupsFragment.newInstance(0);
+                return ChatsListFragment.newInstance(0);
             case TAB_SETTINGS:
                 return new SettingsFragment();
         }

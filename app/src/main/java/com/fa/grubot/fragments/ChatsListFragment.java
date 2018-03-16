@@ -15,10 +15,10 @@ import android.widget.ProgressBar;
 import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.abstractions.GroupsFragmentBase;
-import com.fa.grubot.adapters.GroupsRecyclerAdapter;
-import com.fa.grubot.objects.group.Group;
-import com.fa.grubot.presenters.GroupsPresenter;
+import com.fa.grubot.abstractions.ChatsListFragmentBase;
+import com.fa.grubot.adapters.ChatsListRecyclerAdapter;
+import com.fa.grubot.objects.Chat;
+import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
 
@@ -32,7 +32,7 @@ import icepick.Icepick;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
-public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, Serializable {
+public class ChatsListFragment extends BaseFragment implements ChatsListFragmentBase, Serializable {
 
     @Nullable @BindView(R.id.recycler) RecyclerView groupsView;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
@@ -43,16 +43,16 @@ public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, 
     @Nullable @BindView(R.id.noData) View noData;
 
     private Unbinder unbinder;
-    private GroupsPresenter presenter;
-    private GroupsRecyclerAdapter groupsAdapter;
+    private ChatsListPresenter presenter;
+    private ChatsListRecyclerAdapter groupsAdapter;
 
     private int state;
     private int instance = 0;
 
-    public static GroupsFragment newInstance(int instance) {
+    public static ChatsListFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt("instance", instance);
-        GroupsFragment fragment = new GroupsFragment();
+        ChatsListFragment fragment = new ChatsListFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,7 +65,7 @@ public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new GroupsPresenter(this);
+        presenter = new ChatsListPresenter(this);
         View v = inflater.inflate(R.layout.fragment_groups, container, false);
 
         setHasOptionsMenu(true);
@@ -149,7 +149,7 @@ public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, 
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
-    public void setupRecyclerView(ArrayList<Group> groups) {
+    public void setupRecyclerView(ArrayList<Chat> chats) {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         groupsView.setLayoutManager(mLayoutManager);
         groupsView.setHasFixedSize(false);
@@ -166,7 +166,7 @@ public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, 
         if (App.INSTANCE.areAnimationsEnabled())
             groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
-        groupsAdapter = new GroupsRecyclerAdapter(getActivity(), instance, fragmentNavigation, groups);
+        groupsAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, chats);
         groupsView.setAdapter(groupsAdapter);
         groupsAdapter.notifyDataSetChanged();
     }
@@ -175,14 +175,14 @@ public class GroupsFragment extends BaseFragment implements GroupsFragmentBase, 
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Group group) {
+    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Chat chat) {
         if (groupsAdapter != null) {
             switch (type) {
                 case ADDED:
-                    groupsAdapter.addItem(newIndex, group);
+                    groupsAdapter.addItem(newIndex, chat);
                     break;
                 case MODIFIED:
-                    groupsAdapter.updateItem(oldIndex, newIndex, group);
+                    groupsAdapter.updateItem(oldIndex, newIndex, chat);
                     break;
                 case REMOVED:
                     groupsAdapter.removeItem(oldIndex);
