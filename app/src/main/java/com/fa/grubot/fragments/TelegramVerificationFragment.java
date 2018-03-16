@@ -148,10 +148,7 @@ public class TelegramVerificationFragment extends Fragment implements TelegramVe
         protected Object doInBackground(Void... params) {
             Object returnObject;
 
-            TelegramClient client = INSTANCE.getTelegramClient();
-
-            if (client.isClosed())
-                client = INSTANCE.getNewTelegramClient();
+            TelegramClient client = INSTANCE.getNewTelegramClient();
 
             try {
                 TLAuthorization authorization = client.authSignIn(phoneNumber, sentCode.getPhoneCodeHash(), verificationCode);
@@ -179,7 +176,6 @@ public class TelegramVerificationFragment extends Fragment implements TelegramVe
                 Toast.makeText(context.get(), "Ошибка: " + ((Exception) result).getMessage(), Toast.LENGTH_LONG).show();
             } else {
                 INSTANCE.setCurrentUser(new CurrentUser((TLUser) result, null));
-
                 context.get().startActivity(new Intent(context.get(), MainActivity.class));
                 ((LoginActivity) context.get()).finish();
             }

@@ -43,6 +43,24 @@ public class SplashActivity extends AppCompatActivity {
         INSTANCE.setSlidrEnabled(prefs.getBoolean("slidrSwitch", true));
     }
 
+    @Override
+    protected void onDestroy() {
+        App.INSTANCE.closeTelegramClient();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        App.INSTANCE.closeTelegramClient();
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        App.INSTANCE.closeTelegramClient();
+        super.onStop();
+    }
+
     private static class TryToLoginAsyncTask extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
 
@@ -69,7 +87,7 @@ public class SplashActivity extends AppCompatActivity {
             } catch (Exception e) {
                 returnObject = e;
             } finally {
-                //client.close();
+                App.INSTANCE.closeTelegramClient();
             }
             return returnObject;
         }
@@ -81,7 +99,6 @@ public class SplashActivity extends AppCompatActivity {
                 context.get().startActivity(new Intent(context.get(), LoginActivity.class));
             } else {
                 App.INSTANCE.setCurrentUser(new CurrentUser((TLUser) result, null));
-                App.INSTANCE.closeTelegramClient();
                 context.get().startActivity(new Intent(context.get(), MainActivity.class));
             }
 

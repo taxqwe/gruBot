@@ -1,12 +1,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
 <item android:drawable="@android:color/white"/>
-<item
-    android:left="500dp"
-    android:right="500dp"
-    android:scaleType="centerCrop"
-    android:gravity="center">
+<item>
     <bitmap
-        android:src="@drawable/splash"
+        android:src="@drawable/ic_launcher"
+        android:gravity="clip_vertical"
         />
 </item>
 </layer-list>
