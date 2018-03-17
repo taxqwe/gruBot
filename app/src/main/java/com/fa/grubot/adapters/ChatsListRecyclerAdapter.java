@@ -16,6 +16,7 @@ import com.fa.grubot.fragments.BaseFragment;
 import com.fa.grubot.fragments.GroupInfoFragment;
 import com.fa.grubot.helpers.ChatsListDiffCallback;
 import com.fa.grubot.objects.chat.Chat;
+import com.fa.grubot.util.DataType;
 import com.fa.grubot.util.Globals;
 
 import org.jetbrains.annotations.NotNull;
@@ -33,9 +34,10 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
     private final ArrayList<Chat> chats;
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.chatName) TextView groupName;
+        @BindView(R.id.chatName) TextView chatName;
         @BindView(R.id.lastMessage) TextView lastMessage;
-        @BindView(R.id.groupImage) ImageView groupImage;
+        @BindView(R.id.chatImage) ImageView chatImage;
+        @BindView(R.id.chatTypeImage) ImageView chatTypeImage;
 
         private ViewHolder(View view) {
             super(view);
@@ -61,16 +63,19 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
         final int position = holder.getAdapterPosition();
         Chat chat = chats.get(position);
 
-        holder.groupName.setText(chat.getName());
+        holder.chatName.setText(chat.getName());
         holder.lastMessage.setText(chat.getLastMessage());
 
-        String imgUri = chat.getImgURL();
+        String imgUri = chat.getImgURI();
         if (imgUri == null)
-            holder.groupImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, chat.getName()));
+            holder.chatImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, chat.getName()));
         else
-            Glide.with(context).load(imgUri).apply(RequestOptions.circleCropTransform()).into(holder.groupImage);
+            Glide.with(context).load(imgUri).apply(RequestOptions.circleCropTransform()).into(holder.chatImage);
 
-        holder.groupImage.getRootView().setOnClickListener(v -> {
+        if (chat.getType().equals(DataType.Telegram))
+            Glide.with(context).load(R.drawable.ic_telegram).into(holder.chatTypeImage);
+
+        holder.chatImage.getRootView().setOnClickListener(v -> {
             fragmentNavigation.pushFragment(GroupInfoFragment.newInstance(instance + 1, chat));
         });
     }

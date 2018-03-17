@@ -1,8 +1,8 @@
 package com.fa.grubot.objects.group;
 
-import android.support.annotation.Nullable;
-
 import com.github.badoualy.telegram.tl.api.TLUser;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 

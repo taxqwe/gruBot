@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.SwitchPreferenceCompat;
@@ -18,6 +21,8 @@ import com.fa.grubot.LoginActivity;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.group.CurrentUser;
+import com.fa.grubot.objects.group.VkUser;
+import com.fa.grubot.util.DataType;
 import com.github.badoualy.telegram.tl.api.TLUser;
 
 import java.io.Serializable;
@@ -34,6 +39,24 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Serial
         setupToolbar();
         setupViews();
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onPause() {
+        App.INSTANCE.closeTelegramClient();
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        App.INSTANCE.closeTelegramClient();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        App.INSTANCE.closeTelegramClient();
+        super.onDestroyView();
     }
 
     private void setupToolbar() {
@@ -56,8 +79,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Serial
 
         CurrentUser currentUser = App.INSTANCE.getCurrentUser();
         if (currentUser.getVkUser() != null) {
-            //TODO smth to load vk info
-            //TODO vk login
+            VkUser vkUser = currentUser.getVkUser();
+            vkAccount.setSummary(vkUser.getFirstName() + " " + vkUser.getLastName());
+
+            //TODO logout
         }
 
         if (currentUser.getVkUser() == null) {
@@ -95,7 +120,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Serial
         }
 
         if (currentUser.getTelegramUser() == null) {
-            //TODO telegaram log in
+            telegramAccount.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.putExtra("directLogin", DataType.Telegram);
+                getActivity().startActivity(intent);
+                return false;
+            });
         }
 
         animationsSwitch.setOnPreferenceChangeListener((preference, o) -> {

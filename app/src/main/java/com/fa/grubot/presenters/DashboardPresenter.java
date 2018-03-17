@@ -23,25 +23,23 @@ public class DashboardPresenter {
 
     private Query archiveAnnouncementsQuery;
     private Query announcementsQuery;
-
     private Query votesQuery;
     private Query archiveVotesQuery;
 
     private Query announcementsQueryVk;
     private Query archiveAnnouncementsQueryVk;
-
     private Query votesQueryVk;
     private Query archiveVotesQueryVk;
-
-    private ListenerRegistration announcementsRegistration;
-    private ListenerRegistration archiveAnnouncementsRegistration;
-    private ListenerRegistration votesRegistration;
-    private ListenerRegistration archiveVotesRegistration;
 
     private ListenerRegistration announcementsRegistrationVk;
     private ListenerRegistration archiveAnnouncementsRegistrationVk;
     private ListenerRegistration votesRegistrationVk;
     private ListenerRegistration archiveVotesRegistrationVk;
+
+    private ListenerRegistration announcementsRegistration;
+    private ListenerRegistration archiveAnnouncementsRegistration;
+    private ListenerRegistration votesRegistration;
+    private ListenerRegistration archiveVotesRegistration;
 
     public DashboardPresenter(DashboardFragmentBase fragment){
         this.fragment = fragment;
@@ -242,16 +240,10 @@ public class DashboardPresenter {
         });
     }
 
-
-    public void onRetryBtnClick() {
-        setRegistration();
-        setRegistrationVk();
-    }
-
     private void setRegistrationVk() {
         announcementsRegistrationVk = announcementsQueryVk.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
-                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists()) {
                     fragment.setupLayouts(true);
                     notifyViewCreated(FragmentState.STATE_CONTENT);
                 }
@@ -287,7 +279,7 @@ public class DashboardPresenter {
 
         archiveAnnouncementsRegistrationVk = archiveAnnouncementsQueryVk.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
-                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists()) {
                     fragment.setupLayouts(true);
                     notifyViewCreated(FragmentState.STATE_CONTENT);
                 }
@@ -323,7 +315,7 @@ public class DashboardPresenter {
 
         votesRegistrationVk = votesQueryVk.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
-                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists()) {
                     fragment.setupLayouts(true);
                     notifyViewCreated(FragmentState.STATE_CONTENT);
                 }
@@ -359,7 +351,7 @@ public class DashboardPresenter {
 
         archiveVotesRegistrationVk = archiveVotesQueryVk.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
-                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists()) {
                     fragment.setupLayouts(true);
                     notifyViewCreated(FragmentState.STATE_CONTENT);
                 }
@@ -394,6 +386,11 @@ public class DashboardPresenter {
         });
     }
 
+    public void onRetryBtnClick() {
+        setRegistration();
+        setRegistrationVk();
+    }
+
     public void removeRegistration() {
         if (announcementsRegistration != null)
             announcementsRegistration.remove();
@@ -403,6 +400,14 @@ public class DashboardPresenter {
             votesRegistration.remove();
         if (archiveVotesRegistration != null)
             archiveVotesRegistration.remove();
+        if (announcementsRegistrationVk != null)
+            announcementsRegistrationVk.remove();
+        if (archiveAnnouncementsRegistrationVk != null)
+            archiveAnnouncementsRegistrationVk.remove();
+        if (votesRegistrationVk != null)
+            votesRegistrationVk.remove();
+        if (archiveVotesRegistrationVk != null)
+            archiveVotesRegistrationVk.remove();
     }
 
     public void destroy() {

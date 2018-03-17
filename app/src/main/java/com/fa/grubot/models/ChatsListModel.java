@@ -10,6 +10,7 @@ import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.presenters.ChatsListPresenter;
+import com.fa.grubot.util.DataType;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsMessageAction;
@@ -82,7 +83,7 @@ public class ChatsListModel {
                     TelegramPhoto telegramPhoto = photoMap.get(chatId);
                     String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context.get());
 
-                    chat = new Chat(String.valueOf(chatId), chatName, null, imgUri, lastMessageText);
+                    chat = new Chat(String.valueOf(chatId), chatName, null, imgUri, lastMessageText, DataType.Telegram);
                     chatsList.add(chat);
                 });
             } catch (Exception e) {

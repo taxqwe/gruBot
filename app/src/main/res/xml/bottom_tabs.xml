@@ -13,9 +13,9 @@
         icon="@drawable/ic_dashboard_black_24dp"
         title="Доска" />
     <tab
-        id="@+id/tab_groups"
-        icon="@drawable/ic_group_black_24dp"
-        title="Группы" />
+        id="@+id/tab_chats"
+        icon="@drawable/ic_message_black_24dp"
+        title="Чаты" />
     <tab
         id="@+id/tab_settings"
         icon="@drawable/ic_settings_black_24dp"

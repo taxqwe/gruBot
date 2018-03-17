@@ -8,7 +8,6 @@ import com.fa.grubot.objects.chat.Chat;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChatsListDiffCallback extends DiffUtil.Callback {
     private final ArrayList<Chat> oldChatsList;
@@ -44,7 +43,7 @@ public class ChatsListDiffCallback extends DiffUtil.Callback {
                 TextUtils.equals(oldChat.getName(), newChat.getName()) &&
                 TextUtils.equals(oldChat.getName(), newChat.getName()) &&
                 TextUtils.equals(oldChat.getLastMessage(), newChat.getLastMessage()) &&
-                TextUtils.equals(oldChat.getImgURL(), newChat.getImgURL());
+                TextUtils.equals(oldChat.getImgURI(), newChat.getImgURI());
     }
 
     @Nullable

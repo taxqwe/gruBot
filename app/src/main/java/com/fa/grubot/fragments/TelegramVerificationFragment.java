@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fa.grubot.App;
 import com.fa.grubot.LoginActivity;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
@@ -173,8 +174,11 @@ public class TelegramVerificationFragment extends Fragment implements TelegramVe
             if (result instanceof Exception) {
                 Toast.makeText(context.get(), "Ошибка: " + ((Exception) result).getMessage(), Toast.LENGTH_LONG).show();
             } else {
-                INSTANCE.setCurrentUser(new CurrentUser((TLUser) result, null));
-                context.get().startActivity(new Intent(context.get(), MainActivity.class));
+                CurrentUser currentUser = App.INSTANCE.getCurrentUser();
+                currentUser.setTelegramUser((TLUser) result);
+
+                if (!currentUser.hasVkUser())
+                    context.get().startActivity(new Intent(context.get(), MainActivity.class));
                 ((LoginActivity) context.get()).finish();
             }
             super.onPostExecute(result);
