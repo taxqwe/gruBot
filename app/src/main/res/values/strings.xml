@@ -5,6 +5,8 @@
     <string name="hint_enter_a_message">Сообщение</string>
     <string name="enable_smart">Включить умный чат</string>
 
+    <integer name="com_vk_sdk_AppId">6412081</integer>
+
     <!--preferences-->
     <string name="main_category_title">Основные</string>
     <string name="accounts_category_title">Аккаунты</string>
@@ -20,6 +22,4 @@
     <string name="backstack_switch_summary">Сохранение содержимого вкладок при их переключении</string>
     <string name="slidr_switch_title">Сдвиг для выхода</string>
     <string name="slidr_switch_summary">Переход на предыдущий экран через сдвиг текущего</string>
-    <string name="backstack_switch_title">Backstack фрагментов</string>
-    <string name="slidr_switch_title">Slidr</string>
 </resources>

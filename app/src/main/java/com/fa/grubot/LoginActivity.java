@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fa.grubot.fragments.InitialLoginFragment;
+import com.fa.grubot.fragments.TelegramLoginFragment;
+import com.fa.grubot.util.DataType;
 
 import icepick.Icepick;
 
@@ -19,12 +21,24 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         if (savedInstanceState == null) {
-            Fragment initialLoginFragment = InitialLoginFragment.newInstance();
+            if (getIntent().getExtras() != null) {
+                String directLogin = getIntent().getExtras().getString("directLogin");
+                if (directLogin != null && directLogin.equals(DataType.Telegram)) {
+                    Fragment telegramLoginFragment = TelegramLoginFragment.newInstance();
 
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction transaction = fm.beginTransaction();
-            transaction.replace(R.id.content, initialLoginFragment);
-            transaction.commit();
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.content, telegramLoginFragment);
+                    transaction.commit();
+                }
+            } else {
+                Fragment initialLoginFragment = InitialLoginFragment.newInstance();
+
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.replace(R.id.content, initialLoginFragment);
+                transaction.commit();
+            }
         }
     }
 

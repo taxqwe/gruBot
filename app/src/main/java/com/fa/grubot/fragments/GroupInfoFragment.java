@@ -53,7 +53,7 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
     @Nullable @BindView(R.id.collapsingToolbar) Toolbar collapsingToolbar;
     @Nullable @BindView(R.id.app_bar) AppBarLayout appBarLayout;
     @Nullable @BindView(R.id.recycler) RecyclerView buttonsView;
-    @Nullable @BindView(R.id.groupImage) ImageView groupImage;
+    @Nullable @BindView(R.id.chatImage) ImageView groupImage;
 
     @Nullable @BindView(R.id.fam) FloatingActionMenu fam;
     @Nullable @BindView(R.id.fab_add_announcement) FloatingActionButton announcementFab;
@@ -182,8 +182,8 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
         String title = chat.getName();
 
         ImageLoader imageLoader = new ImageLoader(this);
-        if (chat.getImgURL() != null) {
-            imageLoader.loadToolbarImage(groupImage, chat.getImgURL());
+        if (chat.getImgURI() != null) {
+            imageLoader.loadToolbarImage(groupImage, chat.getImgURI());
         } else {
             imageLoader.loadToolbarImage(groupImage, imageLoader.getUriOfDrawable(R.drawable.material_flat));
         }

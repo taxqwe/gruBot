@@ -5,27 +5,28 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.fa.grubot.objects.group.CurrentUser;
-import com.fa.grubot.util.TmApiStorage;
-import com.github.badoualy.telegram.api.Kotlogram;
+import com.fa.grubot.objects.group.VkUser;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLInputUserSelf;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.TLUserFull;
-import com.github.badoualy.telegram.tl.api.auth.TLAuthorization;
 import com.github.badoualy.telegram.tl.exception.RpcErrorException;
+import com.vk.sdk.VKAccessToken;
 
 import java.lang.ref.WeakReference;
 
 import static com.fa.grubot.App.INSTANCE;
 
 public class SplashActivity extends AppCompatActivity {
+    private VkUser vkUser;
+    private TLUser tlUser;
+    private boolean tlUserChecked = false;
+    private boolean vkUserChecked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,11 @@ public class SplashActivity extends AppCompatActivity {
 
         loadPreferences();
         (new TryToLoginAsyncTask(this)).execute();
+        if (VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()) != null && !VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()).isExpired()) {
+            vkUser = new VkUser(VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()).accessToken);
+        }
+        vkUserChecked = true;
+        nextIfBothAccountsChecked();
     }
 
     private void loadPreferences() {
@@ -61,7 +67,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    private static class TryToLoginAsyncTask extends AsyncTask<Void, Void, Object> {
+    private class TryToLoginAsyncTask extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
 
         private TryToLoginAsyncTask(Context context) {
@@ -96,15 +102,29 @@ public class SplashActivity extends AppCompatActivity {
         protected void onPostExecute(Object result) {
             if (result instanceof Exception) {
                 Toast.makeText(context.get(), ((RpcErrorException) result).getTag(), Toast.LENGTH_SHORT).show();
-                context.get().startActivity(new Intent(context.get(), LoginActivity.class));
+                setTlUser(null);
             } else {
-                App.INSTANCE.setCurrentUser(new CurrentUser((TLUser) result, null));
-                context.get().startActivity(new Intent(context.get(), MainActivity.class));
+                setTlUser((TLUser) result);
             }
 
-            ((SplashActivity) context.get()).finish();
+            nextIfBothAccountsChecked();
 
             super.onPostExecute(result);
+        }
+    }
+
+    private void setTlUser(TLUser tlUser) {
+        tlUserChecked = true;
+        this.tlUser = tlUser;
+    }
+
+    private void nextIfBothAccountsChecked() {
+        if ((vkUser != null || tlUser != null) && (vkUserChecked && tlUserChecked)) {
+            App.INSTANCE.setCurrentUser(new CurrentUser(tlUser, vkUser));
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } else if (vkUserChecked && tlUserChecked){
+            startActivity(new Intent(this, LoginActivity.class));
         }
     }
 }

@@ -7,15 +7,17 @@ public class Chat implements Serializable {
     private String id;
     private String name;
     private Map<String, Boolean> users;
-    private String imgUrl;
+    private String imgUri;
     private String lastMessage;
+    private String type;
 
-    public Chat(String id, String name, Map<String, Boolean> users, String imgUrl, String lastMessage) {
+    public Chat(String id, String name, Map<String, Boolean> users, String imgUri, String lastMessage, String type) {
         this.id = id;
         this.name = name;
         this.lastMessage = lastMessage;
-        this.imgUrl = imgUrl;
+        this.imgUri = imgUri;
         this.users = users;
+        this.type = type;
     }
 
     public String getId() {
@@ -38,7 +40,11 @@ public class Chat implements Serializable {
         this.users = users;
     }
 
-    public String getImgURL() {
-        return imgUrl;
+    public String getImgURI() {
+        return imgUri;
+    }
+
+    public String getType() {
+        return type;
     }
 }
