@@ -60,17 +60,19 @@ public class ChatsListPresenter implements ChatsListRequestResponse{
     public void onChatsListResult(ArrayList<Chat> chats) {
         this.chats = chats;
 
-        if (chats.isEmpty()) {
-            fragment.setupLayouts(true, false);
-            notifyViewCreated(FragmentState.STATE_NO_DATA);
-        } else if (!fragment.isAdapterExists() || fragment.isListEmpty()) {
-            fragment.setupLayouts(true, true);
-            notifyViewCreated(FragmentState.STATE_CONTENT);
-            setUpdateCallback();
-        } else if (fragment.isAdapterExists()) {
-            App.INSTANCE.closeTelegramClient();
-            fragment.updateChatsList(chats);
-            setUpdateCallback();
+        if (fragment != null) {
+            if (chats.isEmpty()) {
+                fragment.setupLayouts(true, false);
+                notifyViewCreated(FragmentState.STATE_NO_DATA);
+            } else if (!fragment.isAdapterExists() || fragment.isListEmpty()) {
+                fragment.setupLayouts(true, true);
+                notifyViewCreated(FragmentState.STATE_CONTENT);
+                setUpdateCallback();
+            } else if (fragment.isAdapterExists()) {
+                App.INSTANCE.closeTelegramClient();
+                fragment.updateChatsList(chats);
+                setUpdateCallback();
+            }
         }
     }
 
