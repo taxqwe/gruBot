@@ -1,7 +1,5 @@
 package com.fa.grubot.objects.group;
 
-import android.support.annotation.Nullable;
-
 import com.github.badoualy.telegram.tl.api.TLUser;
 
 import java.io.Serializable;
@@ -9,9 +7,9 @@ import java.io.Serializable;
 public class CurrentUser implements Serializable {
 
     private TLUser telegramUser;
-    private VkUser vkUser;
+    private Object vkUser;
 
-    public CurrentUser(@Nullable TLUser telegramUser, @Nullable VkUser vkUser) {
+    public CurrentUser(TLUser telegramUser, Object vkUser) {
         this.telegramUser = telegramUser;
         this.vkUser = vkUser;
     }
@@ -20,7 +18,7 @@ public class CurrentUser implements Serializable {
         return telegramUser;
     }
 
-    public VkUser getVkUser() {
+    public Object getVkUser() {
         return vkUser;
     }
 
@@ -28,15 +26,7 @@ public class CurrentUser implements Serializable {
         this.telegramUser = telegramUser;
     }
 
-    public void setVkUser(VkUser vkUser) {
+    public void setVkUser(Object vkUser) {
         this.vkUser = vkUser;
-    }
-
-    public boolean hasVkUser(){
-        return vkUser != null;
-    }
-
-    public boolean hasTelegramUser(){
-        return telegramUser != null;
     }
 }
