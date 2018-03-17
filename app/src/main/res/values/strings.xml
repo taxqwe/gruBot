@@ -7,8 +7,21 @@
 
     <!--preferences-->
     <string name="main_category_title">Основные</string>
+    <string name="accounts_category_title">Аккаунты</string>
+
+    <string name="vk_preference_title">Вконтакте</string>
+    <string name="telegram_preference_title">Telegram</string>
+
+    <string name="no_account_connected">Аккаунт не подключен</string>
+
     <string name="animations_switch_title">Анимации</string>
     <string name="backstack_switch_title">Backstack фрагментов</string>
     <string name="slidr_switch_title">Slidr</string>
     <integer name="com_vk_sdk_AppId">6412081</integer>
+    <string name="animations_switch_summary">Глобальное включение/отключение анимаций элементов</string>
+    <string name="backstack_switch_title">Сохранение вкладок</string>
+    <string name="backstack_switch_summary">Сохранение содержимого вкладок при их переключении</string>
+    <string name="slidr_switch_title">Сдвиг для выхода</string>
+    <string name="slidr_switch_summary">Переход на предыдущий экран через сдвиг текущего</string>
+>>>>>>> dev
 </resources>

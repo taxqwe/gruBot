@@ -9,6 +9,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,6 +87,10 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
         userId = this.getArguments().getString("userId");
         instance = this.getArguments().getInt("instance");
         currentUser = (CurrentUser) this.getArguments().getSerializable("currentUser");
+        if (currentUser != null)
+            userId = String.valueOf(currentUser.getTelegramUser().getId());
+
+        Log.d("tag", userId);
 
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);

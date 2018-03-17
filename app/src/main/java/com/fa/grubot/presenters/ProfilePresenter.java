@@ -30,7 +30,7 @@ public class ProfilePresenter {
     }
 
     public void notifyFragmentStarted(String userId) {
-        userQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("userId", Long.valueOf(userId));
+        userQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("userId", userId);
         setRegistration();
     }
 

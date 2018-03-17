@@ -93,7 +93,7 @@ public class SplashActivity extends AppCompatActivity {
         protected Object doInBackground(Void... params) {
             Object returnObject;
 
-            TelegramClient client = App.INSTANCE.getNewTelegramClient();
+            TelegramClient client = App.INSTANCE.getNewTelegramClient(null);
 
             try {
                 TLUserFull userFull = client.usersGetFullUser(new TLInputUserSelf());

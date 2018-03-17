@@ -1,14 +1,14 @@
 package com.fa.grubot.abstractions;
 
-import com.fa.grubot.objects.group.Group;
+import com.fa.grubot.objects.chat.Chat;
 import com.google.firebase.firestore.DocumentChange;
 
 import java.util.ArrayList;
 
-public interface GroupsFragmentBase extends FragmentBase {
-    void setupRecyclerView(ArrayList<Group> groups);
-    void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Group group);
+public interface ChatsListFragmentBase extends FragmentBase {
+    void setupRecyclerView(ArrayList<Chat> chats);
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
+    void updateChatsList(ArrayList<Chat> chats);;
     boolean isAdapterExists();
     boolean isListEmpty();
 }

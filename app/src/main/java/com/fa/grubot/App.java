@@ -9,6 +9,7 @@ import com.fa.grubot.util.TmApiStorage;
 import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramApp;
 import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.api.UpdateCallback;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 import com.vk.sdk.VKAccessToken;
@@ -27,7 +28,7 @@ public class App extends Application {
     private TelegramClient telegramClient;
     private CurrentUser currentUser;
 
-    private static final int API_ID = 0;
+    private static final int API_ID = ;
     private static final String API_HASH = "";
 
     private static final String APP_VERSION = "1.0";
@@ -69,13 +70,18 @@ public class App extends Application {
         VKSdk.initialize(getApplicationContext());
     }
 
-    public TelegramClient getNewTelegramClient() {
-        telegramClient = Kotlogram.getDefaultClient(application, new TmApiStorage(authKeyFile, nearestDcFile));
+    public TelegramClient getNewTelegramClient(UpdateCallback callback) {
+        if (telegramClient != null && !telegramClient.isClosed())
+            closeTelegramClient();
+
+        TmApiStorage apiStorage = new TmApiStorage(authKeyFile, nearestDcFile);
+        telegramClient = Kotlogram.getDefaultClient(application, apiStorage, apiStorage.loadDc(), callback);
         return telegramClient;
     }
 
     public void closeTelegramClient() {
-        telegramClient.close(false);
+        if (telegramClient != null)
+            telegramClient.close(false);
     }
 
     public void setCurrentUser(CurrentUser user) {
