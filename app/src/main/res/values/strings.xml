@@ -20,4 +20,6 @@
     <string name="backstack_switch_summary">Сохранение содержимого вкладок при их переключении</string>
     <string name="slidr_switch_title">Сдвиг для выхода</string>
     <string name="slidr_switch_summary">Переход на предыдущий экран через сдвиг текущего</string>
+    <string name="backstack_switch_title">Backstack фрагментов</string>
+    <string name="slidr_switch_title">Slidr</string>
 </resources>

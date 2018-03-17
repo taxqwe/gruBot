@@ -1,6 +1,7 @@
 package com.fa.grubot;
 
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Color;
 
 import com.fa.grubot.objects.group.CurrentUser;
@@ -9,6 +10,8 @@ import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramApp;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.api.UpdateCallback;
+import com.github.badoualy.telegram.mtproto.model.DataCenter;
+import com.github.badoualy.telegram.tl.api.TLUser;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 
