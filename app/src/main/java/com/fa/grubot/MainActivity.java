@@ -14,6 +14,7 @@ import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
 import com.fa.grubot.objects.group.CurrentUser;
+import com.fa.grubot.objects.group.VkUser;
 import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.ncapdevi.fragnav.FragNavController;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
     private static final int TIME_INTERVAL = 2000;
     private long mBackPressed;
+    private TLUser currentUser;
+    private VkUser currentVkUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +52,16 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
         ButterKnife.bind(this);
 
         setupViews(savedInstanceState);
-        TLUser currentUser = App.INSTANCE.getCurrentUser().getTelegramUser();
-        Toast.makeText(this, "Welcome back " + currentUser.getFirstName() + " " + currentUser.getLastName(), Toast.LENGTH_SHORT).show();
+        if (App.INSTANCE.getCurrentUser().hasTelegramUser()) {
+            currentUser = App.INSTANCE.getCurrentUser().getTelegramUser();
+        }
+        if (App.INSTANCE.getCurrentUser().hasVkUser()) {
+            currentVkUser = App.INSTANCE.getCurrentUser().getVkUser();
+        }
+
+        if (currentUser != null) {
+            Toast.makeText(this, "Welcome back " + currentUser.getFirstName() + " " + currentUser.getLastName(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

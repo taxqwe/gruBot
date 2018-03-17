@@ -22,12 +22,23 @@ public class GroupsPresenter {
 
     private ArrayList<Group> groups = new ArrayList<>();
 
-    private Query groupsQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), true);
+    private Query groupsQuery;
     private ListenerRegistration groupsRegistration;
+
+    private Query groupsQueryVk;
+    private ListenerRegistration groupsRegistrationVk;
 
     public GroupsPresenter(GroupsFragmentBase fragment) {
         this.fragment = fragment;
         this.model = new GroupsModel();
+
+        if (App.INSTANCE.getCurrentUser().hasTelegramUser()){
+            groupsQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), true);
+        }
+
+        if (App.INSTANCE.getCurrentUser().hasVkUser()){
+            groupsQueryVk = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getVkUser().getId(), true);
+        }
     }
 
     public void notifyFragmentStarted() {
@@ -52,33 +63,64 @@ public class GroupsPresenter {
 
     @SuppressWarnings("unchecked")
     public void setRegistration() {
-        groupsRegistration = groupsQuery.addSnapshotListener((documentSnapshots, e) -> {
-            if (e == null) {
-                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
-                    DocumentSnapshot doc = dc.getDocument();
-                    Group group = new Group(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
+        if (App.INSTANCE.getCurrentUser().hasTelegramUser()) {
+            groupsRegistration = groupsQuery.addSnapshotListener((documentSnapshots, e) -> {
+                if (e == null) {
+                    for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                        DocumentSnapshot doc = dc.getDocument();
+                        Group group = new Group(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
-                    if (fragment != null) {
-                        if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
-                            fragment.setupLayouts(true, true);
-                            notifyViewCreated(FragmentState.STATE_CONTENT);
+                        if (fragment != null) {
+                            if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
+                                fragment.setupLayouts(true, true);
+                                notifyViewCreated(FragmentState.STATE_CONTENT);
+                            }
+
+                            fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
                         }
+                    }
 
-                        fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
+                    if (fragment != null && fragment.isListEmpty()) {
+                        fragment.setupLayouts(true, false);
+                        notifyViewCreated(FragmentState.STATE_NO_DATA);
+                    }
+                } else {
+                    if (fragment != null) {
+                        fragment.setupLayouts(false, false);
+                        notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
                     }
                 }
+            });
+        }
+        if (App.INSTANCE.getCurrentUser().hasVkUser()){
+            groupsRegistrationVk = groupsQueryVk.addSnapshotListener((documentSnapshots, e) -> {
+                if (e == null) {
+                    for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                        DocumentSnapshot doc = dc.getDocument();
+                        Group group = new Group(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
-                if (fragment != null && fragment.isListEmpty()) {
-                    fragment.setupLayouts(true, false);
-                    notifyViewCreated(FragmentState.STATE_NO_DATA);
+                        if (fragment != null) {
+                            if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
+                                fragment.setupLayouts(true, true);
+                                notifyViewCreated(FragmentState.STATE_CONTENT);
+                            }
+
+                            fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), group);
+                        }
+                    }
+
+                    if (fragment != null && fragment.isListEmpty()) {
+                        fragment.setupLayouts(true, false);
+                        notifyViewCreated(FragmentState.STATE_NO_DATA);
+                    }
+                } else {
+                    if (fragment != null) {
+                        fragment.setupLayouts(false, false);
+                        notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    }
                 }
-            } else {
-                if (fragment != null) {
-                    fragment.setupLayouts(false, false);
-                    notifyViewCreated(FragmentState.STATE_NO_INTERNET_CONNECTION);
-                }
-            }
-        });
+            });
+        }
     }
 
     public void onRetryBtnClick() {

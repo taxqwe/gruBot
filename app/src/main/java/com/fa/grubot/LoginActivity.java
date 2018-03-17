@@ -1,5 +1,6 @@
 package com.fa.grubot;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,19 +37,25 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        App.INSTANCE.closeTelegramClient();
+        if (App.INSTANCE.hasTelegramClient()) {
+            App.INSTANCE.closeTelegramClient();
+        }
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
-        App.INSTANCE.closeTelegramClient();
+        if (App.INSTANCE.hasTelegramClient()) {
+            App.INSTANCE.closeTelegramClient();
+        }
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-        App.INSTANCE.closeTelegramClient();
+        if (App.INSTANCE.hasTelegramClient()) {
+            App.INSTANCE.closeTelegramClient();
+        }
         super.onStop();
     }
 }

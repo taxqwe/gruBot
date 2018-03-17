@@ -33,6 +33,10 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden"/>
 
+        <activity android:name="com.vk.sdk.VKServiceActivity"
+            android:label="ServiceActivity"
+            android:theme="@style/VK.Transparent" />
+
         <activity
             android:name=".MainActivity"
             android:screenOrientation="sensor"

@@ -10,4 +10,5 @@
     <string name="animations_switch_title">Анимации</string>
     <string name="backstack_switch_title">Backstack фрагментов</string>
     <string name="slidr_switch_title">Slidr</string>
+    <integer name="com_vk_sdk_AppId">6412081</integer>
 </resources>
