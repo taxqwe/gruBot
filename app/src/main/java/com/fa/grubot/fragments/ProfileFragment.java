@@ -9,6 +9,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,11 @@ import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.adapters.ProfileRecyclerAdapter;
+import com.fa.grubot.objects.group.CurrentUser;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
 import com.fa.grubot.presenters.ProfilePresenter;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.FragmentState;
 import com.fa.grubot.util.ImageLoader;
 
 import java.io.Serializable;
@@ -57,12 +59,14 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
 
     private int state;
     private int instance = 0;
-    private User user;
+    private String userId;
+    private CurrentUser currentUser;
 
-    public static ProfileFragment newInstance(int instance, User user) {
+    public static ProfileFragment newInstance(int instance, CurrentUser currentUser, String userId) {
         Bundle args = new Bundle();
         args.putInt("instance", instance);
-        args.putSerializable("user", user);
+        args.putSerializable("currentUser", currentUser);
+        args.putString("userId", userId);
         ProfileFragment fragment = new ProfileFragment();
         fragment.setArguments(args);
         return fragment;
@@ -80,8 +84,13 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         hideMainToolbar();
-        user = (User) this.getArguments().getSerializable("user");
+        userId = this.getArguments().getString("userId");
         instance = this.getArguments().getInt("instance");
+        currentUser = (CurrentUser) this.getArguments().getSerializable("currentUser");
+        if (currentUser != null)
+            userId = String.valueOf(currentUser.getTelegramUser().getId());
+
+        Log.d("tag", userId);
 
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
@@ -92,7 +101,7 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
     @Override
     public void onResume() {
         super.onResume();
-        presenter.notifyFragmentStarted(user.getId());
+        presenter.notifyFragmentStarted(userId);
     }
 
     @Override
@@ -125,12 +134,12 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
         content.setVisibility(View.GONE);
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case FragmentState.STATE_CONTENT:
                 appBarLayout.setExpanded(true);
                 collapsingToolbar.setVisibility(View.VISIBLE);
                 content.setVisibility(View.VISIBLE);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 appBarLayout.setExpanded(false);
                 noInternet.setVisibility(View.VISIBLE);
                 break;
@@ -139,9 +148,9 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
 
     public void setupLayouts(boolean isNetworkAvailable) {
         if (isNetworkAvailable)
-            state = Globals.FragmentState.STATE_CONTENT;
+            state = FragmentState.STATE_CONTENT;
         else {
-            state = Globals.FragmentState.STATE_NO_INTERNET_CONNECTION;
+            state = FragmentState.STATE_NO_INTERNET_CONNECTION;
         }
     }
 
@@ -161,8 +170,8 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
 
         ImageLoader imageLoader = new ImageLoader(this);
-        if (user.getAvatar() != null) {
-            imageLoader.loadToolbarImage(userImage, user.getAvatar());
+        if (user.getImgUrl() != null) {
+            imageLoader.loadToolbarImage(userImage, user.getImgUrl());
         } else {
             imageLoader.loadToolbarImage(userImage, imageLoader.getUriOfDrawable(R.drawable.material_bg));
         }
@@ -201,9 +210,9 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
             if (changes.isEmpty()) {
                 ArrayList<ProfileItem> items = new ArrayList<>();
                 items.add(new ProfileItem(user.getFullname(), "Имя"));
-                items.add(new ProfileItem(user.getUsername(), "Логин"));
+                items.add(new ProfileItem(user.getUserName(), "Логин"));
                 items.add(new ProfileItem(user.getPhoneNumber(), "Номер телефона"));
-                items.add(new ProfileItem(user.getDesc(), "Описание"));
+                items.add(new ProfileItem("", "Описание"));
                 profileItemsAdapter.addProfileItems(items);
             } else {
                 if (changes.contains("fullname") || changes.contains("avatar")) {
@@ -211,8 +220,8 @@ public class ProfileFragment extends BaseFragment implements ProfileFragmentBase
                 }
                 if (changes.contains("avatar")) {
                     ImageLoader imageLoader = new ImageLoader(this);
-                    if (user.getAvatar() != null) {
-                        imageLoader.loadToolbarImage(userImage, user.getAvatar());
+                    if (user.getImgUrl() != null) {
+                        imageLoader.loadToolbarImage(userImage, user.getImgUrl());
                     } else {
                         imageLoader.loadToolbarImage(userImage, imageLoader.getUriOfDrawable(R.drawable.material_bg));
                     }

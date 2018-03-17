@@ -161,7 +161,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, user.getFullname()));
 
             userImage.getRootView().setOnClickListener(view -> {
-                fragmentNavigation.pushFragment(ProfileFragment.newInstance(instance + 1, user));
+                fragmentNavigation.pushFragment(ProfileFragment.newInstance(instance + 1, null, user.getUserId()));
             });
         }
     }

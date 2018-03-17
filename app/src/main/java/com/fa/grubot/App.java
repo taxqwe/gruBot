@@ -2,10 +2,21 @@ package com.fa.grubot;
 
 import android.app.Application;
 import android.graphics.Color;
+import android.util.Log;
 
-import com.fa.grubot.objects.group.User;
+import com.fa.grubot.objects.group.CurrentUser;
+import com.fa.grubot.util.TmApiStorage;
+import com.github.badoualy.telegram.api.Kotlogram;
+import com.github.badoualy.telegram.api.TelegramApp;
+import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.api.UpdateCallback;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKAccessTokenTracker;
+import com.vk.sdk.VKSdk;
+
+import java.io.File;
 
 public class App extends Application {
     public static App INSTANCE;
@@ -13,12 +24,72 @@ public class App extends Application {
     private boolean isBackstackEnabled = false;
     private boolean areAnimationsEnabled = false;
     private boolean isSlidrEnabled = true;
-    private User currentUser;
+
+    private TelegramClient telegramClient;
+    private CurrentUser currentUser;
+
+    private static final int API_ID = ;
+    private static final String API_HASH = "";
+
+    private static final String APP_VERSION = "1.0";
+    private static final String MODEL = "Dev";
+    private static final String SYSTEM_VERSION = "Dev";
+    private static final String LANG_CODE = "en";
+
+    private File authKeyFile;
+    private File nearestDcFile;
+
+    private File vkAccessTokenFile;
+
+    private TelegramApp application;
+
+    private VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
+        @Override
+        public void onVKAccessTokenChanged(VKAccessToken oldToken, VKAccessToken newToken) {
+            if (newToken == null) {
+                Log.d("TokenTracker", "token has been destroyed");
+            } else {
+                Log.d("TokenTracker", "token just right");
+            }
+        }
+    };
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        authKeyFile = new File(this.getApplicationContext().getFilesDir(), "auth.key");
+        nearestDcFile = new File(this.getApplicationContext().getFilesDir(), "dc.save");
+
+        vkAccessTokenFile = new File(this.getApplicationContext().getFilesDir(), "vk.token");
+
+        application = new TelegramApp(API_ID, API_HASH, MODEL, SYSTEM_VERSION, APP_VERSION, LANG_CODE);
         INSTANCE = this;
+
+        vkAccessTokenTracker.startTracking();
+        VKSdk.initialize(getApplicationContext());
+    }
+
+    public TelegramClient getNewTelegramClient(UpdateCallback callback) {
+        if (telegramClient != null && !telegramClient.isClosed())
+            closeTelegramClient();
+
+        TmApiStorage apiStorage = new TmApiStorage(authKeyFile, nearestDcFile);
+        telegramClient = Kotlogram.getDefaultClient(application, apiStorage, apiStorage.loadDc(), callback);
+        return telegramClient;
+    }
+
+    public void closeTelegramClient() {
+        if (telegramClient != null)
+            telegramClient.close(false);
+    }
+
+    public void setCurrentUser(CurrentUser user) {
+        this.currentUser = user;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
     }
 
     public boolean isBackstackEnabled() {
@@ -45,14 +116,6 @@ public class App extends Application {
         isSlidrEnabled = slidrEnabled;
     }
 
-    public void setCurrentUser(User user) {
-        currentUser = user;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
     public SlidrConfig getSlidrConfig() {
         return new SlidrConfig.Builder()
                 .position(SlidrPosition.LEFT)
@@ -64,5 +127,13 @@ public class App extends Application {
                 .distanceThreshold(0.5f)
                 .edge(false)
                 .build();
+    }
+
+    public String getVkTokenFilePath(){
+        return vkAccessTokenFile.getPath();
+    }
+
+    public boolean hasTelegramClient(){
+        return telegramClient != null;
     }
 }

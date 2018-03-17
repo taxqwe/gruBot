@@ -3,21 +3,41 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <android.support.v7.preference.PreferenceCategory
+        android:title="@string/accounts_category_title">
+
+        <Preference
+            android:key="vkAccount"
+            android:title="@string/vk_preference_title"
+            android:summary="@string/no_account_connected"
+            android:icon="@mipmap/vk" />
+
+        <Preference
+            android:key="telegramAccount"
+            android:title="@string/telegram_preference_title"
+            android:summary="@string/no_account_connected"
+            android:icon="@mipmap/telegram" />
+
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
         android:title="@string/main_category_title">
 
         <SwitchPreferenceCompat
             android:key="animationsSwitch"
             android:title="@string/animations_switch_title"
+            android:summary="@string/animations_switch_summary"
             android:defaultValue="false" />
 
         <SwitchPreferenceCompat
             android:key="backstackSwitch"
             android:title="@string/backstack_switch_title"
+            android:summary="@string/backstack_switch_summary"
             android:defaultValue="false" />
 
         <SwitchPreferenceCompat
             android:key="slidrSwitch"
             android:title="@string/slidr_switch_title"
+            android:summary="@string/slidr_switch_summary"
             android:defaultValue="true" />
 
     </android.support.v7.preference.PreferenceCategory>
