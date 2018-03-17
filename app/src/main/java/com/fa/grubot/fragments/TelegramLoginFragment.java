@@ -22,8 +22,6 @@ import com.fa.grubot.R;
 import com.fa.grubot.abstractions.TelegramLoginFragmentBase;
 import com.fa.grubot.presenters.TelegramLoginPresenter;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.util.TmApiStorage;
-import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.auth.TLSentCode;
 import com.github.badoualy.telegram.tl.exception.RpcErrorException;
@@ -88,7 +86,7 @@ public class TelegramLoginFragment extends Fragment implements TelegramLoginFrag
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setTitle("Telegram вход");
+        activity.getSupportActionBar().setTitle("TelegramHelper вход");
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -134,7 +132,7 @@ public class TelegramLoginFragment extends Fragment implements TelegramLoginFrag
         protected Object doInBackground(Void... params) {
             Object returnObject;
 
-            TelegramClient client = INSTANCE.getNewTelegramClient();
+            TelegramClient client = INSTANCE.getNewTelegramClient(null);
 
             try {
                 returnObject = client.authSendCode(false, phoneNumber, true);

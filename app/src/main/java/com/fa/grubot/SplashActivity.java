@@ -5,20 +5,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.fa.grubot.objects.group.CurrentUser;
-import com.fa.grubot.util.TmApiStorage;
-import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLInputUserSelf;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.TLUserFull;
-import com.github.badoualy.telegram.tl.api.auth.TLAuthorization;
 import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import java.lang.ref.WeakReference;
@@ -77,7 +72,7 @@ public class SplashActivity extends AppCompatActivity {
         protected Object doInBackground(Void... params) {
             Object returnObject;
 
-            TelegramClient client = App.INSTANCE.getNewTelegramClient();
+            TelegramClient client = App.INSTANCE.getNewTelegramClient(null);
 
             try {
                 TLUserFull userFull = client.usersGetFullUser(new TLInputUserSelf());

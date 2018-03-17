@@ -3,11 +3,9 @@ package com.fa.grubot.presenters;
 
 import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.models.ProfileModel;
-import com.fa.grubot.objects.group.CurrentUser;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
 import com.fa.grubot.util.FragmentState;
-import com.github.badoualy.telegram.tl.api.TLUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

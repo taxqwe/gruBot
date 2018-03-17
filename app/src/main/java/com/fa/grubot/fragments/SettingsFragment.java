@@ -3,7 +3,6 @@ package com.fa.grubot.fragments;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -13,13 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.App;
 import com.fa.grubot.LoginActivity;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.SplashActivity;
 import com.fa.grubot.objects.group.CurrentUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
 
@@ -80,7 +77,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Serial
                             .onPositive((dialog, which) -> {
                                 AsyncTask.execute(() -> {
                                     try {
-                                        App.INSTANCE.getNewTelegramClient().authLogOut();
+                                        App.INSTANCE.getNewTelegramClient(null).authLogOut();
                                         App.INSTANCE.closeTelegramClient();
                                         if (currentUser.getTelegramUser() == null && currentUser.getVkUser() == null) {
                                             startActivity(new Intent(getActivity(), LoginActivity.class));

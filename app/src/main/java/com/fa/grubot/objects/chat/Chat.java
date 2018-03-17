@@ -1,4 +1,4 @@
-package com.fa.grubot.objects;
+package com.fa.grubot.objects.chat;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -7,12 +7,14 @@ public class Chat implements Serializable {
     private String id;
     private String name;
     private Map<String, Boolean> users;
+    private String imgUrl;
     private String lastMessage;
 
-    public Chat(String id, String name, Map<String, Boolean> users, String lastMessage) {
+    public Chat(String id, String name, Map<String, Boolean> users, String imgUrl, String lastMessage) {
         this.id = id;
         this.name = name;
         this.lastMessage = lastMessage;
+        this.imgUrl = imgUrl;
         this.users = users;
     }
 
@@ -34,5 +36,9 @@ public class Chat implements Serializable {
 
     public void setUsers(Map<String, Boolean> users) {
         this.users = users;
+    }
+
+    public String getImgURL() {
+        return imgUrl;
     }
 }

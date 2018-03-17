@@ -1,8 +1,5 @@
 package com.fa.grubot.util;
 
-import android.content.Context;
-
-import com.fa.grubot.App;
 import com.github.badoualy.telegram.api.TelegramApiStorage;
 import com.github.badoualy.telegram.mtproto.auth.AuthKey;
 import com.github.badoualy.telegram.mtproto.model.DataCenter;

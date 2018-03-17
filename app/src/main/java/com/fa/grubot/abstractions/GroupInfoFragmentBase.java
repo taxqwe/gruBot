@@ -1,8 +1,8 @@
 package com.fa.grubot.abstractions;
 
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
+import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.dashboard.Action;
-import com.fa.grubot.objects.Chat;
 import com.fa.grubot.objects.group.User;
 import com.google.firebase.firestore.DocumentChange;
 

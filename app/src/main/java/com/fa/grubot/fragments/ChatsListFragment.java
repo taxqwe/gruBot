@@ -17,10 +17,12 @@ import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatsListFragmentBase;
 import com.fa.grubot.adapters.ChatsListRecyclerAdapter;
-import com.fa.grubot.objects.Chat;
+import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ import io.reactivex.annotations.Nullable;
 
 public class ChatsListFragment extends BaseFragment implements ChatsListFragmentBase, Serializable {
 
-    @Nullable @BindView(R.id.recycler) RecyclerView groupsView;
+    @Nullable @BindView(R.id.recycler) RecyclerView chatsView;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
     @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
@@ -44,7 +46,7 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     private Unbinder unbinder;
     private ChatsListPresenter presenter;
-    private ChatsListRecyclerAdapter groupsAdapter;
+    private ChatsListRecyclerAdapter chatsListAdapter;
 
     private int state;
     private int instance = 0;
@@ -65,8 +67,8 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new ChatsListPresenter(this);
-        View v = inflater.inflate(R.layout.fragment_groups, container, false);
+        presenter = new ChatsListPresenter(this, getActivity());
+        View v = inflater.inflate(R.layout.fragment_chats_list, container, false);
 
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
@@ -83,26 +85,26 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     @Override
     public void onPause() {
+        App.INSTANCE.closeTelegramClient();
         super.onPause();
-        terminateRegistration();
+    }
+
+    @Override
+    public void onDestroy() {
+        App.INSTANCE.closeTelegramClient();
+        super.onDestroy();
     }
 
     @Override
     public void onStop() {
+        App.INSTANCE.closeTelegramClient();
         super.onStop();
-        terminateRegistration();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
-    }
-
-    private void terminateRegistration() {
-        presenter.removeRegistration();
-        if (groupsAdapter != null)
-            groupsAdapter.clearItems();
     }
 
     public void showRequiredViews() {
@@ -130,12 +132,12 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
                 state = FragmentState.STATE_CONTENT;
             else {
                 state = FragmentState.STATE_NO_DATA;
-                groupsAdapter = null;
+                chatsListAdapter = null;
             }
         }
         else {
             state = FragmentState.STATE_NO_INTERNET_CONNECTION;
-            groupsAdapter = null;
+            chatsListAdapter = null;
         }
     }
 
@@ -151,58 +153,47 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     public void setupRecyclerView(ArrayList<Chat> chats) {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        groupsView.setLayoutManager(mLayoutManager);
-        groupsView.setHasFixedSize(false);
+        chatsView.setLayoutManager(mLayoutManager);
+        chatsView.setHasFixedSize(false);
 
-        if (groupsView.getItemDecorationCount() == 0) {
+        if (chatsView.getItemDecorationCount() == 0) {
             DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
                     this.getActivity(),
                     mLayoutManager.getOrientation()
             );
 
-            groupsView.addItemDecoration(dividerItemDecoration);
+            chatsView.addItemDecoration(dividerItemDecoration);
         }
 
         if (App.INSTANCE.areAnimationsEnabled())
-            groupsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
+            chatsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
-        groupsAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, chats);
-        groupsView.setAdapter(groupsAdapter);
-        groupsAdapter.notifyDataSetChanged();
+        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, chats);
+        chatsView.setAdapter(chatsListAdapter);
+        chatsListAdapter.notifyDataSetChanged();
     }
 
     public void setupRetryButton() {
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void handleListUpdate(DocumentChange.Type type, int newIndex, int oldIndex, Chat chat) {
-        if (groupsAdapter != null) {
-            switch (type) {
-                case ADDED:
-                    groupsAdapter.addItem(newIndex, chat);
-                    break;
-                case MODIFIED:
-                    groupsAdapter.updateItem(oldIndex, newIndex, chat);
-                    break;
-                case REMOVED:
-                    groupsAdapter.removeItem(oldIndex);
-                    break;
-            }
-        }
+    public void updateChatsList(ArrayList<Chat> chats) {
+        if (isAdapterExists())
+            chatsListAdapter.updateChatsList(chats);
     }
 
     public boolean isListEmpty() {
-        return groupsAdapter == null || groupsAdapter.getItemCount() == 0;
+        return chatsListAdapter == null || chatsListAdapter.getItemCount() == 0;
     }
 
     public boolean isAdapterExists() {
-        return groupsAdapter != null;
+        return chatsListAdapter != null;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        groupsAdapter = null;
+        chatsListAdapter = null;
         unbinder.unbind();
         presenter.destroy();
     }

@@ -4,9 +4,9 @@ package com.fa.grubot.presenters;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.models.GroupInfoModel;
+import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
-import com.fa.grubot.objects.Chat;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
@@ -81,7 +81,7 @@ public class GroupInfoPresenter {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
-                    Chat chat = new Chat(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
+                    //Chat chat = new Chat(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
@@ -89,7 +89,7 @@ public class GroupInfoPresenter {
                             notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
-                        fragment.handleUIUpdate(chat);
+                        fragment.handleUIUpdate(null);
                     }
                 }
             } else {

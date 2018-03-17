@@ -23,8 +23,6 @@ import com.fa.grubot.abstractions.TelegramVerificationFragmentBase;
 import com.fa.grubot.objects.group.CurrentUser;
 import com.fa.grubot.presenters.TelegramVerificationPresenter;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.util.TmApiStorage;
-import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.auth.TLAuthorization;
@@ -91,7 +89,7 @@ public class TelegramVerificationFragment extends Fragment implements TelegramVe
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setTitle("Telegram подтверждение");
+        activity.getSupportActionBar().setTitle("TelegramHelper подтверждение");
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -148,7 +146,7 @@ public class TelegramVerificationFragment extends Fragment implements TelegramVe
         protected Object doInBackground(Void... params) {
             Object returnObject;
 
-            TelegramClient client = INSTANCE.getNewTelegramClient();
+            TelegramClient client = INSTANCE.getNewTelegramClient(null);
 
             try {
                 TLAuthorization authorization = client.authSignIn(phoneNumber, sentCode.getPhoneCodeHash(), verificationCode);
