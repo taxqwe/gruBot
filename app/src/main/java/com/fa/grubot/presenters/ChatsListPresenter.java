@@ -77,7 +77,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
             } else if (fragment.isAdapterExists()) {
                 //App.INSTANCE.closeTelegramClient();
                 fragment.updateChatsList(chats);
-                //setUpdateCallback();
+                setUpdateCallback();
             }
         }
     }

@@ -82,9 +82,7 @@ public class TelegramEventCallback implements UpdateCallback {
     public void onShortChatMessage(@NotNull TelegramClient client, @NotNull TLUpdateShortChatMessage shortChatMessage) {
         String fromName = null;
 
-        if (shortChatMessage.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
-            fromName = "Вы";
-        } else {
+        if (shortChatMessage.getFromId() != App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
             try {
                 TLUser user = TelegramHelper.Users.getUser(client, shortChatMessage.getFromId()).getUser().getAsUser();
                 fromName = user.getFirstName();
@@ -92,6 +90,8 @@ public class TelegramEventCallback implements UpdateCallback {
             } catch (Exception e) {
                 Log.e("TAG", "Is not a user");
             }
+        } else {
+            fromName = "Вы";
         }
 
         TelegramMessageEvent event = new TelegramMessageEvent(shortChatMessage.getMessage(),
@@ -149,9 +149,7 @@ public class TelegramEventCallback implements UpdateCallback {
                     messageToId = peerChat.getChannelId();
                 }
 
-                if (tlMessage.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
-                    fromName = "Вы";
-                } else {
+                if (tlMessage.getFromId() != App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
                     try {
                         TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
                         fromName = user.getFirstName();
@@ -159,6 +157,8 @@ public class TelegramEventCallback implements UpdateCallback {
                     } catch (Exception e) {
                         Log.e("TAG", "Is not a user");
                     }
+                } else {
+                    fromName = "Вы";
                 }
 
                 TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId, ((long) tlMessage.getDate()) * 1000, fromName);
@@ -184,9 +184,7 @@ public class TelegramEventCallback implements UpdateCallback {
                 }
 
 
-                if (tlMessage.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
-                    fromName = "Вы";
-                } else {
+                if (tlMessage.getFromId() != App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
                     try {
                         TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
                         fromName = user.getFirstName();
@@ -194,6 +192,8 @@ public class TelegramEventCallback implements UpdateCallback {
                     } catch (Exception e) {
                         Log.e("TAG", "Is not a user");
                     }
+                } else {
+                    fromName = "Вы";
                 }
 
                 TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId,((long) tlMessage.getDate()) * 1000, fromName);
