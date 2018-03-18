@@ -1,7 +1,5 @@
 package com.fa.grubot.objects.group;
 
-import com.vk.sdk.api.VKApi;
-import com.vk.sdk.api.VKRequest;
 import android.util.Log;
 
 import com.fa.grubot.objects.pojos.VkUserResponse;

@@ -1,7 +1,6 @@
 package com.fa.grubot.objects.chat;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Map;
 
 public class Chat implements Serializable, Cloneable {

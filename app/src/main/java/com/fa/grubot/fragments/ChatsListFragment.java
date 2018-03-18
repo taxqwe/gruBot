@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +20,6 @@ import com.fa.grubot.adapters.ChatsListRecyclerAdapter;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.FragmentState;
-import com.google.firebase.firestore.DocumentChange;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -188,7 +186,7 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     public void updateChatsList(ArrayList<Chat> chats) {
         if (isAdapterExists()) {
             chatsListAdapter.updateChatsList(chats);
-            chatsView.smoothScrollToPosition(0);
+            //chatsView.smoothScrollToPosition(0);
         }
     }
 

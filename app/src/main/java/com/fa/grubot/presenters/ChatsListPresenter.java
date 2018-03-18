@@ -3,18 +3,17 @@ package com.fa.grubot.presenters;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ChatsListFragmentBase;
 import com.fa.grubot.abstractions.ChatsListRequestResponse;
-import com.fa.grubot.objects.events.telegram.TelegramAbstractEvent;
 import com.fa.grubot.helpers.TelegramEventCallback;
-import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.models.ChatsListModel;
 import com.fa.grubot.objects.chat.Chat;
+import com.fa.grubot.objects.events.telegram.TelegramAbstractEvent;
+import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.util.FragmentState;
