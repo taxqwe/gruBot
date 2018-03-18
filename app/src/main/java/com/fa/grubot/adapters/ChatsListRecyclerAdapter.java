@@ -3,6 +3,7 @@ package com.fa.grubot.adapters;
 import android.content.Context;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,13 @@ import com.fa.grubot.util.Globals;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,11 +38,13 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
     private Context context;
     private int instance;
     private BaseFragment.FragmentNavigation fragmentNavigation;
-    private final ArrayList<Chat> chats;
+    private ArrayList<Chat> chats = new ArrayList<>();
 
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.chatName) TextView chatName;
         @BindView(R.id.lastMessage) TextView lastMessage;
+        @BindView(R.id.lastMessageFrom) TextView lastMessageFrom;
+        @BindView(R.id.lastMessageDate) TextView lastMessageDate;
         @BindView(R.id.chatImage) ImageView chatImage;
         @BindView(R.id.chatTypeImage) ImageView chatTypeImage;
 
@@ -49,7 +58,7 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
         this.context = context;
         this.instance = instance;
         this.fragmentNavigation = fragmentNavigation;
-        this.chats = chats;
+        this.chats = cloneChatsList(chats);
     }
 
     @Override
@@ -65,6 +74,15 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
 
         holder.chatName.setText(chat.getName());
         holder.lastMessage.setText(chat.getLastMessage());
+
+        if (chat.getLastMessageFrom() != null) {
+            holder.lastMessageFrom.setVisibility(View.VISIBLE);
+            holder.lastMessageFrom.setText(chat.getLastMessageFrom() + ": ");
+        } else {
+            holder.lastMessageFrom.setVisibility(View.GONE);
+        }
+
+        holder.lastMessageDate.setText(formatDate(chat.getLastMessageDate()));
 
         String imgUri = chat.getImgURI();
         if (imgUri == null)
@@ -85,12 +103,36 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
         final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 
         this.chats.clear();
-        this.chats.addAll(chats);
+        this.chats = cloneChatsList(chats);
         diffResult.dispatchUpdatesTo(this);
     }
 
     @Override
     public int getItemCount() {
-        return (chats == null) ? 0 : chats.size();
+        return (this.chats == null) ? 0 : chats.size();
+    }
+
+    private ArrayList<Chat> cloneChatsList(ArrayList<Chat> copyFrom) {
+        ArrayList<Chat> resultList = new ArrayList<>();
+        resultList.clear();
+        for (Chat chat : copyFrom) {
+            try {
+                resultList.add((Chat) chat.clone());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return resultList;
+    }
+
+    private String formatDate(long date) {
+        SimpleDateFormat dateFormat;
+
+        if (DateUtils.isToday(date))
+            dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        else
+            dateFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
+
+        return dateFormat.format(date);
     }
 }

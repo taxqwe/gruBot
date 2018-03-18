@@ -11,6 +11,8 @@ import com.github.badoualy.telegram.api.utils.TLMediaUtilsKt;
 import com.github.badoualy.telegram.tl.api.TLAbsChat;
 import com.github.badoualy.telegram.tl.api.TLAbsChatPhoto;
 import com.github.badoualy.telegram.tl.api.TLAbsFileLocation;
+import com.github.badoualy.telegram.tl.api.TLAbsMessageAction;
+import com.github.badoualy.telegram.tl.api.TLAbsMessageMedia;
 import com.github.badoualy.telegram.tl.api.TLAbsPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsUser;
 import com.github.badoualy.telegram.tl.api.TLAbsUserProfilePhoto;
@@ -21,6 +23,19 @@ import com.github.badoualy.telegram.tl.api.TLChatEmpty;
 import com.github.badoualy.telegram.tl.api.TLChatForbidden;
 import com.github.badoualy.telegram.tl.api.TLChatPhoto;
 import com.github.badoualy.telegram.tl.api.TLInputUser;
+import com.github.badoualy.telegram.tl.api.TLMessageActionChannelCreate;
+import com.github.badoualy.telegram.tl.api.TLMessageActionChatAddUser;
+import com.github.badoualy.telegram.tl.api.TLMessageActionChatCreate;
+import com.github.badoualy.telegram.tl.api.TLMessageActionChatDeletePhoto;
+import com.github.badoualy.telegram.tl.api.TLMessageActionChatDeleteUser;
+import com.github.badoualy.telegram.tl.api.TLMessageActionChatEditPhoto;
+import com.github.badoualy.telegram.tl.api.TLMessageActionChatEditTitle;
+import com.github.badoualy.telegram.tl.api.TLMessageActionPinMessage;
+import com.github.badoualy.telegram.tl.api.TLMessageMediaContact;
+import com.github.badoualy.telegram.tl.api.TLMessageMediaDocument;
+import com.github.badoualy.telegram.tl.api.TLMessageMediaGame;
+import com.github.badoualy.telegram.tl.api.TLMessageMediaGeo;
+import com.github.badoualy.telegram.tl.api.TLMessageMediaPhoto;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLPeerChat;
 import com.github.badoualy.telegram.tl.api.TLPeerUser;
@@ -160,6 +175,42 @@ public class TelegramHelper {
                 return null;
 
             return null;
+        }
+
+        public static String extractMediaType(TLAbsMessageMedia messageMedia) {
+            if (messageMedia instanceof TLMessageMediaPhoto)
+                return "Фото";
+            else if (messageMedia instanceof TLMessageMediaDocument)
+                return "Документ";
+            else if (messageMedia instanceof TLMessageMediaContact)
+                return "Контакт";
+            else if (messageMedia instanceof TLMessageMediaGame)
+                return "Игра";
+            else if (messageMedia instanceof TLMessageMediaGeo)
+                return "Адрес";
+            else
+                return "";
+        }
+
+        public static String extractActionType(TLAbsMessageAction action) {
+            if (action instanceof TLMessageActionChannelCreate)
+                return "Канал создан";
+            else if (action instanceof TLMessageActionChatAddUser)
+                return "Пользователь добавлен";
+            else if (action instanceof TLMessageActionChatCreate)
+                return "Чат создан";
+            else if (action instanceof TLMessageActionChatDeletePhoto)
+                return "Фото удалено";
+            else if (action instanceof TLMessageActionChatDeleteUser)
+                return "Пользователь исключен";
+            else if (action instanceof TLMessageActionChatEditPhoto)
+                return "Фото изменено";
+            else if (action instanceof TLMessageActionChatEditTitle)
+                return "Название изменено";
+            else if (action instanceof TLMessageActionPinMessage)
+                return "Сообщение закреплено";
+            else
+                return "";
         }
 
         public static TLAbsChat getChat(TelegramClient telegramClient, int chatId) {

@@ -152,6 +152,10 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     }
 
     public void setupRecyclerView(ArrayList<Chat> chats) {
+        ArrayList<Chat> newChats = new ArrayList<>();
+        for (Chat chat : chats)
+            newChats.add(chat);
+
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         chatsView.setLayoutManager(mLayoutManager);
         chatsView.setHasFixedSize(false);
@@ -168,7 +172,7 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
         if (App.INSTANCE.areAnimationsEnabled())
             chatsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
 
-        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, chats);
+        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, newChats);
         chatsView.setAdapter(chatsListAdapter);
         chatsListAdapter.notifyDataSetChanged();
     }
@@ -178,8 +182,10 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     }
 
     public void updateChatsList(ArrayList<Chat> chats) {
-        if (isAdapterExists())
+        if (isAdapterExists()) {
             chatsListAdapter.updateChatsList(chats);
+            chatsView.smoothScrollToPosition(0);
+        }
     }
 
     public boolean isListEmpty() {

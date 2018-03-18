@@ -1,20 +1,36 @@
 package com.fa.grubot.helpers;
 
 import com.fa.grubot.App;
+import com.fa.grubot.objects.events.telegram.TelegramAbstractEvent;
+import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
+import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
+import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
+import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.api.UpdateCallback;
+import com.github.badoualy.telegram.api.utils.InputFileLocation;
+import com.github.badoualy.telegram.api.utils.TLMediaUtilsKt;
+import com.github.badoualy.telegram.tl.api.TLAbsFileLocation;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdate;
+import com.github.badoualy.telegram.tl.api.TLAbsUserProfilePhoto;
 import com.github.badoualy.telegram.tl.api.TLChat;
 import com.github.badoualy.telegram.tl.api.TLMessage;
+import com.github.badoualy.telegram.tl.api.TLPeerChannel;
+import com.github.badoualy.telegram.tl.api.TLPeerChat;
+import com.github.badoualy.telegram.tl.api.TLPeerUser;
+import com.github.badoualy.telegram.tl.api.TLUpdateNewChannelMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateShort;
 import com.github.badoualy.telegram.tl.api.TLUpdateShortChatMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateShortMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateShortSentMessage;
+import com.github.badoualy.telegram.tl.api.TLUpdateUserName;
+import com.github.badoualy.telegram.tl.api.TLUpdateUserPhoto;
 import com.github.badoualy.telegram.tl.api.TLUpdates;
 import com.github.badoualy.telegram.tl.api.TLUpdatesCombined;
 import com.github.badoualy.telegram.tl.api.TLUser;
+import com.github.badoualy.telegram.tl.api.TLUserFull;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
 import com.github.badoualy.telegram.tl.core.TLIntVector;
 import com.github.badoualy.telegram.tl.exception.RpcErrorException;
@@ -72,7 +88,7 @@ public class TelegramEventCallback implements UpdateCallback {
         return null;
     }
 
-    public static TelegramMessageEvent getTelegramMessageEvent(TelegramClient telegramClient, TelegramAbstractEvent telegramAbstractEvent) {
+    /*public static TelegramMessageEvent getTelegramMessageEvent(TelegramClient telegramClient, TelegramAbstractEvent telegramAbstractEvent) {
         TelegramMessageEvent resultMessageEvent = new TelegramMessageEvent();
         if (telegramAbstractEvent.getMessage() instanceof TLMessage) {
             TLMessage tlMessage = (TLMessage) telegramAbstractEvent.getMessage();
@@ -110,7 +126,7 @@ public class TelegramEventCallback implements UpdateCallback {
                     .setFrom(TelegramHelper.Users.extractName(tlUser));
         }
         return resultMessageEvent;
-    }
+    }*/
 
     @Override
     public void onUpdates(@NotNull TelegramClient telegramClient, @NotNull TLUpdates tlUpdates) {
@@ -177,7 +193,7 @@ public class TelegramEventCallback implements UpdateCallback {
         TelegramAbstractEvent telegramAbstractEvent = getTelegramAbstractEvent(telegramClient, tlUpdate.getId());
         LOG.debug("TLUpdateShortChatMessage called");
         listener.onMessage(telegramAbstractEvent);
-        listener.onMessage(getTelegramMessageEvent(telegramClient, telegramAbstractEvent));
+        //listener.onMessage(getTelegramMessageEvent(telegramClient, telegramAbstractEvent));
     }
 
     @Override
@@ -200,7 +216,7 @@ public class TelegramEventCallback implements UpdateCallback {
         TelegramAbstractEvent telegramAbstractEvent = getTelegramAbstractEvent(telegramClient, tlUpdateShortMessage.getId());
         LOG.debug("TLUpdateShortMessage called");
         listener.onMessage(telegramAbstractEvent);
-        listener.onMessage(getTelegramMessageEvent(telegramClient, telegramAbstractEvent));
+        //listener.onMessage(getTelegramMessageEvent(telegramClient, telegramAbstractEvent));
         //LOG.debug("ALT Message: {} ", Message.getMessage(telegramClient,tlUpdateShortMessage.getId()));
     }
 
@@ -214,15 +230,87 @@ public class TelegramEventCallback implements UpdateCallback {
         LOG.debug("UpdateTooLong called");
     }
 
-    private void processUpdate(TLAbsUpdate update, TelegramClient telegramClient) {
+    private void processUpdate(TLAbsUpdate update, TelegramClient client) {
         if (update instanceof TLUpdateNewMessage) {
             TLAbsMessage message = ((TLUpdateNewMessage) update).getMessage();
             if (message instanceof TLMessage) {
-                LOG.info("New message was {} ", ((TLMessage) message).getMessage());
-                TelegramAbstractEvent event = getTelegramAbstractEvent(telegramClient, message.getId());
+                TLMessage tlMessage = (TLMessage) message;
+
+                int messageToId = -1;
+                String fromName = null;
+
+                if (tlMessage.getToId() instanceof TLPeerUser) {
+                    TLPeerUser peerUser = (TLPeerUser) tlMessage.getToId();
+                    messageToId = peerUser.getUserId();
+                } else if (tlMessage.getToId() instanceof TLPeerChat) {
+                    TLPeerChat peerChat = (TLPeerChat) tlMessage.getToId();
+                    messageToId = peerChat.getChatId();
+
+                    if (tlMessage.getFromId() != App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                        TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
+                        fromName = user.getFirstName() + " " + user.getLastName();
+                        fromName = fromName.replace("null", "").trim();
+                    }
+                } else if (tlMessage.getToId() instanceof TLPeerChannel) {
+                    TLPeerChannel peerChat = (TLPeerChannel) tlMessage.getToId();
+                    messageToId = peerChat.getChannelId();
+                }
+
+                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId, tlMessage.getDate() * 1000, fromName);
                 listener.onMessage(event);
-                listener.onMessage(getTelegramMessageEvent(telegramClient, event));
             }
+        } else if (update instanceof TLUpdateNewChannelMessage) {
+            TLAbsMessage message = ((TLUpdateNewChannelMessage) update).getMessage();
+            if (message instanceof TLMessage) {
+                TLMessage tlMessage = (TLMessage) message;
+
+                int messageToId = -1;
+                String fromName = null;
+
+                if (tlMessage.getToId() instanceof TLPeerUser) {
+                    TLPeerUser peerUser = (TLPeerUser) tlMessage.getToId();
+                    messageToId = peerUser.getUserId();
+                } else if (tlMessage.getToId() instanceof TLPeerChat) {
+                    TLPeerChat peerChat = (TLPeerChat) tlMessage.getToId();
+                    messageToId = peerChat.getChatId();
+
+                    if (tlMessage.getFromId() != App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                        TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
+                        fromName = user.getFirstName() + " " + user.getLastName();
+                        fromName = fromName.replace("null", "").trim();
+                    }
+                } else if (tlMessage.getToId() instanceof TLPeerChannel) {
+                    TLPeerChannel peerChat = (TLPeerChannel) tlMessage.getToId();
+                    messageToId = peerChat.getChannelId();
+                }
+
+                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId, tlMessage.getDate() * 1000, fromName);
+                listener.onMessage(event);
+            }
+        } else if (update instanceof TLUpdateUserName) {
+            TLUpdateUserName updateUserName = (TLUpdateUserName) update;
+            TelegramUpdateUserNameEvent event = new TelegramUpdateUserNameEvent(updateUserName.getUserId(),
+                    updateUserName.getFirstName(),
+                    updateUserName.getLastName(),
+                    updateUserName.getUsername());
+            listener.onUserNameUpdate(event);
+        } else if (update instanceof TLUpdateUserPhoto) {
+            TLUpdateUserPhoto updateUserPhoto = (TLUpdateUserPhoto) update;
+
+            TLAbsUserProfilePhoto absPhoto = updateUserPhoto.getPhoto();
+            InputFileLocation inputFileLocation = null;
+            long photoId = 0;
+
+            if (absPhoto != null) {
+                TLAbsFileLocation fileLocation = absPhoto.getAsUserProfilePhoto().getPhotoBig();
+                inputFileLocation = TLMediaUtilsKt.toInputFileLocation(fileLocation);
+                photoId = absPhoto.getAsUserProfilePhoto().getPhotoId();
+            }
+
+            TelegramPhoto telegramPhoto = new TelegramPhoto(inputFileLocation, photoId);
+
+            TelegramUpdateUserPhotoEvent event = new TelegramUpdateUserPhotoEvent(updateUserPhoto.getUserId(), telegramPhoto);
+            listener.onUserPhotoUpdate(event);
         }
     }
 
@@ -230,7 +318,9 @@ public class TelegramEventCallback implements UpdateCallback {
         void onMessage(TelegramAbstractEvent telegramAbstractEvent);
 
         void onMessage(TelegramMessageEvent telegramMessageEvent);
+
+        void onUserNameUpdate(TelegramUpdateUserNameEvent telegramUpdateUserNameEvent);
+
+        void onUserPhotoUpdate(TelegramUpdateUserPhotoEvent telegramUpdateUserPhotoEvent);
     }
-
-
 }

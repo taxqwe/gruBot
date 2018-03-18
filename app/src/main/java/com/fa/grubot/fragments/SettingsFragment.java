@@ -36,9 +36,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Serial
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.setBackgroundColor(getResources().getColor(android.R.color.white));
         setupToolbar();
         setupViews();
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return view;
     }
 
     @Override

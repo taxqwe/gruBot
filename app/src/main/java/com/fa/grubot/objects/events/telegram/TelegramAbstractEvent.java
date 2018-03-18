@@ -1,4 +1,4 @@
-package com.fa.grubot.helpers;
+package com.fa.grubot.objects.events.telegram;
 
 import com.github.badoualy.telegram.tl.api.TLAbsChat;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
