@@ -86,17 +86,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         AsyncTask.execute(() -> {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override
-                public void onMessage(TelegramAbstractEvent telegramAbstractEvent) {
-                    Log.d("debug", telegramAbstractEvent.toString());
-                    //model.sendChatsListRequest(context, presenter, client.getDownloaderClient());
-                }
-
-                @Override
                 public void onMessage(TelegramMessageEvent telegramMessageEvent) {
-                    //Log.d("debug", "Group id: " + String.valueOf(telegramMessageEvent.getGroupId()));
-                    //Log.d("debug", "From id: " + String.valueOf(telegramMessageEvent.getFromId()));
-                    //model.sendChatsListRequest(context, presenter, client.getDownloaderClient());
-
                     ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(chats, telegramMessageEvent)));
                 }
 

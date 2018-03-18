@@ -186,7 +186,7 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     public void updateChatsList(ArrayList<Chat> chats) {
         if (isAdapterExists()) {
             chatsListAdapter.updateChatsList(chats);
-            //chatsView.smoothScrollToPosition(0);
+            chatsView.scrollToPosition(0);
         }
     }
 
