@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -171,6 +172,9 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
         if (App.INSTANCE.areAnimationsEnabled())
             chatsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
+        else
+            chatsView.setItemAnimator(null);
+
 
         chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, newChats);
         chatsView.setAdapter(chatsListAdapter);

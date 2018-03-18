@@ -6,10 +6,10 @@ public class TelegramMessageEvent implements Serializable {
     private String message;
     private int fromId;
     private int toId;
-    private int date;
+    private long date;
     private String nameFrom;
 
-    public TelegramMessageEvent(String message, int fromId, int toId, int date, String nameFrom) {
+    public TelegramMessageEvent(String message, int fromId, int toId, long date, String nameFrom) {
         this.message = message;
         this.fromId = fromId;
         this.toId = toId;
@@ -29,7 +29,7 @@ public class TelegramMessageEvent implements Serializable {
         return toId;
     }
 
-    public int getDate() {
+    public long getDate() {
         return date;
     }
 

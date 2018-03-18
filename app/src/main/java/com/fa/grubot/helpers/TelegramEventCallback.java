@@ -1,5 +1,7 @@
 package com.fa.grubot.helpers;
 
+import android.util.Log;
+
 import com.fa.grubot.App;
 import com.fa.grubot.objects.events.telegram.TelegramAbstractEvent;
 import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
@@ -245,18 +247,24 @@ public class TelegramEventCallback implements UpdateCallback {
                 } else if (tlMessage.getToId() instanceof TLPeerChat) {
                     TLPeerChat peerChat = (TLPeerChat) tlMessage.getToId();
                     messageToId = peerChat.getChatId();
-
-                    if (tlMessage.getFromId() != App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
-                        TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
-                        fromName = user.getFirstName() + " " + user.getLastName();
-                        fromName = fromName.replace("null", "").trim();
-                    }
                 } else if (tlMessage.getToId() instanceof TLPeerChannel) {
                     TLPeerChannel peerChat = (TLPeerChannel) tlMessage.getToId();
                     messageToId = peerChat.getChannelId();
                 }
 
-                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId, tlMessage.getDate() * 1000, fromName);
+                if (tlMessage.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                    fromName = "Вы";
+                } else {
+                    try {
+                        TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
+                        fromName = user.getFirstName();
+                        fromName = fromName.replace("null", "").trim();
+                    } catch (Exception e) {
+                        Log.e("TAG", "Is not a user");
+                    }
+                }
+
+                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId, ((long) tlMessage.getDate()) * 1000, fromName);
                 listener.onMessage(event);
             }
         } else if (update instanceof TLUpdateNewChannelMessage) {
@@ -273,18 +281,25 @@ public class TelegramEventCallback implements UpdateCallback {
                 } else if (tlMessage.getToId() instanceof TLPeerChat) {
                     TLPeerChat peerChat = (TLPeerChat) tlMessage.getToId();
                     messageToId = peerChat.getChatId();
-
-                    if (tlMessage.getFromId() != App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
-                        TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
-                        fromName = user.getFirstName() + " " + user.getLastName();
-                        fromName = fromName.replace("null", "").trim();
-                    }
                 } else if (tlMessage.getToId() instanceof TLPeerChannel) {
                     TLPeerChannel peerChat = (TLPeerChannel) tlMessage.getToId();
                     messageToId = peerChat.getChannelId();
                 }
 
-                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId, tlMessage.getDate() * 1000, fromName);
+
+                if (tlMessage.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                    fromName = "Вы";
+                } else {
+                    try {
+                        TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
+                        fromName = user.getFirstName();
+                        fromName = fromName.replace("null", "").trim();
+                    } catch (Exception e) {
+                        Log.e("TAG", "Is not a user");
+                    }
+                }
+
+                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId,((long) tlMessage.getDate()) * 1000, fromName);
                 listener.onMessage(event);
             }
         } else if (update instanceof TLUpdateUserName) {

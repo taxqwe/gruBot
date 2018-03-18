@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.fa.grubot.App;
@@ -98,10 +99,22 @@ public class ChatsListModel {
                         TLMessage message = (TLMessage) lastMessage;
                         lastMessageDate = ((TLMessage) lastMessage).getDate();
 
-                        if (peer instanceof TLPeerChat) {
-                            TLUser user = TelegramHelper.Users.getUser(client, message.getFromId()).getUser().getAsUser();
-                            fromName = user.getFirstName() + " " + user.getLastName();
-                            fromName = fromName.replace("null", "").trim();
+                        try {
+                            if (peer instanceof  TLPeerChat || peer instanceof TLPeerChannel) {
+                                if (message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                                    fromName = "Вы";
+                                } else {
+                                    TLUser user = TelegramHelper.Users.getUser(client, message.getFromId()).getUser().getAsUser();
+                                    fromName = user.getFirstName();
+                                    fromName = fromName.replace("null", "").trim();
+                                }
+                            }
+
+                            if (peer instanceof TLPeerUser && message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                                fromName = "Вы";
+                        }
+                        } catch (Exception e) {
+                            Log.e("TAG", "Is not a user");
                         }
 
                         if (message.getMedia() == null)
@@ -155,10 +168,10 @@ public class ChatsListModel {
         int index = -1;
         int idToFind = -1;
 
-        //if (event.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
+        if (event.getToId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
+            idToFind = event.getFromId();
+        else
             idToFind = event.getToId();
-        //else
-        //    idToFind = event.getFromId();
 
         for (Chat chat : chats) {
             if (Integer.valueOf(chat.getId()) == idToFind) {
@@ -170,7 +183,7 @@ public class ChatsListModel {
 
         if (chatToChange != null) {
             chatToChange.setLastMessage(event.getMessage());
-            chatToChange.setLastMessageDate(event.getDate() * 1000);
+            chatToChange.setLastMessageDate(event.getDate());
             chatToChange.setLastMessageFrom(event.getNameFrom());
             chats.remove(index);
             chats.add(0, chatToChange);
