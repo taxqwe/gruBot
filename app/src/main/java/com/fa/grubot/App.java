@@ -28,8 +28,8 @@ public class App extends Application {
     private TelegramClient telegramClient;
     private CurrentUser currentUser;
 
-    private static final int API_ID = 120834;
-    private static final String API_HASH = "eab845c3dc214c5cfd4122f3863f5445";
+    private static final int API_ID = 0;
+    private static final String API_HASH = "";
 
     private static final String APP_VERSION = "1.0";
     private static final String MODEL = "Dev";
@@ -75,7 +75,10 @@ public class App extends Application {
             closeTelegramClient();
 
         TmApiStorage apiStorage = new TmApiStorage(authKeyFile, nearestDcFile);
-        telegramClient = Kotlogram.getDefaultClient(application, apiStorage, apiStorage.loadDc(), callback);
+        if (callback != null)
+            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, apiStorage.loadDc(), callback);
+        else
+            telegramClient = Kotlogram.getDefaultClient(application, apiStorage);
         return telegramClient;
     }
 
@@ -86,10 +89,6 @@ public class App extends Application {
 
     public String getVkTokenFilePath(){
         return vkAccessTokenFile.getPath();
-    }
-
-    public boolean hasTelegramClient(){
-        return telegramClient != null;
     }
 
     public void setCurrentUser(CurrentUser user) {

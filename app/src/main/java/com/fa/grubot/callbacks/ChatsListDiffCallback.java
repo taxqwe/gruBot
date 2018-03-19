@@ -1,4 +1,4 @@
-package com.fa.grubot.helpers;
+package com.fa.grubot.callbacks;
 
 import android.support.v7.util.DiffUtil;
 import android.text.TextUtils;
@@ -43,7 +43,9 @@ public class ChatsListDiffCallback extends DiffUtil.Callback {
                 TextUtils.equals(oldChat.getName(), newChat.getName()) &&
                 TextUtils.equals(oldChat.getName(), newChat.getName()) &&
                 TextUtils.equals(oldChat.getLastMessage(), newChat.getLastMessage()) &&
-                TextUtils.equals(oldChat.getImgURI(), newChat.getImgURI());
+                TextUtils.equals(oldChat.getImgURI(), newChat.getImgURI()) &&
+                oldChat.getLastMessageDate() == newChat.getLastMessageDate() &&
+                TextUtils.equals(oldChat.getLastMessageFrom(), newChat.getLastMessageFrom());
     }
 
     @Nullable

@@ -1,4 +1,4 @@
-package com.fa.grubot.helpers;
+package com.fa.grubot.objects.events.telegram;
 
 import com.github.badoualy.telegram.tl.api.TLAbsChat;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
@@ -13,7 +13,6 @@ import com.github.badoualy.telegram.tl.api.TLUser;
 public class TelegramAbstractEvent {
     private TLAbsMessage message;
     private TLAbsChat chat;
-    //private Map<Integer, TLAbsUser> users; //TODO make a map with user ids as key
     private TLAbsUser user;
 
     public TelegramAbstractEvent() {

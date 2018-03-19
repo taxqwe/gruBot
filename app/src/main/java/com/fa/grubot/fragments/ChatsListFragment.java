@@ -20,7 +20,6 @@ import com.fa.grubot.adapters.ChatsListRecyclerAdapter;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.FragmentState;
-import com.google.firebase.firestore.DocumentChange;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -152,6 +151,10 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     }
 
     public void setupRecyclerView(ArrayList<Chat> chats) {
+        ArrayList<Chat> newChats = new ArrayList<>();
+        for (Chat chat : chats)
+            newChats.add(chat);
+
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         chatsView.setLayoutManager(mLayoutManager);
         chatsView.setHasFixedSize(false);
@@ -167,8 +170,11 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
         if (App.INSTANCE.areAnimationsEnabled())
             chatsView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_right));
+        else
+            chatsView.setItemAnimator(null);
 
-        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, chats);
+
+        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, newChats);
         chatsView.setAdapter(chatsListAdapter);
         chatsListAdapter.notifyDataSetChanged();
     }
@@ -178,8 +184,10 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     }
 
     public void updateChatsList(ArrayList<Chat> chats) {
-        if (isAdapterExists())
+        if (isAdapterExists()) {
             chatsListAdapter.updateChatsList(chats);
+            chatsView.scrollToPosition(0);
+        }
     }
 
     public boolean isListEmpty() {

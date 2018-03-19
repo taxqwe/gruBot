@@ -2,12 +2,15 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ChatsListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.Chat;
+import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.DataType;
@@ -18,7 +21,12 @@ import com.github.badoualy.telegram.tl.api.TLAbsPeer;
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLMessageService;
+import com.github.badoualy.telegram.tl.api.TLPeerChannel;
+import com.github.badoualy.telegram.tl.api.TLPeerChat;
+import com.github.badoualy.telegram.tl.api.TLPeerUser;
+import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -29,19 +37,21 @@ public class ChatsListModel {
 
     }
 
-    public void sendChatsListRequest(Context context, ChatsListPresenter presenter) {
-        GetChatsList request = new GetChatsList(context);
+    public void sendChatsListRequest(Context context, ChatsListPresenter presenter, TelegramClient client) {
+        GetChatsList request = new GetChatsList(context, client);
         request.response = presenter;
 
         request.execute();
     }
 
-    public static class GetChatsList extends AsyncTask<Void, Void, ArrayList<Chat>> {
+    public static class GetChatsList extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
-        public ChatsListRequestResponse response = null;
+        private ChatsListRequestResponse response = null;
+        private TelegramClient client;
 
-        private GetChatsList(Context context) {
+        private GetChatsList(Context context, TelegramClient client) {
             this.context = new WeakReference<>(context);
+            this.client = client;
         }
 
         @Override
@@ -50,9 +60,12 @@ public class ChatsListModel {
         }
 
         @Override
-        protected ArrayList<Chat> doInBackground(Void... params) {
+        protected Object doInBackground(Void... params) {
             ArrayList<Chat> chatsList = new ArrayList<>();
-            TelegramClient client = App.INSTANCE.getNewTelegramClient(null);
+            if (client == null || client.isClosed())
+                client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
+            else
+                client = client.getDownloaderClient();
 
             try {
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000); //have no idea how to avoid the limit without a huge number
@@ -69,34 +82,93 @@ public class ChatsListModel {
                     String lastMessageText = "";
 
                     int chatId = TelegramHelper.Chats.getId(peer);
+                    long lastMessageDate = 0;
                     String chatName = namesMap.get(chatId);
+                    String fromName = null;
 
                     TLAbsMessage lastMessage = messagesMap.get(dialog.getTopMessage());
 
                     if (lastMessage instanceof TLMessage) {
-                        lastMessageText = ((TLMessage) lastMessage).getMessage();
+                        TLMessage message = (TLMessage) lastMessage;
+                        lastMessageDate = ((TLMessage) lastMessage).getDate();
+
+                        try {
+                            if (peer instanceof  TLPeerChat || peer instanceof TLPeerChannel) {
+                                if (message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                                    fromName = "Вы";
+                                } else {
+                                    TLUser user = TelegramHelper.Users.getUser(client, message.getFromId()).getUser().getAsUser();
+                                    fromName = user.getFirstName();
+                                    fromName = fromName.replace("null", "").trim();
+                                }
+                            }
+
+                            if (peer instanceof TLPeerUser && message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                                fromName = "Вы";
+                        }
+                        } catch (Exception e) {
+                            Log.e("TAG", "Is not a user");
+                        }
+
+                        if (message.getMedia() == null)
+                            lastMessageText = message.getMessage();
+                        else
+                            lastMessageText = TelegramHelper.Chats.extractMediaType(message.getMedia());
                     } else if (lastMessage instanceof TLMessageService) {
                         TLAbsMessageAction action = ((TLMessageService) lastMessage).getAction();
-                        lastMessageText = action.toString();
+                        lastMessageText = TelegramHelper.Chats.extractActionType(action);
+                        lastMessageDate = ((TLMessageService) lastMessage).getDate();
                     }
 
                     TelegramPhoto telegramPhoto = photoMap.get(chatId);
                     String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context.get());
 
-                    chat = new Chat(String.valueOf(chatId), chatName, null, imgUri, lastMessageText, DataType.Telegram);
+                    chat = new Chat(String.valueOf(chatId), chatName, null, imgUri, lastMessageText, DataType.Telegram, lastMessageDate * 1000, fromName);
                     chatsList.add(chat);
                 });
+                return chatsList;
             } catch (Exception e) {
                 e.printStackTrace();
+                return e;
+            } finally {
+                client.close(false);
             }
-
-            return chatsList;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        protected void onPostExecute(ArrayList<Chat> chats) {
-            if (response != null)
-                response.onChatsListResult(chats);
+        protected void onPostExecute(Object result) {
+            if (response != null && result instanceof ArrayList<?>)
+                response.onChatsListResult((ArrayList<Chat>) result);
         }
+    }
+
+    public ArrayList<Chat> onNewMessage(ArrayList<Chat> chats, TelegramMessageEvent event) {
+        Chat chatToChange = null;
+        int index = -1;
+        int idToFind = -1;
+
+        if (event.getToId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
+            idToFind = event.getFromId();
+        else
+            idToFind = event.getToId();
+
+        for (Chat chat : chats) {
+            if (Integer.valueOf(chat.getId()) == idToFind) {
+                chatToChange = chat;
+                index = chats.indexOf(chat);
+                break;
+            }
+        }
+
+        if (chatToChange != null) {
+            chatToChange.setLastMessage(event.getMessage());
+            chatToChange.setLastMessageDate(event.getDate());
+            chatToChange.setLastMessageFrom(event.getNameFrom());
+            chats.remove(index);
+            chats.add(0, chatToChange);
+        }
+
+        return chats;
     }
 }

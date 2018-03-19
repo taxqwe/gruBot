@@ -1,7 +1,6 @@
 package com.fa.grubot.abstractions;
 
 import com.fa.grubot.objects.chat.Chat;
-import com.google.firebase.firestore.DocumentChange;
 
 import java.util.ArrayList;
 
