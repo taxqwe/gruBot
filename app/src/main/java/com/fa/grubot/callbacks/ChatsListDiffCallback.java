@@ -1,4 +1,4 @@
-package com.fa.grubot.helpers;
+package com.fa.grubot.callbacks;
 
 import android.support.v7.util.DiffUtil;
 import android.text.TextUtils;

@@ -1,8 +1,9 @@
-package com.fa.grubot.helpers;
+package com.fa.grubot.callbacks;
 
 import android.util.Log;
 
 import com.fa.grubot.App;
+import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
