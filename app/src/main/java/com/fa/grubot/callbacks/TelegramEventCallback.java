@@ -162,7 +162,13 @@ public class TelegramEventCallback implements UpdateCallback {
                     fromName = "Вы";
                 }
 
-                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId, ((long) tlMessage.getDate()) * 1000, fromName);
+                String messageText;
+                if (tlMessage.getMedia() == null)
+                    messageText = tlMessage.getMessage();
+                else
+                    messageText = TelegramHelper.Chats.extractMediaType(tlMessage.getMedia());
+
+                TelegramMessageEvent event = new TelegramMessageEvent(messageText, tlMessage.getFromId(), messageToId, ((long) tlMessage.getDate()) * 1000, fromName);
                 listener.onMessage(event);
             }
         } else if (update instanceof TLUpdateNewChannelMessage) {
@@ -197,7 +203,13 @@ public class TelegramEventCallback implements UpdateCallback {
                     fromName = "Вы";
                 }
 
-                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getMessage(), tlMessage.getFromId(), messageToId,((long) tlMessage.getDate()) * 1000, fromName);
+                String messageText;
+                if (tlMessage.getMedia() == null)
+                    messageText = tlMessage.getMessage();
+                else
+                    messageText = TelegramHelper.Chats.extractMediaType(tlMessage.getMedia());
+
+                TelegramMessageEvent event = new TelegramMessageEvent(messageText, tlMessage.getFromId(), messageToId,((long) tlMessage.getDate()) * 1000, fromName);
                 listener.onMessage(event);
             }
         } else if (update instanceof TLUpdateUserName) {

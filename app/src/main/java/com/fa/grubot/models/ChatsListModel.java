@@ -42,12 +42,6 @@ public class ChatsListModel {
         request.response = presenter;
 
         request.execute();
-        /*if (client == null)
-            request.execute();
-        else
-            ((AppCompatActivity) context).runOnUiThread(() -> {
-                (new Handler()).postDelayed(request::execute, 1000);
-            });*/
     }
 
     public static class GetChatsList extends AsyncTask<Void, Void, Object> {
@@ -69,7 +63,9 @@ public class ChatsListModel {
         protected Object doInBackground(Void... params) {
             ArrayList<Chat> chatsList = new ArrayList<>();
             if (client == null || client.isClosed())
-                client = App.INSTANCE.getNewTelegramClient(null);
+                client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
+            else
+                client = client.getDownloaderClient();
 
             try {
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000); //have no idea how to avoid the limit without a huge number
