@@ -183,10 +183,12 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void updateChatsList(ArrayList<Chat> chats) {
+    public void updateChatsList(ArrayList<Chat> chats, boolean moveToTop) {
         if (isAdapterExists()) {
             chatsListAdapter.updateChatsList(chats);
-            chatsView.scrollToPosition(0);
+
+            if (moveToTop)
+                chatsView.scrollToPosition(0);
         }
     }
 

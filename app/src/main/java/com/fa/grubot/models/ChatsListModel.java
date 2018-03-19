@@ -11,6 +11,7 @@ import com.fa.grubot.abstractions.ChatsListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
+import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.DataType;
@@ -105,10 +106,11 @@ public class ChatsListModel {
                             Log.e("TAG", "Is not a user");
                         }
 
-                        if (message.getMedia() == null)
-                            lastMessageText = message.getMessage();
-                        else
+                        if (message.getMedia() != null && message.getMessage().isEmpty())
                             lastMessageText = TelegramHelper.Chats.extractMediaType(message.getMedia());
+                        else
+                            lastMessageText = message.getMessage();
+
                     } else if (lastMessage instanceof TLMessageService) {
                         TLAbsMessageAction action = ((TLMessageService) lastMessage).getAction();
                         lastMessageText = TelegramHelper.Chats.extractActionType(action);
@@ -134,7 +136,7 @@ public class ChatsListModel {
         @Override
         protected void onPostExecute(Object result) {
             if (response != null && result instanceof ArrayList<?>)
-                response.onChatsListResult((ArrayList<Chat>) result);
+                response.onChatsListResult((ArrayList<Chat>) result, true);
         }
     }
 
@@ -162,6 +164,28 @@ public class ChatsListModel {
             chatToChange.setLastMessageFrom(event.getNameFrom());
             chats.remove(index);
             chats.add(0, chatToChange);
+        }
+
+        return chats;
+    }
+
+    public ArrayList<Chat> onUserPhotoUpdate(ArrayList<Chat> chats, TelegramUpdateUserPhotoEvent event) {
+        Chat chatToChange = null;
+        int index = -1;
+        int idToFind = event.getUserId();
+
+        for (Chat chat : chats) {
+            if (Integer.valueOf(chat.getId()) == idToFind) {
+                chatToChange = chat;
+                index = chats.indexOf(chat);
+                break;
+            }
+        }
+
+        if (chatToChange != null) {
+            chatToChange.setImgUri(event.getImgUri());
+            chats.remove(index);
+            chats.add(index, chatToChange);
         }
 
         return chats;

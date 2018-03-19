@@ -59,7 +59,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         }
     }
 
-    public void onChatsListResult(ArrayList<Chat> chats) {
+    public void onChatsListResult(ArrayList<Chat> chats, boolean moveToTop) {
         this.chats = chats;
 
         if (fragment != null) {
@@ -72,7 +72,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
                 fragment.setupLayouts(true, true);
                 notifyViewCreated(FragmentState.STATE_CONTENT);
             } else if (fragment.isAdapterExists()) {
-                fragment.updateChatsList(chats);
+                fragment.updateChatsList(chats, moveToTop);
             }
 
             if (client == null || client.isClosed())
@@ -85,7 +85,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override
                 public void onMessage(TelegramMessageEvent telegramMessageEvent) {
-                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(chats, telegramMessageEvent)));
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(chats, telegramMessageEvent), true));
                 }
 
                 @Override
@@ -95,10 +95,10 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
 
                 @Override
                 public void onUserPhotoUpdate(TelegramUpdateUserPhotoEvent telegramUpdateUserPhotoEvent) {
-
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserPhotoUpdate(chats, telegramUpdateUserPhotoEvent), false));
                 }
             };
-            client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener));
+            client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener, context));
         });
     }
 
