@@ -37,8 +37,8 @@ public class ChatsListModel {
 
     }
 
-    public void sendChatsListRequest(Context context, ChatsListPresenter presenter, TelegramClient client) {
-        GetChatsList request = new GetChatsList(context, client);
+    public void sendChatsListRequest(Context context, ChatsListPresenter presenter) {
+        GetChatsList request = new GetChatsList(context);
         request.response = presenter;
 
         request.execute();
@@ -47,11 +47,9 @@ public class ChatsListModel {
     public static class GetChatsList extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
         private ChatsListRequestResponse response = null;
-        private TelegramClient client;
 
-        private GetChatsList(Context context, TelegramClient client) {
+        private GetChatsList(Context context) {
             this.context = new WeakReference<>(context);
-            this.client = client;
         }
 
         @Override
@@ -62,10 +60,7 @@ public class ChatsListModel {
         @Override
         protected Object doInBackground(Void... params) {
             ArrayList<Chat> chatsList = new ArrayList<>();
-            if (client == null || client.isClosed())
-                client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
-            else
-                client = client.getDownloaderClient();
+            TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
 
             try {
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000); //have no idea how to avoid the limit without a huge number

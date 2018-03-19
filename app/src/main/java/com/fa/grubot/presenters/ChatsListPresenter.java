@@ -27,9 +27,9 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
 
     private TelegramEventCallback.TelegramEventListener telegramEventListener;
     private ChatsListPresenter presenter = this;
+    private TelegramClient client;
 
     private ArrayList<Chat> chats = new ArrayList<>();
-    private TelegramClient client;
 
     public ChatsListPresenter(ChatsListFragmentBase fragment, Context context) {
         this.fragment = fragment;
@@ -40,7 +40,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
     public void notifyFragmentStarted() {
         fragment.setupToolbar();
         if (App.INSTANCE.getCurrentUser().hasTelegramUser())
-            model.sendChatsListRequest(context, presenter, client);
+            model.sendChatsListRequest(context, presenter);
 
     }
 
@@ -71,17 +71,16 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
                 this.chats = chats;
                 fragment.setupLayouts(true, true);
                 notifyViewCreated(FragmentState.STATE_CONTENT);
-                setUpdateCallback();
             } else if (fragment.isAdapterExists()) {
-                //App.INSTANCE.closeTelegramClient();
                 fragment.updateChatsList(chats);
-                setUpdateCallback();
             }
+
+            if (client == null || client.isClosed())
+                setUpdateCallback();
         }
     }
 
     private void setUpdateCallback() {
-
         AsyncTask.execute(() -> {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override
@@ -104,7 +103,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
     }
 
     public void onRetryBtnClick() {
-        //setRegistration();
+        model.sendChatsListRequest(context, presenter);
     }
 
     public void destroy() {
