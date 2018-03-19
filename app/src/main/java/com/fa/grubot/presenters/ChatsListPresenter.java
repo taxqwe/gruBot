@@ -81,6 +81,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
     }
 
     private void setUpdateCallback() {
+
         AsyncTask.execute(() -> {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override

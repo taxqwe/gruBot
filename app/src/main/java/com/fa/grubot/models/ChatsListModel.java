@@ -130,29 +130,16 @@ public class ChatsListModel {
             } catch (Exception e) {
                 e.printStackTrace();
                 return e;
+            } finally {
+                client.close(false);
             }
         }
 
         @SuppressWarnings("unchecked")
         @Override
         protected void onPostExecute(Object result) {
-            if (response != null) {
-                if (result instanceof ArrayList<?>)
-                    response.onChatsListResult((ArrayList<Chat>) result);
-                else if (result instanceof RpcErrorException) {
-                    RpcErrorException exception = (RpcErrorException) result;
-                    String tag = exception.getTag();
-                    if (tag.contains("FLOOD_WAIT_")) {
-                        String waitTime = tag.substring(tag.lastIndexOf('_') + 1);
-
-                        GetChatsList request = new GetChatsList(context.get(), client);
-                        request.response = response;
-                        //((AppCompatActivity) context.get()).runOnUiThread(() -> {
-                            (new Handler()).postDelayed(request::execute, Integer.valueOf(waitTime) * 1000 + 1000);
-                        //});
-                    }
-                }
-            }
+            if (response != null && result instanceof ArrayList<?>)
+                response.onChatsListResult((ArrayList<Chat>) result);
         }
     }
 

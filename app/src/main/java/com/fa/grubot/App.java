@@ -88,10 +88,6 @@ public class App extends Application {
         return vkAccessTokenFile.getPath();
     }
 
-    public boolean hasTelegramClient(){
-        return telegramClient != null;
-    }
-
     public void setCurrentUser(CurrentUser user) {
         this.currentUser = user;
     }
