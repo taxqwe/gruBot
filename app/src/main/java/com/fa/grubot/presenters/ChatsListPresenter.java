@@ -90,7 +90,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
 
                 @Override
                 public void onUserNameUpdate(TelegramUpdateUserNameEvent telegramUpdateUserNameEvent) {
-
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserNameUpdate(chats, telegramUpdateUserNameEvent), false));
                 }
 
                 @Override

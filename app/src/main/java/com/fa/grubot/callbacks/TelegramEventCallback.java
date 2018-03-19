@@ -17,6 +17,7 @@ import com.github.badoualy.telegram.tl.api.TLAbsFileLocation;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdate;
 import com.github.badoualy.telegram.tl.api.TLAbsUserProfilePhoto;
+import com.github.badoualy.telegram.tl.api.TLBotInfo;
 import com.github.badoualy.telegram.tl.api.TLChat;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
@@ -199,6 +200,9 @@ public class TelegramEventCallback implements UpdateCallback {
                         TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
                         fromName = user.getFirstName();
                         fromName = fromName.replace("null", "").trim();
+
+                        if (fromName.isEmpty())
+                            fromName = user.getUsername();
                     } catch (Exception e) {
                         Log.e("TAG", "Is not a user");
                     }
@@ -241,6 +245,7 @@ public class TelegramEventCallback implements UpdateCallback {
             TelegramUpdateUserPhotoEvent event = new TelegramUpdateUserPhotoEvent(updateUserPhoto.getUserId(), imgUri);
             listener.onUserPhotoUpdate(event);
         }
+        //TODO MOAR EVENTS11111
     }
 
     public interface TelegramEventListener {

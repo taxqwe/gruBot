@@ -11,6 +11,7 @@ import com.fa.grubot.abstractions.ChatsListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
+import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.presenters.ChatsListPresenter;
@@ -96,12 +97,14 @@ public class ChatsListModel {
                                     TLUser user = TelegramHelper.Users.getUser(client, message.getFromId()).getUser().getAsUser();
                                     fromName = user.getFirstName();
                                     fromName = fromName.replace("null", "").trim();
+
+                                    if (fromName.isEmpty())
+                                        fromName = user.getUsername();
                                 }
                             }
 
-                            if (peer instanceof TLPeerUser && message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                            if (peer instanceof TLPeerUser && message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
                                 fromName = "Вы";
-                        }
                         } catch (Exception e) {
                             Log.e("TAG", "Is not a user");
                         }
@@ -184,6 +187,32 @@ public class ChatsListModel {
 
         if (chatToChange != null) {
             chatToChange.setImgUri(event.getImgUri());
+            chats.remove(index);
+            chats.add(index, chatToChange);
+        }
+
+        return chats;
+    }
+
+    public ArrayList<Chat> onUserNameUpdate(ArrayList<Chat> chats, TelegramUpdateUserNameEvent event) {
+        Chat chatToChange = null;
+        int index = -1;
+        int idToFind = event.getUserId();
+
+        for (Chat chat : chats) {
+            if (Integer.valueOf(chat.getId()) == idToFind) {
+                chatToChange = chat;
+                index = chats.indexOf(chat);
+                break;
+            }
+        }
+
+        String newName = (event.getFirstName() + " " + event.getLastName()).replace("null", "").trim();
+        if (newName.isEmpty())
+            newName = event.getUserName();
+
+        if (chatToChange != null) {
+            chatToChange.setName(newName);
             chats.remove(index);
             chats.add(index, chatToChange);
         }
