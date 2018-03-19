@@ -36,12 +36,8 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
 public class InitialLoginFragment extends Fragment implements InitialLoginFragmentBase {
-    @Nullable
-    @BindView(R.id.vkImage)
-    ImageView vkBtn;
-    @Nullable
-    @BindView(R.id.telegramImage)
-    ImageView telegramBtn;
+    @Nullable @BindView(R.id.vkImage) ImageView vkBtn;
+    @Nullable @BindView(R.id.telegramImage) ImageView telegramBtn;
 
     private InitialLoginPresenter presenter;
     private Unbinder unbinder;
@@ -123,8 +119,6 @@ public class InitialLoginFragment extends Fragment implements InitialLoginFragme
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
-
-
             @Override
             public void onResult(VKAccessToken res) {
                 VkUser vkUser = new VkUser(res.accessToken);

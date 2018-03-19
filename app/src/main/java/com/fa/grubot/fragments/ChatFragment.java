@@ -114,13 +114,13 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
                     null,
                     new Date());
             messageAdapter.addToStart(message, true);
-            presenter.sendMessage(message);
+            //presenter.sendMessage(message);
             return true;
         });
 
         messages = new ArrayList<>();
 
-        presenter.onNotifyViewCreated();
+        //presenter.onNotifyViewCreated();
     }
 
     @Override
@@ -182,7 +182,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
                 refreshMenuItems();
                 Toast.makeText(getActivity(),
                         isSmartEnabled ? "Умный фильтр включен" : "Умный фильтр выключен", Toast.LENGTH_SHORT).show();
-                presenter.notifySmartFilterStatusChanged(isSmartEnabled);
+                //presenter.notifySmartFilterStatusChanged(isSmartEnabled);
                 break;
             case android.R.id.home:
                 getActivity().onBackPressed();
@@ -196,7 +196,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
-        presenter.destroy();
+        //presenter.destroy();
         messagesDisposable.dispose();
     }
 

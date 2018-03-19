@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fa.grubot.App;
 import com.fa.grubot.LoginActivity;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
@@ -23,8 +24,6 @@ import com.fa.grubot.abstractions.TelegramVerificationFragmentBase;
 import com.fa.grubot.objects.group.CurrentUser;
 import com.fa.grubot.presenters.TelegramVerificationPresenter;
 import com.fa.grubot.util.Globals;
-import com.fa.grubot.util.TmApiStorage;
-import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.auth.TLAuthorization;
@@ -91,7 +90,7 @@ public class TelegramVerificationFragment extends Fragment implements TelegramVe
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setTitle("Telegram подтверждение");
+        activity.getSupportActionBar().setTitle("TelegramHelper подтверждение");
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -148,7 +147,7 @@ public class TelegramVerificationFragment extends Fragment implements TelegramVe
         protected Object doInBackground(Void... params) {
             Object returnObject;
 
-            TelegramClient client = INSTANCE.getNewTelegramClient();
+            TelegramClient client = INSTANCE.getNewTelegramClient(null);
 
             try {
                 TLAuthorization authorization = client.authSignIn(phoneNumber, sentCode.getPhoneCodeHash(), verificationCode);
@@ -175,8 +174,11 @@ public class TelegramVerificationFragment extends Fragment implements TelegramVe
             if (result instanceof Exception) {
                 Toast.makeText(context.get(), "Ошибка: " + ((Exception) result).getMessage(), Toast.LENGTH_LONG).show();
             } else {
-                INSTANCE.setCurrentUser(new CurrentUser((TLUser) result, null));
-                context.get().startActivity(new Intent(context.get(), MainActivity.class));
+                CurrentUser currentUser = App.INSTANCE.getCurrentUser();
+                currentUser.setTelegramUser((TLUser) result);
+
+                if (!currentUser.hasVkUser())
+                    context.get().startActivity(new Intent(context.get(), MainActivity.class));
                 ((LoginActivity) context.get()).finish();
             }
             super.onPostExecute(result);

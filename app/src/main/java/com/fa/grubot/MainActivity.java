@@ -3,19 +3,16 @@ package com.fa.grubot;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.fa.grubot.fragments.BaseFragment;
+import com.fa.grubot.fragments.ChatsListFragment;
 import com.fa.grubot.fragments.DashboardFragment;
-import com.fa.grubot.fragments.GroupsFragment;
 import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.fragments.SettingsFragment;
 import com.fa.grubot.fragments.WorkInProgressFragment;
-import com.fa.grubot.objects.group.CurrentUser;
 import com.fa.grubot.objects.group.VkUser;
-import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.ncapdevi.fragnav.FragNavController;
 import com.ncapdevi.fragnav.tabhistory.FragNavTabHistoryController;
@@ -33,15 +30,16 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
     private final int TAB_SEARCH = FragNavController.TAB1;
     private final int TAB_PROFILE = FragNavController.TAB2;
     private final int TAB_DASHBOARD = FragNavController.TAB3;
-    private final int TAB_GROUPS = FragNavController.TAB4;
+    private final int TAB_CHATS = FragNavController.TAB4;
     private final int TAB_SETTINGS = FragNavController.TAB5;
 
     private FragNavController navController;
 
-    private static final int TIME_INTERVAL = 2000;
-    private long mBackPressed;
     private TLUser currentUser;
     private VkUser currentVkUser;
+
+    private static final int TIME_INTERVAL = 2000;
+    private long mBackPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +99,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 case R.id.tab_dashboard:
                     navController.switchTab(TAB_DASHBOARD);
                     break;
-                case R.id.tab_groups:
-                    navController.switchTab(TAB_GROUPS);
+                case R.id.tab_chats:
+                    navController.switchTab(TAB_CHATS);
                     break;
                 case R.id.tab_settings:
                     navController.switchTab(TAB_SETTINGS);
@@ -167,8 +165,8 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
                 return ProfileFragment.newInstance(0, App.INSTANCE.getCurrentUser(), null);
             case TAB_DASHBOARD:
                 return DashboardFragment.newInstance(0);
-            case TAB_GROUPS:
-                return GroupsFragment.newInstance(0);
+            case TAB_CHATS:
+                return ChatsListFragment.newInstance(0);
             case TAB_SETTINGS:
                 return new SettingsFragment();
         }

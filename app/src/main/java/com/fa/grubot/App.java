@@ -9,6 +9,7 @@ import com.fa.grubot.util.TmApiStorage;
 import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramApp;
 import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.api.UpdateCallback;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 import com.vk.sdk.VKAccessToken;
@@ -37,7 +38,6 @@ public class App extends Application {
 
     private File authKeyFile;
     private File nearestDcFile;
-
     private File vkAccessTokenFile;
 
     private TelegramApp application;
@@ -57,9 +57,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        currentUser = new CurrentUser(null, null);
+
         authKeyFile = new File(this.getApplicationContext().getFilesDir(), "auth.key");
         nearestDcFile = new File(this.getApplicationContext().getFilesDir(), "dc.save");
-
         vkAccessTokenFile = new File(this.getApplicationContext().getFilesDir(), "vk.token");
 
         application = new TelegramApp(API_ID, API_HASH, MODEL, SYSTEM_VERSION, APP_VERSION, LANG_CODE);
@@ -69,13 +70,22 @@ public class App extends Application {
         VKSdk.initialize(getApplicationContext());
     }
 
-    public TelegramClient getNewTelegramClient() {
-        telegramClient = Kotlogram.getDefaultClient(application, new TmApiStorage(authKeyFile, nearestDcFile));
+    public TelegramClient getNewTelegramClient(UpdateCallback callback) {
+        if (telegramClient != null && !telegramClient.isClosed())
+            closeTelegramClient();
+
+        TmApiStorage apiStorage = new TmApiStorage(authKeyFile, nearestDcFile);
+        telegramClient = Kotlogram.getDefaultClient(application, apiStorage, apiStorage.loadDc(), callback);
         return telegramClient;
     }
 
     public void closeTelegramClient() {
-        telegramClient.close(false);
+        if (telegramClient != null)
+            telegramClient.close(false);
+    }
+
+    public String getVkTokenFilePath(){
+        return vkAccessTokenFile.getPath();
     }
 
     public void setCurrentUser(CurrentUser user) {
@@ -121,13 +131,5 @@ public class App extends Application {
                 .distanceThreshold(0.5f)
                 .edge(false)
                 .build();
-    }
-
-    public String getVkTokenFilePath(){
-        return vkAccessTokenFile.getPath();
-    }
-
-    public boolean hasTelegramClient(){
-        return telegramClient != null;
     }
 }

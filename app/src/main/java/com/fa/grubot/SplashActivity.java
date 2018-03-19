@@ -23,13 +23,9 @@ import java.lang.ref.WeakReference;
 import static com.fa.grubot.App.INSTANCE;
 
 public class SplashActivity extends AppCompatActivity {
-
     private VkUser vkUser;
-
     private TLUser tlUser;
-
     private boolean tlUserChecked = false;
-
     private boolean vkUserChecked = false;
 
     @Override
@@ -55,25 +51,19 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (App.INSTANCE.hasTelegramClient()) {
-            App.INSTANCE.closeTelegramClient();
-        }
+        App.INSTANCE.closeTelegramClient();
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
-        if (App.INSTANCE.hasTelegramClient()) {
-            App.INSTANCE.closeTelegramClient();
-        }
+        App.INSTANCE.closeTelegramClient();
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-        if (App.INSTANCE.hasTelegramClient()) {
-            App.INSTANCE.closeTelegramClient();
-        }
+        App.INSTANCE.closeTelegramClient();
         super.onStop();
     }
 
@@ -93,7 +83,7 @@ public class SplashActivity extends AppCompatActivity {
         protected Object doInBackground(Void... params) {
             Object returnObject;
 
-            TelegramClient client = App.INSTANCE.getNewTelegramClient();
+            TelegramClient client = App.INSTANCE.getNewTelegramClient(null);
 
             try {
                 TLUserFull userFull = client.usersGetFullUser(new TLInputUserSelf());
@@ -116,7 +106,9 @@ public class SplashActivity extends AppCompatActivity {
             } else {
                 setTlUser((TLUser) result);
             }
+
             nextIfBothAccountsChecked();
+
             super.onPostExecute(result);
         }
     }
@@ -126,7 +118,7 @@ public class SplashActivity extends AppCompatActivity {
         this.tlUser = tlUser;
     }
 
-    private void nextIfBothAccountsChecked(){
+    private void nextIfBothAccountsChecked() {
         if ((vkUser != null || tlUser != null) && (vkUserChecked && tlUserChecked)) {
             App.INSTANCE.setCurrentUser(new CurrentUser(tlUser, vkUser));
             startActivity(new Intent(this, MainActivity.class));

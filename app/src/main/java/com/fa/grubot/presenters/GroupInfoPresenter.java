@@ -4,9 +4,9 @@ package com.fa.grubot.presenters;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.models.GroupInfoModel;
+import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
-import com.fa.grubot.objects.group.Group;
 import com.fa.grubot.objects.group.GroupInfoButton;
 import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.VoteOption;
@@ -33,7 +33,7 @@ public class GroupInfoPresenter {
             new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Участники", new ArrayList<>()))
     ));
 
-    private Group localGroup;
+    private Chat localChat;
 
     private Query groupQuery;
     private Query usersQuery;
@@ -50,12 +50,12 @@ public class GroupInfoPresenter {
         this.model = new GroupInfoModel();
     }
 
-    public void notifyFragmentStarted(Group group) {
-        String groupId = group.getId();
+    public void notifyFragmentStarted(Chat chat) {
+        String groupId = chat.getId();
         groupQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("chatId", groupId);
         usersQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("groups." + groupId, true);
-        announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("group", groupId);
-        votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("group", groupId);
+        announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("chat", groupId);
+        votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("chat", groupId);
 
         setRegistration();
     }
@@ -81,7 +81,7 @@ public class GroupInfoPresenter {
             if (e == null) {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
-                    Group group = new Group(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
+                    //Chat chat = new Chat(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
 
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
@@ -89,7 +89,7 @@ public class GroupInfoPresenter {
                             notifyViewCreated(FragmentState.STATE_CONTENT);
                         }
 
-                        fragment.handleUIUpdate(group);
+                        fragment.handleUIUpdate(null);
                     }
                 }
             } else {
