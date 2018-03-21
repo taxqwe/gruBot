@@ -1,7 +1,7 @@
 package com.fa.grubot.abstractions;
 
-import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
+import com.fa.grubot.objects.users.User;
 
 import java.util.ArrayList;
 

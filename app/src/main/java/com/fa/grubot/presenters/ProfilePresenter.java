@@ -3,8 +3,8 @@ package com.fa.grubot.presenters;
 
 import com.fa.grubot.abstractions.ProfileFragmentBase;
 import com.fa.grubot.models.ProfileModel;
-import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;

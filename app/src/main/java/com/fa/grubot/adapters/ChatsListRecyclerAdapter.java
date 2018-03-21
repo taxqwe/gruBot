@@ -126,6 +126,8 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
 
         if (DateUtils.isToday(date))
             dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        else if (DateUtils.isToday(date + DateUtils.DAY_IN_MILLIS))
+            return "Вчера";
         else
             dateFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
 

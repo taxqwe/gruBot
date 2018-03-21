@@ -1,5 +1,6 @@
 package com.fa.grubot.callbacks;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.fa.grubot.App;
@@ -39,11 +40,13 @@ import org.slf4j.LoggerFactory;
 
 public class TelegramEventCallback implements UpdateCallback {
 
-    public static final Logger LOG = LoggerFactory.getLogger(TelegramEventCallback.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TelegramEventCallback.class);
     private TelegramEventListener listener;
+    private Context context;
 
-    public TelegramEventCallback(TelegramEventListener listener) {
+    public TelegramEventCallback(TelegramEventListener listener, Context context) {
         this.listener = listener;
+        this.context = context;
     }
 
     @Override
@@ -163,10 +166,10 @@ public class TelegramEventCallback implements UpdateCallback {
                 }
 
                 String messageText;
-                if (tlMessage.getMedia() == null)
-                    messageText = tlMessage.getMessage();
-                else
+                if (tlMessage.getMedia() != null && tlMessage.getMessage().isEmpty())
                     messageText = TelegramHelper.Chats.extractMediaType(tlMessage.getMedia());
+                else
+                    messageText = tlMessage.getMessage();
 
                 TelegramMessageEvent event = new TelegramMessageEvent(messageText, tlMessage.getFromId(), messageToId, ((long) tlMessage.getDate()) * 1000, fromName);
                 listener.onMessage(event);
@@ -196,6 +199,9 @@ public class TelegramEventCallback implements UpdateCallback {
                         TLUser user = TelegramHelper.Users.getUser(client, tlMessage.getFromId()).getUser().getAsUser();
                         fromName = user.getFirstName();
                         fromName = fromName.replace("null", "").trim();
+
+                        if (fromName.isEmpty())
+                            fromName = user.getUsername();
                     } catch (Exception e) {
                         Log.e("TAG", "Is not a user");
                     }
@@ -204,10 +210,10 @@ public class TelegramEventCallback implements UpdateCallback {
                 }
 
                 String messageText;
-                if (tlMessage.getMedia() == null)
-                    messageText = tlMessage.getMessage();
-                else
+                if (tlMessage.getMedia() != null && tlMessage.getMessage().isEmpty())
                     messageText = TelegramHelper.Chats.extractMediaType(tlMessage.getMedia());
+                else
+                    messageText = tlMessage.getMessage();
 
                 TelegramMessageEvent event = new TelegramMessageEvent(messageText, tlMessage.getFromId(), messageToId,((long) tlMessage.getDate()) * 1000, fromName);
                 listener.onMessage(event);
@@ -233,10 +239,12 @@ public class TelegramEventCallback implements UpdateCallback {
             }
 
             TelegramPhoto telegramPhoto = new TelegramPhoto(inputFileLocation, photoId);
+            String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context);
 
-            TelegramUpdateUserPhotoEvent event = new TelegramUpdateUserPhotoEvent(updateUserPhoto.getUserId(), telegramPhoto);
+            TelegramUpdateUserPhotoEvent event = new TelegramUpdateUserPhotoEvent(updateUserPhoto.getUserId(), imgUri);
             listener.onUserPhotoUpdate(event);
         }
+        //TODO MOAR EVENTS11111
     }
 
     public interface TelegramEventListener {

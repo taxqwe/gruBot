@@ -27,9 +27,9 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
 
     private TelegramEventCallback.TelegramEventListener telegramEventListener;
     private ChatsListPresenter presenter = this;
+    private TelegramClient client;
 
     private ArrayList<Chat> chats = new ArrayList<>();
-    private TelegramClient client;
 
     public ChatsListPresenter(ChatsListFragmentBase fragment, Context context) {
         this.fragment = fragment;
@@ -40,8 +40,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
     public void notifyFragmentStarted() {
         fragment.setupToolbar();
         if (App.INSTANCE.getCurrentUser().hasTelegramUser())
-            model.sendChatsListRequest(context, presenter, client);
-
+            model.sendChatsListRequest(context, presenter);
     }
 
     private void notifyViewCreated(int state) {
@@ -59,7 +58,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         }
     }
 
-    public void onChatsListResult(ArrayList<Chat> chats) {
+    public void onChatsListResult(ArrayList<Chat> chats, boolean moveToTop) {
         this.chats = chats;
 
         if (fragment != null) {
@@ -71,40 +70,39 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
                 this.chats = chats;
                 fragment.setupLayouts(true, true);
                 notifyViewCreated(FragmentState.STATE_CONTENT);
-                setUpdateCallback();
             } else if (fragment.isAdapterExists()) {
-                //App.INSTANCE.closeTelegramClient();
-                fragment.updateChatsList(chats);
-                setUpdateCallback();
+                fragment.updateChatsList(chats, moveToTop);
             }
+
+            if (client == null || client.isClosed())
+                setUpdateCallback();
         }
     }
 
     private void setUpdateCallback() {
-
         AsyncTask.execute(() -> {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override
                 public void onMessage(TelegramMessageEvent telegramMessageEvent) {
-                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(chats, telegramMessageEvent)));
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(chats, telegramMessageEvent), true));
                 }
 
                 @Override
                 public void onUserNameUpdate(TelegramUpdateUserNameEvent telegramUpdateUserNameEvent) {
-
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserNameUpdate(chats, telegramUpdateUserNameEvent), false));
                 }
 
                 @Override
                 public void onUserPhotoUpdate(TelegramUpdateUserPhotoEvent telegramUpdateUserPhotoEvent) {
-
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserPhotoUpdate(chats, telegramUpdateUserPhotoEvent), false));
                 }
             };
-            client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener));
+            client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener, context));
         });
     }
 
     public void onRetryBtnClick() {
-        //setRegistration();
+        model.sendChatsListRequest(context, presenter);
     }
 
     public void destroy() {

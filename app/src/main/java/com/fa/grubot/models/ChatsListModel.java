@@ -2,7 +2,6 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -11,6 +10,8 @@ import com.fa.grubot.abstractions.ChatsListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
+import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
+import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.DataType;
@@ -26,7 +27,6 @@ import com.github.badoualy.telegram.tl.api.TLPeerChat;
 import com.github.badoualy.telegram.tl.api.TLPeerUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
-import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ public class ChatsListModel {
 
     }
 
-    public void sendChatsListRequest(Context context, ChatsListPresenter presenter, TelegramClient client) {
-        GetChatsList request = new GetChatsList(context, client);
+    public void sendChatsListRequest(Context context, ChatsListPresenter presenter) {
+        GetChatsList request = new GetChatsList(context);
         request.response = presenter;
 
         request.execute();
@@ -47,11 +47,9 @@ public class ChatsListModel {
     public static class GetChatsList extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
         private ChatsListRequestResponse response = null;
-        private TelegramClient client;
 
-        private GetChatsList(Context context, TelegramClient client) {
+        private GetChatsList(Context context) {
             this.context = new WeakReference<>(context);
-            this.client = client;
         }
 
         @Override
@@ -62,10 +60,7 @@ public class ChatsListModel {
         @Override
         protected Object doInBackground(Void... params) {
             ArrayList<Chat> chatsList = new ArrayList<>();
-            if (client == null || client.isClosed())
-                client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
-            else
-                client = client.getDownloaderClient();
+            TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
 
             try {
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000); //have no idea how to avoid the limit without a huge number
@@ -100,20 +95,23 @@ public class ChatsListModel {
                                     TLUser user = TelegramHelper.Users.getUser(client, message.getFromId()).getUser().getAsUser();
                                     fromName = user.getFirstName();
                                     fromName = fromName.replace("null", "").trim();
+
+                                    if (fromName.isEmpty())
+                                        fromName = user.getUsername();
                                 }
                             }
 
-                            if (peer instanceof TLPeerUser && message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                            if (peer instanceof TLPeerUser && message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
                                 fromName = "Вы";
-                        }
                         } catch (Exception e) {
                             Log.e("TAG", "Is not a user");
                         }
 
-                        if (message.getMedia() == null)
-                            lastMessageText = message.getMessage();
-                        else
+                        if (message.getMedia() != null && message.getMessage().isEmpty())
                             lastMessageText = TelegramHelper.Chats.extractMediaType(message.getMedia());
+                        else
+                            lastMessageText = message.getMessage();
+
                     } else if (lastMessage instanceof TLMessageService) {
                         TLAbsMessageAction action = ((TLMessageService) lastMessage).getAction();
                         lastMessageText = TelegramHelper.Chats.extractActionType(action);
@@ -139,7 +137,7 @@ public class ChatsListModel {
         @Override
         protected void onPostExecute(Object result) {
             if (response != null && result instanceof ArrayList<?>)
-                response.onChatsListResult((ArrayList<Chat>) result);
+                response.onChatsListResult((ArrayList<Chat>) result, true);
         }
     }
 
@@ -167,6 +165,54 @@ public class ChatsListModel {
             chatToChange.setLastMessageFrom(event.getNameFrom());
             chats.remove(index);
             chats.add(0, chatToChange);
+        }
+
+        return chats;
+    }
+
+    public ArrayList<Chat> onUserPhotoUpdate(ArrayList<Chat> chats, TelegramUpdateUserPhotoEvent event) {
+        Chat chatToChange = null;
+        int index = -1;
+        int idToFind = event.getUserId();
+
+        for (Chat chat : chats) {
+            if (Integer.valueOf(chat.getId()) == idToFind) {
+                chatToChange = chat;
+                index = chats.indexOf(chat);
+                break;
+            }
+        }
+
+        if (chatToChange != null) {
+            chatToChange.setImgUri(event.getImgUri());
+            chats.remove(index);
+            chats.add(index, chatToChange);
+        }
+
+        return chats;
+    }
+
+    public ArrayList<Chat> onUserNameUpdate(ArrayList<Chat> chats, TelegramUpdateUserNameEvent event) {
+        Chat chatToChange = null;
+        int index = -1;
+        int idToFind = event.getUserId();
+
+        for (Chat chat : chats) {
+            if (Integer.valueOf(chat.getId()) == idToFind) {
+                chatToChange = chat;
+                index = chats.indexOf(chat);
+                break;
+            }
+        }
+
+        String newName = (event.getFirstName() + " " + event.getLastName()).replace("null", "").trim();
+        if (newName.isEmpty())
+            newName = event.getUserName();
+
+        if (chatToChange != null) {
+            chatToChange.setName(newName);
+            chats.remove(index);
+            chats.add(index, chatToChange);
         }
 
         return chats;

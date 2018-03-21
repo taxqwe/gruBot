@@ -66,9 +66,8 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new ChatsListPresenter(this, getActivity());
         View v = inflater.inflate(R.layout.fragment_chats_list, container, false);
-
+        presenter = new ChatsListPresenter(this, getActivity());
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
         instance = this.getArguments().getInt("instance");
@@ -89,15 +88,16 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     }
 
     @Override
-    public void onDestroy() {
-        App.INSTANCE.closeTelegramClient();
-        super.onDestroy();
-    }
-
-    @Override
     public void onStop() {
         App.INSTANCE.closeTelegramClient();
         super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        App.INSTANCE.closeTelegramClient();
+        presenter.destroy();
+        super.onDestroy();
     }
 
     @Override
@@ -183,10 +183,12 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void updateChatsList(ArrayList<Chat> chats) {
+    public void updateChatsList(ArrayList<Chat> chats, boolean moveToTop) {
         if (isAdapterExists()) {
             chatsListAdapter.updateChatsList(chats);
-            chatsView.scrollToPosition(0);
+
+            if (moveToTop)
+                chatsView.scrollToPosition(0);
         }
     }
 
