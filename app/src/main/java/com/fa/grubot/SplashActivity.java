@@ -9,8 +9,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.fa.grubot.objects.group.CurrentUser;
-import com.fa.grubot.objects.group.VkUser;
+import com.fa.grubot.objects.users.CurrentUser;
+import com.fa.grubot.objects.users.VkUser;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLInputUserSelf;
 import com.github.badoualy.telegram.tl.api.TLUser;

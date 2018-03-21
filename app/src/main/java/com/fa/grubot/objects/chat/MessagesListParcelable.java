@@ -19,7 +19,6 @@ public class MessagesListParcelable extends MessagesList {
 
     private Parcelable mLayoutManagerSavedState;
 
-
     public MessagesListParcelable(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }

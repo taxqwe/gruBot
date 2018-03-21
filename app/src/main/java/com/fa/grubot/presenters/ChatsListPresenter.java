@@ -41,7 +41,6 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         fragment.setupToolbar();
         if (App.INSTANCE.getCurrentUser().hasTelegramUser())
             model.sendChatsListRequest(context, presenter);
-
     }
 
     private void notifyViewCreated(int state) {

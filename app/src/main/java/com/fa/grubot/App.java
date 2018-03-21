@@ -4,7 +4,7 @@ import android.app.Application;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.fa.grubot.objects.group.CurrentUser;
+import com.fa.grubot.objects.users.CurrentUser;
 import com.fa.grubot.util.TmApiStorage;
 import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramApp;

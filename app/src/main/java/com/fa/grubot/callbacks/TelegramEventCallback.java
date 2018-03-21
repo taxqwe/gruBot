@@ -17,7 +17,6 @@ import com.github.badoualy.telegram.tl.api.TLAbsFileLocation;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdate;
 import com.github.badoualy.telegram.tl.api.TLAbsUserProfilePhoto;
-import com.github.badoualy.telegram.tl.api.TLBotInfo;
 import com.github.badoualy.telegram.tl.api.TLChat;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;

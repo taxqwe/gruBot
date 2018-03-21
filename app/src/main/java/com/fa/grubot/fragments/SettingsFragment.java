@@ -17,8 +17,8 @@ import com.fa.grubot.App;
 import com.fa.grubot.LoginActivity;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
-import com.fa.grubot.objects.group.CurrentUser;
-import com.fa.grubot.objects.group.VkUser;
+import com.fa.grubot.objects.users.CurrentUser;
+import com.fa.grubot.objects.users.VkUser;
 import com.fa.grubot.util.DataType;
 import com.github.badoualy.telegram.tl.api.TLUser;
 

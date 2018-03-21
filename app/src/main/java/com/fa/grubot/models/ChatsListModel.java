@@ -2,7 +2,6 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -28,7 +27,6 @@ import com.github.badoualy.telegram.tl.api.TLPeerChat;
 import com.github.badoualy.telegram.tl.api.TLPeerUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
-import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

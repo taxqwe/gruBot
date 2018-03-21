@@ -1,4 +1,4 @@
-package com.fa.grubot.objects.group;
+package com.fa.grubot.objects.users;
 
 import com.github.badoualy.telegram.tl.api.TLUser;
 
