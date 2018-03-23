@@ -8,6 +8,7 @@ import android.util.SparseArray;
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ChatsListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
+import com.fa.grubot.helpers.VkDialogParser;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
@@ -28,8 +29,17 @@ import com.github.badoualy.telegram.tl.api.TLPeerUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class ChatsListModel {
 
@@ -43,6 +53,37 @@ public class ChatsListModel {
 
         request.execute();
     }
+
+    public void sendVkChatListRequest(ChatsListPresenter presenter) {
+        Log.d("VK DIALOGS", "trying to get list of dialogs... ");
+        VKRequest request = VKApi.messages().getDialogs();
+        request.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                Log.d("VK DIALOGS", "dialogs successfully received");
+                VkDialogParser parser = new VkDialogParser(response);
+                List<Chat> dialogs = new ArrayList<>();
+                parser.getDialogsSubscription()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                        chat -> {
+                            dialogs.add(chat);
+                            Log.d("VK DIALOGS", "onnext: dialog added : " + chat.getName());
+                        },
+                        error -> error.printStackTrace(),
+                        () -> presenter.onChatsListResult(new ArrayList<>(dialogs), true)
+                );
+            }
+
+            @Override
+            public void onError(VKError error) {
+                Log.d("VK DIALOGS", "dialogs not received with error: " + error.toString());
+
+            }
+        });
+    }
+
 
     public static class GetChatsList extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
@@ -88,7 +129,7 @@ public class ChatsListModel {
                         lastMessageDate = ((TLMessage) lastMessage).getDate();
 
                         try {
-                            if (peer instanceof  TLPeerChat || peer instanceof TLPeerChannel) {
+                            if (peer instanceof TLPeerChat || peer instanceof TLPeerChannel) {
                                 if (message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
                                     fromName = "Вы";
                                 } else {
