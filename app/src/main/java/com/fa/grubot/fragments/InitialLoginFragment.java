@@ -96,17 +96,12 @@ public class InitialLoginFragment extends Fragment implements InitialLoginFragme
     }
 
     private void callVkLogin() {
-        String[] scope = {VKScope.FRIENDS,
+        String[] scope = {
+                VKScope.FRIENDS,
                 VKScope.EMAIL,
-                VKScope.WALL,
-                VKScope.PHOTOS,
                 VKScope.NOHTTPS,
-                VKScope.MESSAGES,
-                VKScope.DOCS,
-                VKScope.GROUPS,
-                VKScope.PAGES,
-                VKScope.MESSAGES,
-                VKScope.OFFLINE};
+                VKScope.MESSAGES
+        };
 
         Intent intent = new Intent(getActivity(), VKServiceActivity.class);
         intent.putExtra("arg1", "Authorization");

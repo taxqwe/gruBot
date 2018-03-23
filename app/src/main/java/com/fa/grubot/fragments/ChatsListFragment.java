@@ -22,6 +22,7 @@ import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.FragmentState;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -78,7 +79,11 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     @Override
     public void onResume() {
         super.onResume();
-        presenter.notifyFragmentStarted();
+        try {
+            presenter.notifyFragmentStarted();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

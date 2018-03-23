@@ -17,6 +17,8 @@ import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.util.FragmentState;
 import com.github.badoualy.telegram.api.TelegramClient;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
 public class ChatsListPresenter implements ChatsListRequestResponse {
@@ -37,10 +39,15 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         this.context = context;
     }
 
-    public void notifyFragmentStarted() {
+    public void notifyFragmentStarted() throws JSONException {
         fragment.setupToolbar();
         if (App.INSTANCE.getCurrentUser().hasTelegramUser())
             model.sendChatsListRequest(context, presenter);
+
+        if (App.INSTANCE.getCurrentUser().hasVkUser()){
+            model.sendVkChatListRequest(this);
+        }
+
     }
 
     private void notifyViewCreated(int state) {
