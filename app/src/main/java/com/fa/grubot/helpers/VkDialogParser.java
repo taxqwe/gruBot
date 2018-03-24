@@ -68,7 +68,7 @@ public class VkDialogParser {
                     messagePOJO.getBody(),
                     DataType.VK,
                     messagePOJO.getDate(),
-                    VkHelper.getVkUserInfoById(messagePOJO.getUserId().toString()).first_name);
+                    VkHelper.getVkUserInfoById(messagePOJO.getUserId().toString()).first_name); //TODO may be combained into batch request
             dialogsSubscription.onNext(chat);
         }
 

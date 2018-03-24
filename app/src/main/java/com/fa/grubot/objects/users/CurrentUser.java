@@ -1,9 +1,14 @@
 package com.fa.grubot.objects.users;
 
+import android.os.AsyncTask;
+
+import com.fa.grubot.App;
 import com.github.badoualy.telegram.tl.api.TLUser;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public class CurrentUser implements Serializable {
@@ -38,5 +43,23 @@ public class CurrentUser implements Serializable {
 
     public boolean hasTelegramUser(){
         return telegramUser != null;
+    }
+
+    public void resetVkUser(){
+        vkUser = null;
+    }
+
+    public void resetTelegramUser(){
+        telegramUser = null;
+        AsyncTask.execute(() -> {
+            try {
+                App.INSTANCE.getNewTelegramClient(null).authLogOut();
+            } catch (RpcErrorException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            App.INSTANCE.closeTelegramClient();
+        });
     }
 }
