@@ -75,19 +75,16 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
         unbinder = ButterKnife.bind(this, v);
         instance = this.getArguments().getInt("instance");
 
-        if (savedInstanceState == null) {
-            try {
-                presenter.notifyFragmentStarted();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
         return v;
     }
 
     @Override
     public void onResume() {
+        try {
+            presenter.notifyFragmentStarted();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         presenter.setUpdateCallback();
         super.onResume();
     }

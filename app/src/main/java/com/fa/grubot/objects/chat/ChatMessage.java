@@ -38,5 +38,4 @@ public class ChatMessage implements IMessage {
     public Date getCreatedAt() {
         return createdAt;
     }
-
 }

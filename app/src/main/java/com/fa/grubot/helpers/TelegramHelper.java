@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.SparseArray;
 
-import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.DataType;
@@ -360,6 +359,27 @@ public class TelegramHelper {
                 users.put(userId, user);
             }
             return users;
+        }
+
+        public static User getChatUser(TelegramClient client, int userId, Context context) {
+            TLUser tlUser = Users.getUser(client, userId).getUser().getAsUser();
+            String fullname = TelegramHelper.Users.extractName(tlUser);
+            String userName = tlUser.getUsername();
+
+            TLAbsUserProfilePhoto absPhoto = tlUser.getPhoto();
+            InputFileLocation inputFileLocation = null;
+            long photoId = 0;
+
+            if (absPhoto != null) {
+                TLAbsFileLocation fileLocation = absPhoto.getAsUserProfilePhoto().getPhotoBig();
+                inputFileLocation = TLMediaUtilsKt.toInputFileLocation(fileLocation);
+                photoId = tlUser.getPhoto().getAsUserProfilePhoto().getPhotoId();
+            }
+
+            TelegramPhoto telegramPhoto = new TelegramPhoto(inputFileLocation, photoId);
+            String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context);
+
+            return new User(String.valueOf(userId), DataType.Telegram, fullname, userName, imgUri);
         }
 
         public static User getChatAsUser(TelegramClient client, int chatId, Context context) {

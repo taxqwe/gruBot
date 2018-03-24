@@ -2,39 +2,26 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.MessagesListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.ChatMessage;
-import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
-import com.fa.grubot.util.DataType;
 import com.github.badoualy.telegram.api.TelegramClient;
-import com.github.badoualy.telegram.api.utils.InputFileLocation;
-import com.github.badoualy.telegram.api.utils.TLMediaUtilsKt;
-import com.github.badoualy.telegram.tl.api.TLAbsChat;
-import com.github.badoualy.telegram.tl.api.TLAbsChatPhoto;
-import com.github.badoualy.telegram.tl.api.TLAbsFileLocation;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
-import com.github.badoualy.telegram.tl.api.TLAbsUser;
-import com.github.badoualy.telegram.tl.api.TLAbsUserProfilePhoto;
-import com.github.badoualy.telegram.tl.api.TLChatPhoto;
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
-import com.github.badoualy.telegram.tl.api.TLPeerChat;
-import com.github.badoualy.telegram.tl.api.TLPeerUser;
-import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
 
 import java.lang.ref.WeakReference;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ChatModel {
 
@@ -45,6 +32,52 @@ public class ChatModel {
         GetMessagesList request = new GetMessagesList(context, chatId);
         request.response = presenter;
         request.execute();
+    }
+
+    public void sendMessage(Context context, String chatId, String message) {
+        SendMessage request = new SendMessage(context, chatId, message);
+        request.execute();
+    }
+
+    public static class SendMessage extends AsyncTask<Void, Void, Object> {
+        private WeakReference<Context> context;
+        private String message;
+        private String chatId;
+        private MessagesListRequestResponse response = null;
+
+        private SendMessage(Context context, String chatId, String message) {
+            this.context = new WeakReference<>(context);
+            this.message = message;
+            this.chatId = chatId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Object doInBackground(Void... params) {
+            TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
+
+            try {
+                TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 0);
+                TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
+                client.messagesSendMessage(inputPeer, message, Math.abs(new Random().nextLong()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                client.close(false);
+            }
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void onPostExecute(Object result) {
+            //if (response != null && result instanceof ArrayList<?>)
+                //response.onMessagesListResult((ArrayList<ChatMessage>) result, true);
+        }
     }
 
     public static class GetMessagesList extends AsyncTask<Void, Void, Object> {
