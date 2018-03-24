@@ -48,10 +48,10 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
         Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
-    public static ChatsListFragment newInstance(String id) {
+    public static ChatFragment newInstance(String id) {
         Bundle args = new Bundle();
         args.putString("chatId", id);
-        ChatsListFragment fragment = new ChatsListFragment();
+        ChatFragment fragment = new ChatFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,7 +70,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     @Override
     public void onResume() {
         super.onResume();
-        presenter.notifyFragmentStarted();
+        presenter.notifyFragmentStarted(chatId);
     }
 
     @Override
@@ -98,6 +98,25 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
         Icepick.saveInstanceState(this, outState);
     }
 
+    public void showRequiredViews() {
+        /*progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
+
+        switch (state) {
+            case FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+            case FragmentState.STATE_NO_DATA:
+                noData.setVisibility(View.VISIBLE);
+                break;
+        }*/
+    }
+
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
             if (isHasData)
@@ -113,12 +132,20 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
         }
     }
 
+    public void setupToolbar() {
+
+    }
+
     public void setupToolbar(String chatName) {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(chatToolbar);
         activity.getSupportActionBar().setTitle(chatName);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    public void setupRetryButton() {
+        //retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
     @Override

@@ -175,7 +175,6 @@ public class GroupInfoPresenter {
                     User user = new User( doc.get("userId").toString(),
                             doc.get("username").toString(),
                             doc.get("fullname").toString(),
-                            doc.get("phoneNumber").toString(),
                             doc.get("desc").toString(),
                             doc.get("imgUrl").toString());
 

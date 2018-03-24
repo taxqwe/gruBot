@@ -44,10 +44,8 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         if (App.INSTANCE.getCurrentUser().hasTelegramUser())
             model.sendChatsListRequest(context, presenter);
 
-        if (App.INSTANCE.getCurrentUser().hasVkUser()){
+        if (App.INSTANCE.getCurrentUser().hasVkUser())
             model.sendVkChatListRequest(this);
-        }
-
     }
 
     private void notifyViewCreated(int state) {
@@ -86,7 +84,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         }
     }
 
-    private void setUpdateCallback() {
+    public void setUpdateCallback() {
         AsyncTask.execute(() -> {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override

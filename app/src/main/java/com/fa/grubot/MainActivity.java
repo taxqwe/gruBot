@@ -49,16 +49,18 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Frag
 
         ButterKnife.bind(this);
 
-        setupViews(savedInstanceState);
-        if (App.INSTANCE.getCurrentUser().hasTelegramUser()) {
-            currentUser = App.INSTANCE.getCurrentUser().getTelegramUser();
-        }
-        if (App.INSTANCE.getCurrentUser().hasVkUser()) {
-            currentVkUser = App.INSTANCE.getCurrentUser().getVkUser();
-        }
+        if (savedInstanceState == null) {
+            setupViews(savedInstanceState);
+            if (App.INSTANCE.getCurrentUser().hasTelegramUser()) {
+                currentUser = App.INSTANCE.getCurrentUser().getTelegramUser();
+            }
+            if (App.INSTANCE.getCurrentUser().hasVkUser()) {
+                currentVkUser = App.INSTANCE.getCurrentUser().getVkUser();
+            }
 
-        if (currentUser != null) {
-            Toast.makeText(this, "Welcome back " + currentUser.getFirstName() + " " + currentUser.getLastName(), Toast.LENGTH_SHORT).show();
+            if (currentUser != null) {
+                Toast.makeText(this, "Welcome back " + currentUser.getFirstName() + " " + currentUser.getLastName(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

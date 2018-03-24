@@ -2,6 +2,7 @@ package com.fa.grubot;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -9,25 +10,52 @@ import android.support.v7.app.AppCompatActivity;
 import com.fa.grubot.fragments.ChatFragment;
 import com.r0adkll.slidr.Slidr;
 
+import icepick.Icepick;
+
 public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        Icepick.restoreInstanceState(this, savedInstanceState);
 
         if (App.INSTANCE.isSlidrEnabled())
             Slidr.attach(this, App.INSTANCE.getSlidrConfig());
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        String chatId = getIntent().getExtras().getString("chatId");
 
-        ChatFragment fragment = new ChatFragment();
-        fragmentTransaction.replace(R.id.content, fragment).commit();
+        if (savedInstanceState == null) {
+            Fragment chatFragment = ChatFragment.newInstance(chatId);
+
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction.replace(R.id.content, chatFragment);
+            transaction.commit();
+        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        App.INSTANCE.closeTelegramClient();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        App.INSTANCE.closeTelegramClient();
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        App.INSTANCE.closeTelegramClient();
+        super.onStop();
     }
 
     @Override

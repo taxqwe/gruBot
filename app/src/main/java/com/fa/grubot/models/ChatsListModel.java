@@ -28,7 +28,6 @@ import com.github.badoualy.telegram.tl.api.TLPeerChat;
 import com.github.badoualy.telegram.tl.api.TLPeerUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
-
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKRequest;
@@ -50,7 +49,6 @@ public class ChatsListModel {
     public void sendChatsListRequest(Context context, ChatsListPresenter presenter) {
         GetChatsList request = new GetChatsList(context);
         request.response = presenter;
-
         request.execute();
     }
 

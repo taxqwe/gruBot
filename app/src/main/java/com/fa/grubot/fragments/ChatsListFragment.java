@@ -68,27 +68,33 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chats_list, container, false);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+        setRetainInstance(true);
         presenter = new ChatsListPresenter(this, getActivity());
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
         instance = this.getArguments().getInt("instance");
+
+        if (savedInstanceState == null) {
+            try {
+                presenter.notifyFragmentStarted();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         return v;
     }
 
     @Override
     public void onResume() {
+        presenter.setUpdateCallback();
         super.onResume();
-        try {
-            presenter.notifyFragmentStarted();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void onPause() {
-        App.INSTANCE.closeTelegramClient();
+        //App.INSTANCE.closeTelegramClient();
         super.onPause();
     }
 
