@@ -9,33 +9,31 @@ import com.fa.grubot.App;
 import com.fa.grubot.abstractions.MessagesListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.ChatMessage;
+import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.DataType;
 import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.api.utils.InputFileLocation;
+import com.github.badoualy.telegram.api.utils.TLMediaUtilsKt;
 import com.github.badoualy.telegram.tl.api.TLAbsChat;
-import com.github.badoualy.telegram.tl.api.TLAbsInputChannel;
+import com.github.badoualy.telegram.tl.api.TLAbsChatPhoto;
+import com.github.badoualy.telegram.tl.api.TLAbsFileLocation;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
-import com.github.badoualy.telegram.tl.api.TLAbsInputUser;
-import com.github.badoualy.telegram.tl.api.TLAbsPeer;
-import com.github.badoualy.telegram.tl.api.TLChannel;
-import com.github.badoualy.telegram.tl.api.TLDialog;
-import com.github.badoualy.telegram.tl.api.TLInputChannel;
-import com.github.badoualy.telegram.tl.api.TLInputPeerChannel;
-import com.github.badoualy.telegram.tl.api.TLInputPeerChat;
+import com.github.badoualy.telegram.tl.api.TLAbsUser;
+import com.github.badoualy.telegram.tl.api.TLAbsUserProfilePhoto;
+import com.github.badoualy.telegram.tl.api.TLChatPhoto;
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
-import com.github.badoualy.telegram.tl.api.TLInputUser;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLPeerChat;
 import com.github.badoualy.telegram.tl.api.TLPeerUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
-import com.github.badoualy.telegram.tl.api.TLUserFull;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
-import com.github.badoualy.telegram.tl.api.messages.TLChatFull;
 
 import java.lang.ref.WeakReference;
+import java.sql.Date;
 import java.util.ArrayList;
 
 public class ChatModel {
@@ -70,21 +68,30 @@ public class ChatModel {
             TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
 
             try {
-
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000);
-
                 TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
-
                 TLAbsMessages tlAbsMessages = client.messagesGetHistory(inputPeer, 0, 0, 0, 40, 0, 0); //TODO add an offset here
+                SparseArray<User> users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context.get());
 
                 tlAbsMessages.getMessages().forEach(message -> {
                     if (message instanceof TLMessage) {
                         TLMessage tlMessage = (TLMessage) message;
 
+                        User user;
+                        try {
+                            user = users.get(tlMessage.getFromId());
+                        } catch (Exception e) {
+                            int chatId = ((TLPeerChannel) tlMessage.getToId()).getChannelId();
+                            user = TelegramHelper.Chats.getChatAsUser(client, chatId, context.get());
+                        }
 
-                        System.out.println(tlMessage.getFromId() + ": " + tlMessage.getMessage());
-                    }
-                    else
+                        ChatMessage chatMessage = new ChatMessage(String.valueOf(tlMessage.getId()),
+                                tlMessage.getMessage(),
+                                user,
+                                new Date(((long) tlMessage.getDate()) * 1000));
+
+                        messages.add(chatMessage);
+                    } else
                         System.out.println("Service message");
                 });
 

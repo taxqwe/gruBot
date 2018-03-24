@@ -162,10 +162,6 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     }
 
     public void setupRecyclerView(ArrayList<Chat> chats) {
-        ArrayList<Chat> newChats = new ArrayList<>();
-        for (Chat chat : chats)
-            newChats.add(chat);
-
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         chatsView.setLayoutManager(mLayoutManager);
         chatsView.setHasFixedSize(false);
@@ -185,7 +181,7 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
             chatsView.setItemAnimator(null);
 
 
-        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, newChats);
+        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, chats);
         chatsView.setAdapter(chatsListAdapter);
         chatsListAdapter.notifyDataSetChanged();
     }

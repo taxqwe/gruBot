@@ -23,9 +23,10 @@ public class ChatActivity extends AppCompatActivity {
             Slidr.attach(this, App.INSTANCE.getSlidrConfig());
 
         String chatId = getIntent().getExtras().getString("chatId");
+        String chatTitle = getIntent().getExtras().getString("chatTitle");
 
         if (savedInstanceState == null) {
-            Fragment chatFragment = ChatFragment.newInstance(chatId);
+            Fragment chatFragment = ChatFragment.newInstance(chatId, chatTitle);
 
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction transaction = fm.beginTransaction();
