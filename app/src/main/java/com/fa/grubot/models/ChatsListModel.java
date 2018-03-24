@@ -29,7 +29,9 @@ import com.github.badoualy.telegram.tl.api.TLPeerUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 
@@ -54,7 +56,8 @@ public class ChatsListModel {
 
     public void sendVkChatListRequest(ChatsListPresenter presenter) {
         Log.d("VK DIALOGS", "trying to get list of dialogs... ");
-        VKRequest request = VKApi.messages().getDialogs();
+        VKRequest request = VKApi.messages()
+                .getDialogs(VKParameters.from(VKApiConst.COUNT, 20));
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
