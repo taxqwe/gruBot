@@ -2,6 +2,7 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.fa.grubot.App;
@@ -21,7 +22,6 @@ import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewChannelMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewMessage;
-import com.github.badoualy.telegram.tl.api.TLUpdateShortSentMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdates;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
@@ -71,7 +71,7 @@ public class ChatModel {
             Object returnObject;
 
             try {
-                TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 0);
+                TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 1);
                 TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
                 TLAbsUpdates tlAbsUpdates = client.messagesSendMessage(inputPeer, message, Math.abs(new Random().nextLong()));
 
@@ -112,7 +112,7 @@ public class ChatModel {
                 e.printStackTrace();
                 returnObject = e;
             } finally {
-                client.close(false);
+                //client.close(false);
             }
             return returnObject;
         }
@@ -158,9 +158,11 @@ public class ChatModel {
 
                         User user;
                         try {
+                            Log.d("debug", "Trying to get user with id: " + tlMessage.getFromId());
                             user = users.get(tlMessage.getFromId());
                         } catch (Exception e) {
                             int chatId = ((TLPeerChannel) tlMessage.getToId()).getChannelId();
+                            Log.d("debug", "Is not a user, trying to get chat with id: " + chatId);
                             user = TelegramHelper.Chats.getChatAsUser(client, chatId, context.get());
                         }
 

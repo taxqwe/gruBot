@@ -4,7 +4,6 @@ package com.fa.grubot.presenters;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ChatsListFragmentBase;
@@ -90,12 +89,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override
                 public void onMessage(TelegramMessageEvent telegramMessageEvent) {
-<<<<<<< HEAD
-                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(mergedChats, telegramMessageEvent), true));
-=======
-                    Log.d("debug", "IM STILL WORKIN'!!!!!!!!!!!");
                     ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(chats, telegramMessageEvent), true));
->>>>>>> parent of 385cc2a... Merge pull request #45 from taxqwe/dev
                 }
 
                 @Override
