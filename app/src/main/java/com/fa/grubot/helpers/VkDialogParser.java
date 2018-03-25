@@ -64,7 +64,7 @@ public class VkDialogParser {
             Chat chat = new Chat(messagePOJO.getUserId().toString(),
                     isGroupDialog ? messagePOJO.getTitle() : VkHelper.getVkUserInfoById(messagePOJO.getUserId().toString()).first_name,
                     usersInDialog,
-                    "http://nonsoc.com/uploads/posts/2017-04/1492002153_vk-zen-dlya-google-chrome.jpg",
+                    getPictureLinkFromJson(messagesArrayJson.getJSONObject(i)),
                     messagePOJO.getBody(),
                     DataType.VK,
                     messagePOJO.getDate(),
@@ -87,5 +87,22 @@ public class VkDialogParser {
 
     public Observable<Chat> getDialogsSubscription() {
         return dialogsSubscription;
+    }
+
+    private String getPictureLinkFromJson(JSONObject jsonObject){
+        try {
+            if (jsonObject.getJSONObject("message").has("photo_100")) {
+                return jsonObject.getJSONObject("message").getString("photo_100");
+            } else if (!jsonObject.getJSONObject("message").has("chat_id")){
+                String userId = jsonObject.getJSONObject("message").getString("user_id");
+                return VkHelper.getVkUserInfoById(userId).getPhoto_100();
+            } else {
+                return "http://nonsoc.com/uploads/posts/2017-04/1492002153_vk-zen-dlya-google-chrome.jpg";
+            }
+
+        } catch (JSONException e){
+            return "http://nonsoc.com/uploads/posts/2017-04/1492002153_vk-zen-dlya-google-chrome.jpg";
+        }
+
     }
 }
