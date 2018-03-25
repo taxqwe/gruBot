@@ -21,9 +21,6 @@ import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.FragmentState;
 import com.github.badoualy.telegram.api.TelegramClient;
-import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
-import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
-import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
 
 import java.sql.Date;
@@ -134,7 +131,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
                             if (fromId == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
                                 user = App.INSTANCE.getCurrentUser().getTelegramChatUser();
                             else {
-                                TLAbsMessages tlAbsMessages = client.messagesGetHistory(chat.getInputPeer(), 0, 0, 0, 40, 0, 0);
+                                TLAbsMessages tlAbsMessages = client.messagesGetHistory(chat.getInputPeer(), 0, 0, 0, 40, 0, 1);
                                 users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context);
 
                                 try {

@@ -14,21 +14,17 @@ import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.github.badoualy.telegram.api.TelegramClient;
-import com.github.badoualy.telegram.tl.api.TLAbsChat;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdate;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdates;
-import com.github.badoualy.telegram.tl.api.TLChannel;
-import com.github.badoualy.telegram.tl.api.TLDialog;
-import com.github.badoualy.telegram.tl.api.TLInputPeerChannel;
-import com.github.badoualy.telegram.tl.api.TLInputPeerChat;
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
-import com.github.badoualy.telegram.tl.api.TLInputPeerSelf;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewChannelMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewMessage;
+import com.github.badoualy.telegram.tl.api.TLUpdateShort;
+import com.github.badoualy.telegram.tl.api.TLUpdateShortSentMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdates;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
@@ -86,11 +82,11 @@ public class ChatModel {
                 else
                     user = TelegramHelper.Chats.getChatUser(client, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), context.get());
 
+                String messageId = null;
+                Date messageDate = null;
+
                 if (tlAbsUpdates instanceof TLUpdates) {
                     TLUpdates tlUpdates = (TLUpdates) tlAbsUpdates;
-
-                    String messageId = null;
-                    Date messageDate = null;
 
                     for (TLAbsUpdate absUpdate : tlUpdates.getUpdates()) {
                         if (absUpdate instanceof TLUpdateNewMessage) {
@@ -109,14 +105,17 @@ public class ChatModel {
                             }
                         }
                     }
+                } else if (tlAbsUpdates instanceof TLUpdateShortSentMessage) {
+                    TLUpdateShortSentMessage updateMessageSent = (TLUpdateShortSentMessage) tlAbsUpdates;
 
-                    if (messageId != null && messageDate != null)
-                        returnObject = new ChatMessage(messageId, message, user, messageDate);
-                    else
-                        returnObject = null;
-                } else {
-                    returnObject = null;
+                    messageId = String.valueOf(updateMessageSent.getId());
+                    messageDate = new Date(((long) updateMessageSent.getDate()) * 1000);
                 }
+
+                if (messageId != null && messageDate != null)
+                    returnObject = new ChatMessage(messageId, message, user, messageDate);
+                else
+                    returnObject = null;
             } catch (Exception e) {
                 e.printStackTrace();
                 returnObject = e;
