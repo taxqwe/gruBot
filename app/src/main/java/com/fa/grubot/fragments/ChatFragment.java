@@ -89,12 +89,6 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     }
 
     @Override
-    public void onPause() {
-        App.INSTANCE.closeTelegramClient();
-        super.onPause();
-    }
-
-    @Override
     public void onStop() {
         App.INSTANCE.closeTelegramClient();
         super.onStop();
