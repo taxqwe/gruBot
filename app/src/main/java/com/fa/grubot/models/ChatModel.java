@@ -80,7 +80,11 @@ public class ChatModel {
             try {
                 TLAbsUpdates tlAbsUpdates = client.messagesSendMessage(chat.getInputPeer(), message, Math.abs(new Random().nextLong()));
 
-                User user = TelegramHelper.Chats.getChatUser(client, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), context.get());
+                User user;
+                if (App.INSTANCE.getCurrentUser().getTelegramChatUser() != null)
+                    user = App.INSTANCE.getCurrentUser().getTelegramChatUser();
+                else
+                    user = TelegramHelper.Chats.getChatUser(client, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), context.get());
 
                 if (tlAbsUpdates instanceof TLUpdates) {
                     TLUpdates tlUpdates = (TLUpdates) tlAbsUpdates;

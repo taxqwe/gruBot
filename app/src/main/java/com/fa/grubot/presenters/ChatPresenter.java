@@ -131,15 +131,19 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
                         SparseArray<User> users;
                         User user = null;
                         try {
-                            TLAbsMessages tlAbsMessages = client.messagesGetHistory(chat.getInputPeer(), 0, 0, 0, 40, 0, 0);
-                            users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context);
+                            if (fromId == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
+                                user = App.INSTANCE.getCurrentUser().getTelegramChatUser();
+                            else {
+                                TLAbsMessages tlAbsMessages = client.messagesGetHistory(chat.getInputPeer(), 0, 0, 0, 40, 0, 0);
+                                users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context);
 
-                            try {
-                                Log.d("debug", "Trying to get user with id: " + fromId);
-                                user = users.get(fromId);
-                            } catch (Exception e) {
-                                Log.d("debug", "Is not a user, trying to get chat with id: " + fromId);
-                                user = TelegramHelper.Chats.getChatAsUser(client.getDownloaderClient(), fromId, context);
+                                try {
+                                    Log.d("debug", "Trying to get user with id: " + fromId);
+                                    user = users.get(fromId);
+                                } catch (Exception e) {
+                                    Log.d("debug", "Is not a user, trying to get chat with id: " + fromId);
+                                    user = TelegramHelper.Chats.getChatAsUser(client.getDownloaderClient(), fromId, context);
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
