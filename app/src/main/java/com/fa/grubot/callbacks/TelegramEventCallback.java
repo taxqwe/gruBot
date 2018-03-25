@@ -116,7 +116,7 @@ public class TelegramEventCallback implements UpdateCallback {
 
         TelegramMessageEvent event = new TelegramMessageEvent(shortMessage.getMessage(),
                 shortMessage.getUserId(),
-                App.INSTANCE.getCurrentUser().getTelegramUser().getId(),
+                shortMessage.getUserId(),
                 ((long) shortMessage.getDate()) * 1000,
                 fromName);
 
@@ -124,13 +124,13 @@ public class TelegramEventCallback implements UpdateCallback {
     }
 
     @Override
-    public void onShortSentMessage(@NotNull TelegramClient telegramClient, @NotNull TLUpdateShortSentMessage tlUpdateShortSentMessage) {
-        LOG.debug("TLUpdateShortSentMessage called");
+    public void onShortSentMessage(@NotNull TelegramClient telegramClient, @NotNull TLUpdateShortSentMessage shortSentMessage) {
+        Log.d("debug", "TLUpdateShortSentMessage called");
     }
 
     @Override
     public void onUpdateTooLong(@NotNull TelegramClient telegramClient) {
-        LOG.debug("UpdateTooLong called");
+        Log.d("debug","UpdateTooLong called");
     }
 
     private void processUpdate(TLAbsUpdate update, TelegramClient client) {

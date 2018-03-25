@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.fa.grubot.App;
 import com.fa.grubot.R;
@@ -17,30 +19,42 @@ import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.chat.MessagesListParcelable;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.FragmentState;
+import com.fa.grubot.util.ImageLoader;
+import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.Icepick;
+import io.reactivex.annotations.Nullable;
 
-public class ChatFragment extends Fragment implements ChatFragmentBase, Serializable {
+public class ChatFragment extends Fragment implements ChatFragmentBase, Serializable, MessagesListAdapter.OnLoadMoreListener, MessageInput.InputListener {
 
-    @BindView(R.id.messagesList) MessagesListParcelable messagesListView;
-    @BindView(R.id.input) MessageInput inputView;
-    @BindView(R.id.toolbar) Toolbar chatToolbar;
+    @Nullable @BindView(R.id.messagesList) MessagesListParcelable messagesList;
+    @Nullable @BindView(R.id.input) MessageInput messageInput;
+    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
+    @Nullable @BindView(R.id.noData) View noData;
 
     private ChatPresenter presenter;
-    private MessagesListAdapter<ChatMessage> messageAdapter;
+    private MessagesListAdapter<ChatMessage> messagesListAdapter;
     private Unbinder unbinder;
 
     private int state;
-    String chatId;
+    private String chatId;
+    private String chatTitle;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -48,10 +62,11 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
         Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
-    public static ChatsListFragment newInstance(String id) {
+    public static ChatFragment newInstance(String chatId, String chatTitle) {
         Bundle args = new Bundle();
-        args.putString("chatId", id);
-        ChatsListFragment fragment = new ChatsListFragment();
+        args.putString("chatId", chatId);
+        args.putString("chatTitle", chatTitle);
+        ChatFragment fragment = new ChatFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,14 +78,16 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
         chatId = this.getArguments().getString("chatId");
+        chatTitle = this.getArguments().getString("chatTitle");
 
         return v;
     }
 
     @Override
     public void onResume() {
+        presenter.notifyFragmentStarted(chatId);
+        //presenter.setUpdateCallback();
         super.onResume();
-        presenter.notifyFragmentStarted();
     }
 
     @Override
@@ -89,6 +106,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     public void onDestroy() {
         App.INSTANCE.closeTelegramClient();
         presenter.destroy();
+        unbinder.unbind();
         super.onDestroy();
     }
 
@@ -98,27 +116,107 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
         Icepick.saveInstanceState(this, outState);
     }
 
+    @Override
+    public boolean onSubmit(CharSequence input) {
+        presenter.sendMessage(input.toString());
+        messageInput.getInputEditText().setText(null);
+        return false;
+    }
+
+    @Override
+    public void onLoadMore(int page, int totalItemsCount) {
+
+    }
+
+    @Override
+    public void showRequiredViews() {
+        progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
+
+        switch (state) {
+            case FragmentState.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case FragmentState.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+            case FragmentState.STATE_NO_DATA:
+                noData.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    @Override
     public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
         if (isNetworkAvailable) {
             if (isHasData)
                 state = FragmentState.STATE_CONTENT;
             else {
                 state = FragmentState.STATE_NO_DATA;
-                messageAdapter = null;
+                messagesListAdapter = null;
             }
         }
         else {
             state = FragmentState.STATE_NO_INTERNET_CONNECTION;
-            messageAdapter = null;
+            messagesListAdapter = null;
         }
     }
 
-    public void setupToolbar(String chatName) {
+    public void updateMessagesList(ArrayList<ChatMessage> messages, boolean moveToTop) {
+        /*if (isAdapterExists()) {
+            messagesListAdapter.updateMessagesList(messages);
+
+            if (moveToTop)
+                messagesList.scrollToPosition(0);
+        }*/
+    }
+
+    @Override
+    public void onMessageReceived(ChatMessage chatMessage) {
+        messagesListAdapter.addToStart(chatMessage, true);
+    }
+
+    @Override
+    public void setupRecyclerView(ArrayList<ChatMessage> messages) {
+        MessageHolders holdersConfig = new MessageHolders()
+                .setIncomingTextLayout(R.layout.item_custom_incoming_text_message)
+                .setOutcomingTextLayout(R.layout.item_custom_outcoming_text_message)
+                .setIncomingImageLayout(R.layout.item_custom_incoming_image_message)
+                .setOutcomingImageLayout(R.layout.item_custom_outcoming_image_message);
+
+        ImageLoader imageLoader = new ImageLoader(this);
+
+        messagesListAdapter = new MessagesListAdapter<>(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), holdersConfig, imageLoader);
+        messagesListAdapter.addToEnd(messages, false);
+        messagesList.setAdapter(messagesListAdapter);
+        messageInput.setInputListener(this);
+    }
+
+    @Override
+    public void setupToolbar() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(chatToolbar);
-        activity.getSupportActionBar().setTitle(chatName);
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setTitle(chatTitle);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.bringToFront();
+    }
+
+    @Override
+    public void setupRetryButton() {
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+    }
+
+    @Override
+    public boolean isListEmpty() {
+        return messagesListAdapter == null || messagesListAdapter.getItemCount() == 0;
+    }
+
+    @Override
+    public boolean isAdapterExists() {
+        return messagesListAdapter != null;
     }
 
     @Override

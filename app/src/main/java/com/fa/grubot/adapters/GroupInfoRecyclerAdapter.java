@@ -156,7 +156,7 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             User user = visibleItems.get(position).user;
 
             userName.setText(user.getFullname());
-            userPhone.setText(user.getPhoneNumber());
+            //userPhone.setText(user.getPhoneNumber());
             userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, user.getFullname()));
 
             userImage.getRootView().setOnClickListener(view -> {

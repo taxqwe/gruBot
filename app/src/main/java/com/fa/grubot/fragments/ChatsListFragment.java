@@ -68,6 +68,8 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chats_list, container, false);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+        setRetainInstance(true);
         presenter = new ChatsListPresenter(this, getActivity());
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
@@ -78,17 +80,18 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     @Override
     public void onResume() {
-        super.onResume();
         try {
             presenter.notifyFragmentStarted();
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        presenter.setUpdateCallback();
+        super.onResume();
     }
 
     @Override
     public void onPause() {
-        App.INSTANCE.closeTelegramClient();
+        //App.INSTANCE.closeTelegramClient();
         super.onPause();
     }
 
@@ -156,10 +159,6 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     }
 
     public void setupRecyclerView(ArrayList<Chat> chats) {
-        ArrayList<Chat> newChats = new ArrayList<>();
-        for (Chat chat : chats)
-            newChats.add(chat);
-
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         chatsView.setLayoutManager(mLayoutManager);
         chatsView.setHasFixedSize(false);
@@ -179,7 +178,7 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
             chatsView.setItemAnimator(null);
 
 
-        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, newChats);
+        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, chats);
         chatsView.setAdapter(chatsListAdapter);
         chatsListAdapter.notifyDataSetChanged();
     }

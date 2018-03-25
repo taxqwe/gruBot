@@ -1,10 +1,14 @@
 package com.fa.grubot.abstractions;
 
-public interface ChatFragmentBase {
-    //void setupRecyclerView(ArrayList<Chat> chats);
+import com.fa.grubot.objects.chat.ChatMessage;
+
+import java.util.ArrayList;
+
+public interface ChatFragmentBase extends FragmentBase {
+    void setupRecyclerView(ArrayList<ChatMessage> messages);
     void setupLayouts(boolean isNetworkAvailable, boolean isHasData);
-    void setupToolbar(String chatName);
-    //void updateChatsList();
-    //boolean isAdapterExists();
-    //boolean isListEmpty();
+    void updateMessagesList(ArrayList<ChatMessage> messages, boolean moveToTop);
+    void onMessageReceived(ChatMessage chatMessage);
+    boolean isAdapterExists();
+    boolean isListEmpty();
 }

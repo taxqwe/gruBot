@@ -1,6 +1,7 @@
 package com.fa.grubot.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -12,10 +13,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.fa.grubot.ChatActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.callbacks.ChatsListDiffCallback;
 import com.fa.grubot.fragments.BaseFragment;
-import com.fa.grubot.fragments.GroupInfoFragment;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.util.DataType;
 import com.fa.grubot.util.Globals;
@@ -92,7 +93,10 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
         }
 
         holder.chatImage.getRootView().setOnClickListener(v -> {
-            fragmentNavigation.pushFragment(GroupInfoFragment.newInstance(instance + 1, chat));
+            Intent intent = new Intent(context, ChatActivity.class);
+            intent.putExtra("chatId", chat.getId());
+            intent.putExtra("chatTitle", chat.getName());
+            context.startActivity(intent);
         });
     }
 

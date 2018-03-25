@@ -4,6 +4,7 @@ package com.fa.grubot.presenters;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ChatsListFragmentBase;
@@ -44,9 +45,8 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         if (App.INSTANCE.getCurrentUser().hasTelegramUser())
             model.sendChatsListRequest(context, presenter);
 
-        if (App.INSTANCE.getCurrentUser().hasVkUser()){
+        if (App.INSTANCE.getCurrentUser().hasVkUser())
             model.sendVkChatListRequest(this);
-        }
     }
 
     private void notifyViewCreated(int state) {
@@ -89,12 +89,12 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         }
     }
 
-    private void setUpdateCallback() {
+    public void setUpdateCallback() {
         AsyncTask.execute(() -> {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override
                 public void onMessage(TelegramMessageEvent telegramMessageEvent) {
-                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(mergedChats, telegramMessageEvent), true));
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(chats, telegramMessageEvent), true));
                 }
 
                 @Override
