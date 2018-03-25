@@ -58,8 +58,8 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
 
 
     @Override
-    public void onMessageSent(ChatMessage message) {
-
+    public void onMessageSent(ChatMessage chatMessage) {
+        fragment.onMessageReceived(chatMessage);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
                 public void onMessage(TelegramMessageEvent telegramMessageEvent) {
                     Log.d("debug", "Received a message: " + telegramMessageEvent.getMessage());
                     if (telegramMessageEvent.getToId() == Integer.valueOf(chatId)) {
-                        int messageId = telegramMessageEvent.getFromId();
+                        int messageId = telegramMessageEvent.getMessageId();
                         String messageText = telegramMessageEvent.getMessage();
                         Date createdAt = new Date(telegramMessageEvent.getDate());
                         int userId = telegramMessageEvent.getFromId();
@@ -141,7 +141,8 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     }
 
     public void destroy() {
-        client.close(false);
+        if (client != null)
+            client.close(false);
         fragment = null;
         model = null;
     }

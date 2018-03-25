@@ -82,6 +82,13 @@ public class App extends Application {
         return telegramClient;
     }
 
+    public TelegramClient getNewDownloaderClient() {
+        if (telegramClient != null && !telegramClient.isClosed())
+            return telegramClient.getDownloaderClient();
+        else
+            return getNewTelegramClient(null).getDownloaderClient();
+    }
+
     public void closeTelegramClient() {
         if (telegramClient != null)
             telegramClient.close(false);

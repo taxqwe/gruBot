@@ -13,10 +13,14 @@ import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
+import com.github.badoualy.telegram.tl.api.TLAbsMessage;
+import com.github.badoualy.telegram.tl.api.TLAbsUpdate;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdates;
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
+import com.github.badoualy.telegram.tl.api.TLUpdateNewChannelMessage;
+import com.github.badoualy.telegram.tl.api.TLUpdateNewMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateShortSentMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdates;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
@@ -63,20 +67,46 @@ public class ChatModel {
 
         @Override
         protected Object doInBackground(Void... params) {
-            TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
-            Object returnObject = null;
+            TelegramClient client = App.INSTANCE.getNewDownloaderClient().getDownloaderClient();
+            Object returnObject;
 
             try {
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 0);
                 TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
                 TLAbsUpdates tlAbsUpdates = client.messagesSendMessage(inputPeer, message, Math.abs(new Random().nextLong()));
 
-                if (tlAbsUpdates instanceof TLUpdateShortSentMessage) {
-                    TLUpdateShortSentMessage shortSentMessage = (TLUpdateShortSentMessage) tlAbsUpdates;
+                User user = TelegramHelper.Chats.getChatUser(client, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), context.get());
 
-                    User user = TelegramHelper.Chats.getChatUser(client, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), context.get());
+                if (tlAbsUpdates instanceof TLUpdates) {
+                    TLUpdates tlUpdates = (TLUpdates) tlAbsUpdates;
 
-                    returnObject = new ChatMessage(String.valueOf(shortSentMessage.getId()), message, user, new Date(((long) shortSentMessage.getDate()) * 1000));
+                    String messageId = null;
+                    Date messageDate = null;
+
+                    for (TLAbsUpdate absUpdate : tlUpdates.getUpdates()) {
+                        if (absUpdate instanceof TLUpdateNewMessage) {
+                            TLAbsMessage message = ((TLUpdateNewMessage) absUpdate).getMessage();
+                            if (message instanceof TLMessage) {
+                                TLMessage tlMessage = (TLMessage) message;
+                                messageId = String.valueOf(tlMessage.getId());
+                                messageDate = new Date(((long) tlMessage.getDate()) * 1000);
+                            }
+                        } else if (absUpdate instanceof TLUpdateNewChannelMessage) {
+                            TLAbsMessage message = ((TLUpdateNewChannelMessage) absUpdate).getMessage();
+                            if (message instanceof TLMessage) {
+                                TLMessage tlMessage = (TLMessage) message;
+                                messageId = String.valueOf(tlMessage.getId());
+                                messageDate = new Date(((long) tlMessage.getDate()) * 1000);
+                            }
+                        }
+                    }
+
+                    if (messageId != null && messageDate != null)
+                        returnObject = new ChatMessage(messageId, message, user, messageDate);
+                    else
+                        returnObject = null;
+                } else {
+                    returnObject = null;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -112,8 +142,8 @@ public class ChatModel {
 
         @Override
         protected Object doInBackground(Void... params) {
-            TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
-            Object returnObject = null;
+            TelegramClient client = App.INSTANCE.getNewDownloaderClient();
+            Object returnObject;
 
             try {
                 ArrayList<ChatMessage> messages = new ArrayList<>();

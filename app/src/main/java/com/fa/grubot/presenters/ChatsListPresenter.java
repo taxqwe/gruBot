@@ -94,7 +94,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override
                 public void onMessage(TelegramMessageEvent telegramMessageEvent) {
-                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(chats, telegramMessageEvent), true));
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onNewMessage(mergedChats, telegramMessageEvent), true));
                 }
 
                 @Override
