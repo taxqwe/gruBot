@@ -22,9 +22,8 @@ import com.fa.grubot.util.Globals;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,7 +77,7 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
             holder.lastMessageFrom.setVisibility(View.GONE);
         }
 
-        holder.lastMessageDate.setText(formatDate(chat.getLastMessageDate()));
+        holder.lastMessageDate.setText(chat.getLastMessageDateAsString());
 
         String imgUri = chat.getImgURI();
         if (imgUri == null)
@@ -86,8 +85,11 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
         else
             Glide.with(context).load(imgUri).apply(RequestOptions.circleCropTransform()).into(holder.chatImage);
 
-        if (chat.getType().equals(DataType.Telegram))
+        if (chat.getType().equals(DataType.Telegram)) {
             Glide.with(context).load(R.drawable.ic_telegram).into(holder.chatTypeImage);
+        } else if (chat.getType().equals(DataType.VK)){
+            Glide.with(context).load(R.drawable.ic_vk).into(holder.chatTypeImage);
+        }
 
         holder.chatImage.getRootView().setOnClickListener(v -> {
             fragmentNavigation.pushFragment(GroupInfoFragment.newInstance(instance + 1, chat));
@@ -100,6 +102,7 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
 
         this.chats.clear();
         this.chats = cloneChatsList(chats);
+        Collections.sort(this.chats);
         diffResult.dispatchUpdatesTo(this);
     }
 
@@ -119,18 +122,5 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
             }
         }
         return resultList;
-    }
-
-    private String formatDate(long date) {
-        SimpleDateFormat dateFormat;
-
-        if (DateUtils.isToday(date))
-            dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        else if (DateUtils.isToday(date + DateUtils.DAY_IN_MILLIS))
-            return "Вчера";
-        else
-            dateFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
-
-        return dateFormat.format(date);
     }
 }
