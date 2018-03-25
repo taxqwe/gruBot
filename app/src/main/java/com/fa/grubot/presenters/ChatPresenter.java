@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ChatFragmentBase;
+import com.fa.grubot.abstractions.ChatMessageSendRequestResponse;
 import com.fa.grubot.abstractions.MessagesListRequestResponse;
 import com.fa.grubot.callbacks.TelegramEventCallback;
 import com.fa.grubot.helpers.TelegramHelper;
@@ -22,7 +23,7 @@ import com.github.badoualy.telegram.api.TelegramClient;
 import java.sql.Date;
 import java.util.ArrayList;
 
-public class ChatPresenter implements MessagesListRequestResponse {
+public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSendRequestResponse {
 
     private ChatFragmentBase fragment;
     private ChatModel model;
@@ -52,9 +53,16 @@ public class ChatPresenter implements MessagesListRequestResponse {
     }
 
     public void sendMessage(String message) {
-        model.sendMessage(context, chatId, message);
+        model.sendMessage(context, chatId, presenter, message);
     }
 
+
+    @Override
+    public void onMessageSent(ChatMessage message) {
+
+    }
+
+    @Override
     public void onMessagesListResult(ArrayList<ChatMessage> messages, boolean moveToTop) {
         this.messages = messages;
 

@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.SparseArray;
 
 import com.fa.grubot.App;
+import com.fa.grubot.abstractions.ChatMessageSendRequestResponse;
 import com.fa.grubot.abstractions.MessagesListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.ChatMessage;
@@ -12,9 +13,12 @@ import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
+import com.github.badoualy.telegram.tl.api.TLAbsUpdates;
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
+import com.github.badoualy.telegram.tl.api.TLUpdateShortSentMessage;
+import com.github.badoualy.telegram.tl.api.TLUpdates;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
 
@@ -34,8 +38,9 @@ public class ChatModel {
         request.execute();
     }
 
-    public void sendMessage(Context context, String chatId, String message) {
+    public void sendMessage(Context context, String chatId, ChatPresenter presenter, String message) {
         SendMessage request = new SendMessage(context, chatId, message);
+        request.response = presenter;
         request.execute();
     }
 
@@ -43,7 +48,7 @@ public class ChatModel {
         private WeakReference<Context> context;
         private String message;
         private String chatId;
-        private MessagesListRequestResponse response = null;
+        private ChatMessageSendRequestResponse response = null;
 
         private SendMessage(Context context, String chatId, String message) {
             this.context = new WeakReference<>(context);
@@ -59,24 +64,34 @@ public class ChatModel {
         @Override
         protected Object doInBackground(Void... params) {
             TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
+            Object returnObject = null;
 
             try {
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 0);
                 TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
-                client.messagesSendMessage(inputPeer, message, Math.abs(new Random().nextLong()));
+                TLAbsUpdates tlAbsUpdates = client.messagesSendMessage(inputPeer, message, Math.abs(new Random().nextLong()));
+
+                if (tlAbsUpdates instanceof TLUpdateShortSentMessage) {
+                    TLUpdateShortSentMessage shortSentMessage = (TLUpdateShortSentMessage) tlAbsUpdates;
+
+                    User user = TelegramHelper.Chats.getChatUser(client, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), context.get());
+
+                    returnObject = new ChatMessage(String.valueOf(shortSentMessage.getId()), message, user, new Date(((long) shortSentMessage.getDate()) * 1000));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+                returnObject = e;
             } finally {
                 client.close(false);
             }
-            return null;
+            return returnObject;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         protected void onPostExecute(Object result) {
-            //if (response != null && result instanceof ArrayList<?>)
-                //response.onMessagesListResult((ArrayList<ChatMessage>) result, true);
+            if (response != null && result != null && result instanceof ChatMessage)
+                response.onMessageSent((ChatMessage) result);
         }
     }
 
@@ -97,10 +112,11 @@ public class ChatModel {
 
         @Override
         protected Object doInBackground(Void... params) {
-            ArrayList<ChatMessage> messages = new ArrayList<>();
             TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
+            Object returnObject = null;
 
             try {
+                ArrayList<ChatMessage> messages = new ArrayList<>();
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000);
                 TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
                 TLAbsMessages tlAbsMessages = client.messagesGetHistory(inputPeer, 0, 0, 0, 40, 0, 0); //TODO add an offset here
@@ -127,20 +143,21 @@ public class ChatModel {
                     } else
                         System.out.println("Service message");
                 });
-
-                return messages;
+                returnObject = messages;
             } catch (Exception e) {
                 e.printStackTrace();
-                return e;
+                returnObject = e;
             } finally {
                 client.close(false);
             }
+
+            return returnObject;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         protected void onPostExecute(Object result) {
-            if (response != null && result instanceof ArrayList<?>)
+            if (response != null && result != null && result instanceof ArrayList<?>)
                 response.onMessagesListResult((ArrayList<ChatMessage>) result, true);
         }
     }
