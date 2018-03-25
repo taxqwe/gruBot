@@ -9,14 +9,15 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.fa.grubot.objects.group.CurrentUser;
-import com.fa.grubot.objects.group.VkUser;
+import com.fa.grubot.objects.users.CurrentUser;
+import com.fa.grubot.objects.users.VkUser;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLInputUserSelf;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.TLUserFull;
 import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKSdk;
 
 import java.lang.ref.WeakReference;
 
@@ -34,7 +35,7 @@ public class SplashActivity extends AppCompatActivity {
 
         loadPreferences();
         (new TryToLoginAsyncTask(this)).execute();
-        if (VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()) != null && !VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()).isExpired()) {
+        if (VKSdk.isLoggedIn()){
             vkUser = new VkUser(VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()).accessToken);
         }
         vkUserChecked = true;
@@ -121,10 +122,12 @@ public class SplashActivity extends AppCompatActivity {
     private void nextIfBothAccountsChecked() {
         if ((vkUser != null || tlUser != null) && (vkUserChecked && tlUserChecked)) {
             App.INSTANCE.setCurrentUser(new CurrentUser(tlUser, vkUser));
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, MainActivity.class)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
             finish();
         } else if (vkUserChecked && tlUserChecked){
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, LoginActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }
 }

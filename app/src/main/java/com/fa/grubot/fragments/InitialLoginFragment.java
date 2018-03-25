@@ -15,8 +15,8 @@ import com.fa.grubot.App;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.InitialLoginFragmentBase;
-import com.fa.grubot.objects.group.CurrentUser;
-import com.fa.grubot.objects.group.VkUser;
+import com.fa.grubot.objects.users.CurrentUser;
+import com.fa.grubot.objects.users.VkUser;
 import com.fa.grubot.presenters.InitialLoginPresenter;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
@@ -96,17 +96,12 @@ public class InitialLoginFragment extends Fragment implements InitialLoginFragme
     }
 
     private void callVkLogin() {
-        String[] scope = {VKScope.FRIENDS,
+        String[] scope = {
+                VKScope.FRIENDS,
                 VKScope.EMAIL,
-                VKScope.WALL,
-                VKScope.PHOTOS,
                 VKScope.NOHTTPS,
-                VKScope.MESSAGES,
-                VKScope.DOCS,
-                VKScope.GROUPS,
-                VKScope.PAGES,
-                VKScope.MESSAGES,
-                VKScope.OFFLINE};
+                VKScope.MESSAGES
+        };
 
         Intent intent = new Intent(getActivity(), VKServiceActivity.class);
         intent.putExtra("arg1", "Authorization");

@@ -12,7 +12,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
@@ -42,18 +42,14 @@
             android:screenOrientation="sensor"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation|screenSize"/>
 
         <activity android:name=".ChatActivity"
             android:screenOrientation="sensor"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="orientation|screenSize" />
-
-        <activity android:name=".BranchesActivity"
-            android:screenOrientation="sensor"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"/>
 
     </application>
 

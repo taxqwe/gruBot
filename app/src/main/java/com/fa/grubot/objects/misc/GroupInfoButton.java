@@ -1,4 +1,4 @@
-package com.fa.grubot.objects.group;
+package com.fa.grubot.objects.misc;
 
 import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 
@@ -26,6 +26,7 @@ public class GroupInfoButton {
     public void addChild(GroupInfoRecyclerAdapter.GroupInfoRecyclerItem item) {
         childList.add(item);
     }
+
     public int getChildCount() {
         return childList.size();
     }

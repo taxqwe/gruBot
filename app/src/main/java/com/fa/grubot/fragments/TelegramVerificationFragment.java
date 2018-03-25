@@ -21,7 +21,7 @@ import com.fa.grubot.LoginActivity;
 import com.fa.grubot.MainActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.TelegramVerificationFragmentBase;
-import com.fa.grubot.objects.group.CurrentUser;
+import com.fa.grubot.objects.users.CurrentUser;
 import com.fa.grubot.presenters.TelegramVerificationPresenter;
 import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.api.TelegramClient;

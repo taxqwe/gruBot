@@ -2,8 +2,8 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 
-import com.fa.grubot.objects.group.User;
 import com.fa.grubot.objects.misc.ProfileItem;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;

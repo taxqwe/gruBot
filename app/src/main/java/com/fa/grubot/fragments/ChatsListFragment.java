@@ -22,6 +22,7 @@ import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.FragmentState;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -66,9 +67,10 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new ChatsListPresenter(this, getActivity());
         View v = inflater.inflate(R.layout.fragment_chats_list, container, false);
-
+        Icepick.restoreInstanceState(this, savedInstanceState);
+        setRetainInstance(true);
+        presenter = new ChatsListPresenter(this, getActivity());
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
         instance = this.getArguments().getInt("instance");
@@ -78,26 +80,32 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     @Override
     public void onResume() {
+        try {
+            presenter.notifyFragmentStarted();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        presenter.setUpdateCallback();
         super.onResume();
-        presenter.notifyFragmentStarted();
     }
 
     @Override
     public void onPause() {
-        App.INSTANCE.closeTelegramClient();
+        //App.INSTANCE.closeTelegramClient();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        App.INSTANCE.closeTelegramClient();
-        super.onDestroy();
     }
 
     @Override
     public void onStop() {
         App.INSTANCE.closeTelegramClient();
         super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        App.INSTANCE.closeTelegramClient();
+        presenter.destroy();
+        super.onDestroy();
     }
 
     @Override
@@ -151,10 +159,6 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     }
 
     public void setupRecyclerView(ArrayList<Chat> chats) {
-        ArrayList<Chat> newChats = new ArrayList<>();
-        for (Chat chat : chats)
-            newChats.add(chat);
-
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         chatsView.setLayoutManager(mLayoutManager);
         chatsView.setHasFixedSize(false);
@@ -174,7 +178,7 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
             chatsView.setItemAnimator(null);
 
 
-        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, newChats);
+        chatsListAdapter = new ChatsListRecyclerAdapter(getActivity(), instance, fragmentNavigation, chats);
         chatsView.setAdapter(chatsListAdapter);
         chatsListAdapter.notifyDataSetChanged();
     }
@@ -183,10 +187,12 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
-    public void updateChatsList(ArrayList<Chat> chats) {
+    public void updateChatsList(ArrayList<Chat> chats, boolean moveToTop) {
         if (isAdapterExists()) {
             chatsListAdapter.updateChatsList(chats);
-            chatsView.scrollToPosition(0);
+
+            if (moveToTop)
+                chatsView.scrollToPosition(0);
         }
     }
 

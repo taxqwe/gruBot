@@ -7,9 +7,9 @@ import com.fa.grubot.models.GroupInfoModel;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
-import com.fa.grubot.objects.group.GroupInfoButton;
-import com.fa.grubot.objects.group.User;
+import com.fa.grubot.objects.misc.GroupInfoButton;
 import com.fa.grubot.objects.misc.VoteOption;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.FragmentState;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -175,7 +175,6 @@ public class GroupInfoPresenter {
                     User user = new User( doc.get("userId").toString(),
                             doc.get("username").toString(),
                             doc.get("fullname").toString(),
-                            doc.get("phoneNumber").toString(),
                             doc.get("desc").toString(),
                             doc.get("imgUrl").toString());
 
