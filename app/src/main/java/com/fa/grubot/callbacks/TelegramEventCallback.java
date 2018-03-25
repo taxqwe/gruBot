@@ -114,13 +114,18 @@ public class TelegramEventCallback implements UpdateCallback {
     public void onShortMessage(@NotNull TelegramClient client, @NotNull TLUpdateShortMessage shortMessage) {
         Log.d("debug", "TLUpdateShortMessage called");
         String fromName = null;
+        int fromId;
 
-        if (shortMessage.getOut())
+        if (shortMessage.getOut()) {
             fromName = "Вы";
+            fromId = App.INSTANCE.getCurrentUser().getTelegramUser().getId();
+        } else {
+            fromId = shortMessage.getUserId();
+        }
 
         TelegramMessageEvent event = new TelegramMessageEvent(shortMessage.getId(),
                 shortMessage.getMessage(),
-                shortMessage.getUserId(),
+                fromId,
                 shortMessage.getUserId(),
                 ((long) shortMessage.getDate()) * 1000,
                 fromName);
