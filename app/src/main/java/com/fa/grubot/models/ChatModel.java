@@ -9,15 +9,22 @@ import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ChatMessageSendRequestResponse;
 import com.fa.grubot.abstractions.MessagesListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
+import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.tl.api.TLAbsChat;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdate;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdates;
+import com.github.badoualy.telegram.tl.api.TLChannel;
+import com.github.badoualy.telegram.tl.api.TLDialog;
+import com.github.badoualy.telegram.tl.api.TLInputPeerChannel;
+import com.github.badoualy.telegram.tl.api.TLInputPeerChat;
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
+import com.github.badoualy.telegram.tl.api.TLInputPeerSelf;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewChannelMessage;
@@ -42,8 +49,8 @@ public class ChatModel {
         request.execute();
     }
 
-    public void sendMessage(Context context, String chatId, ChatPresenter presenter, String message) {
-        SendMessage request = new SendMessage(context, chatId, message);
+    public void sendMessage(Context context, Chat chat, ChatPresenter presenter, String message) {
+        SendMessage request = new SendMessage(context, chat, message);
         request.response = presenter;
         request.execute();
     }
@@ -51,13 +58,13 @@ public class ChatModel {
     public static class SendMessage extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
         private String message;
-        private String chatId;
+        private Chat chat;
         private ChatMessageSendRequestResponse response = null;
 
-        private SendMessage(Context context, String chatId, String message) {
+        private SendMessage(Context context, Chat chat, String message) {
             this.context = new WeakReference<>(context);
             this.message = message;
-            this.chatId = chatId;
+            this.chat = chat;
         }
 
         @Override
@@ -71,9 +78,7 @@ public class ChatModel {
             Object returnObject;
 
             try {
-                TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 1);
-                TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
-                TLAbsUpdates tlAbsUpdates = client.messagesSendMessage(inputPeer, message, Math.abs(new Random().nextLong()));
+                TLAbsUpdates tlAbsUpdates = client.messagesSendMessage(chat.getInputPeer(), message, Math.abs(new Random().nextLong()));
 
                 User user = TelegramHelper.Chats.getChatUser(client, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), context.get());
 

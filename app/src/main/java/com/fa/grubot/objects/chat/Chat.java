@@ -1,5 +1,7 @@
 package com.fa.grubot.objects.chat;
 
+import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -12,6 +14,8 @@ public class Chat implements Serializable, Cloneable {
     private String type;
     private long lastMessageDate;
     private String lastMessageFrom;
+
+    private TLAbsInputPeer inputPeer;
 
     public Chat(String id, String name, Map<String, Boolean> users, String imgUri, String lastMessage, String type, long lastMessageDate, String lastMessageFrom) {
         this.id = id;
@@ -90,6 +94,14 @@ public class Chat implements Serializable, Cloneable {
 
     public void setLastMessageFrom(String lastMessageFrom) {
         this.lastMessageFrom = lastMessageFrom;
+    }
+
+    public TLAbsInputPeer getInputPeer() {
+        return inputPeer;
+    }
+
+    public void setInputPeer(TLAbsInputPeer inputPeer) {
+        this.inputPeer = inputPeer;
     }
 
     public Object clone() throws CloneNotSupportedException {

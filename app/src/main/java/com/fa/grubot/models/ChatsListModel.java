@@ -17,6 +17,7 @@ import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.DataType;
 import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsMessageAction;
 import com.github.badoualy.telegram.tl.api.TLAbsPeer;
@@ -124,6 +125,7 @@ public class ChatsListModel {
                     String fromName = null;
 
                     TLAbsMessage lastMessage = messagesMap.get(dialog.getTopMessage());
+                    TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, String.valueOf(chatId));
 
                     if (lastMessage instanceof TLMessage) {
                         TLMessage message = (TLMessage) lastMessage;
@@ -164,6 +166,7 @@ public class ChatsListModel {
                     String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context.get());
 
                     chat = new Chat(String.valueOf(chatId), chatName, null, imgUri, lastMessageText, DataType.Telegram, lastMessageDate * 1000, fromName);
+                    chat.setInputPeer(inputPeer);
                     chatsList.add(chat);
                 });
                 return chatsList;

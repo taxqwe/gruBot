@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.fa.grubot.fragments.ChatFragment;
+import com.fa.grubot.objects.chat.Chat;
 import com.r0adkll.slidr.Slidr;
 
 import icepick.Icepick;
@@ -22,11 +23,10 @@ public class ChatActivity extends AppCompatActivity {
         if (App.INSTANCE.isSlidrEnabled())
             Slidr.attach(this, App.INSTANCE.getSlidrConfig());
 
-        String chatId = getIntent().getExtras().getString("chatId");
-        String chatTitle = getIntent().getExtras().getString("chatTitle");
+        Chat chat = (Chat) getIntent().getSerializableExtra("chat");
 
         if (savedInstanceState == null) {
-            Fragment chatFragment = ChatFragment.newInstance(chatId, chatTitle);
+            Fragment chatFragment = ChatFragment.newInstance(chat);
 
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction transaction = fm.beginTransaction();

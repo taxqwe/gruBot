@@ -13,6 +13,7 @@ import com.fa.grubot.abstractions.MessagesListRequestResponse;
 import com.fa.grubot.callbacks.TelegramEventCallback;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.models.ChatModel;
+import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
@@ -37,6 +38,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     private TelegramEventCallback.TelegramEventListener telegramEventListener;
 
     private String chatId;
+    private Chat chat;
     private ChatPresenter presenter = this;
     private TelegramClient client;
 
@@ -48,8 +50,10 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
         model = new ChatModel();
     }
 
-    public void notifyFragmentStarted(String chatId) {
-        this.chatId = chatId;
+    public void notifyFragmentStarted(Chat chat) {
+        this.chat = chat;
+        this.chatId = chat.getId();
+
         if (App.INSTANCE.getCurrentUser().hasTelegramUser())
             model.sendTelegramMessagesRequest(context, presenter, chatId);
 
@@ -58,7 +62,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     }
 
     public void sendMessage(String message) {
-        model.sendMessage(context, chatId, presenter, message);
+        model.sendMessage(context, chat, presenter, message);
     }
 
     @Override
@@ -127,9 +131,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
                         SparseArray<User> users;
                         User user = null;
                         try {
-                            TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000);
-                            TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
-                            TLAbsMessages tlAbsMessages = client.messagesGetHistory(inputPeer, 0, 0, 0, 40, 0, 0);
+                            TLAbsMessages tlAbsMessages = client.messagesGetHistory(chat.getInputPeer(), 0, 0, 0, 40, 0, 0);
                             users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context);
 
                             try {

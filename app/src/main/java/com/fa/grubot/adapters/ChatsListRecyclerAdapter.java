@@ -92,8 +92,7 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
 
         holder.chatImage.getRootView().setOnClickListener(v -> {
             Intent intent = new Intent(context, ChatActivity.class);
-            intent.putExtra("chatId", chat.getId());
-            intent.putExtra("chatTitle", chat.getName());
+            intent.putExtra("chat", chat);
             context.startActivity(intent);
         });
     }
