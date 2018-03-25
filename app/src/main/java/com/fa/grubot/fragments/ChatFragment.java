@@ -135,7 +135,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
                 noInternet.setVisibility(View.VISIBLE);
                 break;
             case FragmentState.STATE_NO_DATA:
-                noData.setVisibility(View.VISIBLE);
+                content.setVisibility(View.VISIBLE);
                 break;
         }
     }
