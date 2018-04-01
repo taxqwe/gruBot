@@ -12,11 +12,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.ReplaySubject;
 
 /**
@@ -30,6 +32,9 @@ public class VkDialogParser {
     private VKResponse dialogsResponse;
 
     private Gson gson = new Gson();
+
+    private List<Chat> parsedChats = new ArrayList<>();
+
 
     public VkDialogParser(VKResponse dialogsResponse){
         this.dialogsResponse = dialogsResponse;
@@ -69,11 +74,10 @@ public class VkDialogParser {
                     DataType.VK,
                     messagePOJO.getDate(),
                     VkHelper.getVkUserInfoById(messagePOJO.getUserId().toString()).first_name); //TODO may be combained into batch request
-            dialogsSubscription.onNext(chat);
         }
-
-        dialogsSubscription.onComplete();
     }
+
+
 
     private Map<String,Boolean> getUsersFromChatActiveJsonObject(JSONArray chat_active) {
         Type listType = new TypeToken<List<String>>() {}.getType();
@@ -83,6 +87,14 @@ public class VkDialogParser {
             users.put(s, true);
         }
         return users;
+    }
+
+    private void onChatsReadyToDraw(){
+        for (Chat chat: parsedChats) {
+            dialogsSubscription.onNext(chat);
+        }
+
+        dialogsSubscription.onComplete();
     }
 
     public Observable<Chat> getDialogsSubscription() {
