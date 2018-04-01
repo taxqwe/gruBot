@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatFragmentBase;
+import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.chat.MessagesListParcelable;
 import com.fa.grubot.presenters.ChatPresenter;
@@ -53,8 +54,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     private Unbinder unbinder;
 
     private int state;
-    private String chatId;
-    private String chatTitle;
+    private Chat chat;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -62,10 +62,9 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
         Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
-    public static ChatFragment newInstance(String chatId, String chatTitle) {
+    public static ChatFragment newInstance(Chat chat) {
         Bundle args = new Bundle();
-        args.putString("chatId", chatId);
-        args.putString("chatTitle", chatTitle);
+        args.putSerializable("chat", chat);
         ChatFragment fragment = new ChatFragment();
         fragment.setArguments(args);
         return fragment;
@@ -77,15 +76,14 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
         presenter = new ChatPresenter(this, getActivity());
         setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
-        chatId = this.getArguments().getString("chatId");
-        chatTitle = this.getArguments().getString("chatTitle");
+        chat = (Chat) this.getArguments().getSerializable("chat");
 
         return v;
     }
 
     @Override
     public void onResume() {
-        presenter.notifyFragmentStarted(chatId);
+        presenter.notifyFragmentStarted(chat);
         //presenter.setUpdateCallback();
         super.onResume();
     }
@@ -198,7 +196,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     public void setupToolbar() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setTitle(chatTitle);
+        activity.getSupportActionBar().setTitle(chat.getName());
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.bringToFront();

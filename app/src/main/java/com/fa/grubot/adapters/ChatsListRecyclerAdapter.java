@@ -23,8 +23,9 @@ import com.fa.grubot.util.Globals;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,7 +79,7 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
             holder.lastMessageFrom.setVisibility(View.GONE);
         }
 
-        holder.lastMessageDate.setText(chat.getLastMessageDateAsString());
+        holder.lastMessageDate.setText(formatDate(chat.getLastMessageDate()));
 
         String imgUri = chat.getImgURI();
         if (imgUri == null)
@@ -86,16 +87,12 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
         else
             Glide.with(context).load(imgUri).apply(RequestOptions.circleCropTransform()).into(holder.chatImage);
 
-        if (chat.getType().equals(DataType.Telegram)) {
+        if (chat.getType().equals(DataType.Telegram))
             Glide.with(context).load(R.drawable.ic_telegram).into(holder.chatTypeImage);
-        } else if (chat.getType().equals(DataType.VK)){
-            Glide.with(context).load(R.drawable.ic_vk).into(holder.chatTypeImage);
-        }
 
         holder.chatImage.getRootView().setOnClickListener(v -> {
             Intent intent = new Intent(context, ChatActivity.class);
-            intent.putExtra("chatId", chat.getId());
-            intent.putExtra("chatTitle", chat.getName());
+            intent.putExtra("chat", chat);
             context.startActivity(intent);
         });
     }
@@ -106,7 +103,6 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
 
         this.chats.clear();
         this.chats = cloneChatsList(chats);
-        Collections.sort(this.chats);
         diffResult.dispatchUpdatesTo(this);
     }
 
@@ -126,5 +122,18 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
             }
         }
         return resultList;
+    }
+
+    private String formatDate(long date) {
+        SimpleDateFormat dateFormat;
+
+        if (DateUtils.isToday(date))
+            dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        else if (DateUtils.isToday(date + DateUtils.DAY_IN_MILLIS))
+            return "Вчера";
+        else
+            dateFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
+
+        return dateFormat.format(date);
     }
 }

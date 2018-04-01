@@ -4,7 +4,6 @@ package com.fa.grubot.presenters;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ChatsListFragmentBase;
@@ -32,7 +31,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
     private ChatsListPresenter presenter = this;
     private TelegramClient client;
 
-    private ArrayList<Chat> mergedChats = new ArrayList<>();
+    private ArrayList<Chat> chats = new ArrayList<>();
 
     public ChatsListPresenter(ChatsListFragmentBase fragment, Context context) {
         this.fragment = fragment;
@@ -54,7 +53,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
 
         switch (state) {
             case FragmentState.STATE_CONTENT:
-                fragment.setupRecyclerView(mergedChats);
+                fragment.setupRecyclerView(chats);
                 break;
             case FragmentState.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
@@ -65,23 +64,19 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
     }
 
     public void onChatsListResult(ArrayList<Chat> chats, boolean moveToTop) {
-        for (Chat c: chats) {
-            if (!mergedChats.contains(c)){
-                mergedChats.add(c);
-            }
-        }
+        this.chats = chats;
 
         if (fragment != null) {
             if (chats.isEmpty()) {
                 fragment.setupLayouts(true, false);
                 notifyViewCreated(FragmentState.STATE_NO_DATA);
-                //this.mergedChats = chats;
+                this.chats = chats;
             } else if (!fragment.isAdapterExists() || fragment.isListEmpty()) {
-                //this.mergedChats = chats;
+                this.chats = chats;
                 fragment.setupLayouts(true, true);
                 notifyViewCreated(FragmentState.STATE_CONTENT);
             } else if (fragment.isAdapterExists()) {
-                fragment.updateChatsList(mergedChats, moveToTop);
+                fragment.updateChatsList(chats, moveToTop);
             }
 
             if (client == null || client.isClosed())
@@ -99,12 +94,12 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
 
                 @Override
                 public void onUserNameUpdate(TelegramUpdateUserNameEvent telegramUpdateUserNameEvent) {
-                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserNameUpdate(mergedChats, telegramUpdateUserNameEvent), false));
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserNameUpdate(chats, telegramUpdateUserNameEvent), false));
                 }
 
                 @Override
                 public void onUserPhotoUpdate(TelegramUpdateUserPhotoEvent telegramUpdateUserPhotoEvent) {
-                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserPhotoUpdate(mergedChats, telegramUpdateUserPhotoEvent), false));
+                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserPhotoUpdate(chats, telegramUpdateUserPhotoEvent), false));
                 }
             };
             client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener, context));

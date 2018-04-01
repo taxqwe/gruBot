@@ -16,6 +16,9 @@ public class CurrentUser implements Serializable {
     private TLUser telegramUser;
     private VkUser vkUser;
 
+    private User telegramChatUser = null;
+    private User vkChatUser = null;
+
     public CurrentUser(@Nullable TLUser telegramUser, @Nullable VkUser vkUser) {
         this.telegramUser = telegramUser;
         this.vkUser = vkUser;
@@ -61,5 +64,21 @@ public class CurrentUser implements Serializable {
             }
             App.INSTANCE.closeTelegramClient();
         });
+    }
+
+    public User getTelegramChatUser() {
+        return telegramChatUser;
+    }
+
+    public void setTelegramChatUser(User telegramChatUser) {
+        this.telegramChatUser = telegramChatUser;
+    }
+
+    public User getVkChatUser() {
+        return vkChatUser;
+    }
+
+    public void setVkChatUser(User vkChatUser) {
+        this.vkChatUser = vkChatUser;
     }
 }

@@ -1,19 +1,11 @@
 package com.fa.grubot.objects.chat;
 
-import android.support.annotation.NonNull;
-import android.text.format.DateUtils;
-import android.util.Log;
-
-import com.fa.grubot.util.DataType;
+import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
-public class Chat implements Serializable, Cloneable, Comparable<Chat> {
+public class Chat implements Serializable, Cloneable {
     private String id;
     private String name;
     private Map<String, Boolean> users;
@@ -22,6 +14,8 @@ public class Chat implements Serializable, Cloneable, Comparable<Chat> {
     private String type;
     private long lastMessageDate;
     private String lastMessageFrom;
+
+    private TLAbsInputPeer inputPeer;
 
     public Chat(String id, String name, Map<String, Boolean> users, String imgUri, String lastMessage, String type, long lastMessageDate, String lastMessageFrom) {
         this.id = id;
@@ -102,50 +96,15 @@ public class Chat implements Serializable, Cloneable, Comparable<Chat> {
         this.lastMessageFrom = lastMessageFrom;
     }
 
+    public TLAbsInputPeer getInputPeer() {
+        return inputPeer;
+    }
+
+    public void setInputPeer(TLAbsInputPeer inputPeer) {
+        this.inputPeer = inputPeer;
+    }
+
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
-    }
-
-    @Override
-    public int compareTo(@NonNull Chat chat) {
-        Long dateThisMillis = this.lastMessageDate * (this.type.equals(DataType.VK) ? 1000 : 1);
-        Long dateThatMillis = chat.getLastMessageDate() * (chat.getType().equals(DataType.VK) ? 1000 : 1);
-
-        Date dateThis = new Date(dateThisMillis);
-        Date dateThat = new Date(dateThatMillis);
-
-        if (dateThis.after(dateThat)) {
-            return -1;
-        } else if (dateThis.before(dateThat)){
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    public String getLastMessageDateAsString() {
-            Long date = lastMessageDate * (type.equals(DataType.VK) ? 1000 : 1);
-            SimpleDateFormat dateFormat;
-
-            if (DateUtils.isToday(date))
-                dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            else if (DateUtils.isToday(date + DateUtils.DAY_IN_MILLIS))
-                return "Вчера";
-            else
-                dateFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
-
-            return dateFormat.format(date);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Chat){
-            Chat comparableChat = (Chat) obj;
-            if (id.equals(comparableChat.getId()) &&
-                    getLastMessageDate() == comparableChat.getLastMessageDate()){
-                return true;
-            }
-        }
-        return false;
     }
 }

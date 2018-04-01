@@ -14,9 +14,11 @@ import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.objects.misc.TelegramPhoto;
+import com.fa.grubot.objects.users.CurrentUser;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.DataType;
 import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsMessageAction;
 import com.github.badoualy.telegram.tl.api.TLAbsPeer;
@@ -104,6 +106,10 @@ public class ChatsListModel {
             ArrayList<Chat> chatsList = new ArrayList<>();
             TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
 
+            CurrentUser currentUser = App.INSTANCE.getCurrentUser();
+            if (currentUser.getTelegramChatUser() == null)
+                currentUser.setTelegramChatUser(TelegramHelper.Chats.getChatUser(client, currentUser.getTelegramUser().getId(), context.get()));
+
             try {
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000); //have no idea how to avoid the limit without a huge number
 
@@ -124,6 +130,7 @@ public class ChatsListModel {
                     String fromName = null;
 
                     TLAbsMessage lastMessage = messagesMap.get(dialog.getTopMessage());
+                    TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, String.valueOf(chatId));
 
                     if (lastMessage instanceof TLMessage) {
                         TLMessage message = (TLMessage) lastMessage;
@@ -164,6 +171,7 @@ public class ChatsListModel {
                     String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context.get());
 
                     chat = new Chat(String.valueOf(chatId), chatName, null, imgUri, lastMessageText, DataType.Telegram, lastMessageDate * 1000, fromName);
+                    chat.setInputPeer(inputPeer);
                     chatsList.add(chat);
                 });
                 return chatsList;

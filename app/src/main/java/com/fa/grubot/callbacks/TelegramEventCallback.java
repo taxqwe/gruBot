@@ -51,10 +51,11 @@ public class TelegramEventCallback implements UpdateCallback {
 
     @Override
     public void onUpdates(@NotNull TelegramClient telegramClient, @NotNull TLUpdates tlUpdates) {
-        LOG.debug("TLUpdates called");
+        Log.d("debug","TLUpdates called");
 
         if (tlUpdates.getUpdates().isEmpty())
-            LOG.info("Update was empty");
+            Log.d("debug","Update was empty");
+
 
         tlUpdates.getUpdates().forEach(absUpdate -> this.processUpdate(absUpdate, telegramClient));
         tlUpdates.getChats().forEach(tlAbsChat -> {
@@ -73,17 +74,18 @@ public class TelegramEventCallback implements UpdateCallback {
 
     @Override
     public void onUpdatesCombined(@NotNull TelegramClient telegramClient, @NotNull TLUpdatesCombined tlUpdatesCombined) {
-        LOG.debug("TLUpdatesCombined called");
+        Log.d("debug","TLUpdatesCombined called");
     }
 
     @Override
     public void onUpdateShort(@NotNull TelegramClient telegramClient, @NotNull TLUpdateShort tlUpdateShort) {
-        LOG.debug("TLUpdateShort called");
+        Log.d("debug","TLUpdateShort called");
         processUpdate(tlUpdateShort.getUpdate(), telegramClient);
     }
 
     @Override
     public void onShortChatMessage(@NotNull TelegramClient client, @NotNull TLUpdateShortChatMessage shortChatMessage) {
+        Log.d("debug", "TLUpdateShortChatMessage called");
         String fromName = null;
 
         if (shortChatMessage.getFromId() != App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
@@ -98,7 +100,8 @@ public class TelegramEventCallback implements UpdateCallback {
             fromName = "Вы";
         }
 
-        TelegramMessageEvent event = new TelegramMessageEvent(shortChatMessage.getMessage(),
+        TelegramMessageEvent event = new TelegramMessageEvent(shortChatMessage.getId(),
+                shortChatMessage.getMessage(),
                 shortChatMessage.getFromId(),
                 shortChatMessage.getChatId(),
                 ((long) shortChatMessage.getDate()) * 1000,
@@ -109,13 +112,20 @@ public class TelegramEventCallback implements UpdateCallback {
 
     @Override
     public void onShortMessage(@NotNull TelegramClient client, @NotNull TLUpdateShortMessage shortMessage) {
+        Log.d("debug", "TLUpdateShortMessage called");
         String fromName = null;
+        int fromId;
 
-        if (shortMessage.getOut())
+        if (shortMessage.getOut()) {
             fromName = "Вы";
+            fromId = App.INSTANCE.getCurrentUser().getTelegramUser().getId();
+        } else {
+            fromId = shortMessage.getUserId();
+        }
 
-        TelegramMessageEvent event = new TelegramMessageEvent(shortMessage.getMessage(),
-                shortMessage.getUserId(),
+        TelegramMessageEvent event = new TelegramMessageEvent(shortMessage.getId(),
+                shortMessage.getMessage(),
+                fromId,
                 shortMessage.getUserId(),
                 ((long) shortMessage.getDate()) * 1000,
                 fromName);
@@ -171,7 +181,7 @@ public class TelegramEventCallback implements UpdateCallback {
                 else
                     messageText = tlMessage.getMessage();
 
-                TelegramMessageEvent event = new TelegramMessageEvent(messageText, tlMessage.getFromId(), messageToId, ((long) tlMessage.getDate()) * 1000, fromName);
+                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getId(), messageText, tlMessage.getFromId(), messageToId, ((long) tlMessage.getDate()) * 1000, fromName);
                 listener.onMessage(event);
             }
         } else if (update instanceof TLUpdateNewChannelMessage) {
@@ -203,7 +213,7 @@ public class TelegramEventCallback implements UpdateCallback {
                         if (fromName.isEmpty())
                             fromName = user.getUsername();
                     } catch (Exception e) {
-                        Log.e("TAG", "Is not a user");
+                        Log.e("debug", "Is not a user");
                     }
                 } else {
                     fromName = "Вы";
@@ -215,7 +225,7 @@ public class TelegramEventCallback implements UpdateCallback {
                 else
                     messageText = tlMessage.getMessage();
 
-                TelegramMessageEvent event = new TelegramMessageEvent(messageText, tlMessage.getFromId(), messageToId,((long) tlMessage.getDate()) * 1000, fromName);
+                TelegramMessageEvent event = new TelegramMessageEvent(tlMessage.getId(), messageText, tlMessage.getFromId(), messageToId,((long) tlMessage.getDate()) * 1000, fromName);
                 listener.onMessage(event);
             }
         } else if (update instanceof TLUpdateUserName) {
