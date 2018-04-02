@@ -18,6 +18,7 @@ import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
+import com.fa.grubot.objects.misc.CombinedMessagesListObject;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
 import com.github.badoualy.telegram.api.TelegramClient;
@@ -34,12 +35,12 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
 
     private TelegramEventCallback.TelegramEventListener telegramEventListener;
 
-    private String chatId;
     private Chat chat;
     private ChatPresenter presenter = this;
     private TelegramClient client;
 
     private ArrayList<ChatMessage> messages = new ArrayList<>();
+    private SparseArray<User> users = new SparseArray<>();
 
     public ChatPresenter(ChatFragmentBase fragment, Context context) {
         this.fragment = fragment;
@@ -49,10 +50,9 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
 
     public void notifyFragmentStarted(Chat chat) {
         this.chat = chat;
-        this.chatId = chat.getId();
 
         if (chat.getType().equals(Consts.Telegram))
-            model.sendTelegramMessagesRequest(context, presenter, chatId, Consts.FLAG_LOAD_FIRST_MESSAGES, 0);
+            model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_FIRST_MESSAGES, 0, users);
         //else
             //model.sendVkMessagesRequest(this);
     }
@@ -68,8 +68,9 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     }
 
     @Override
-    public void onMessagesListResult(ArrayList<ChatMessage> messages, int flag, boolean moveToTop) {
-        this.messages = messages;
+    public void onMessagesListResult(CombinedMessagesListObject combinedMessagesListObject, int flag, boolean moveToTop) {
+        this.messages = combinedMessagesListObject.getMessages();
+        this.users = combinedMessagesListObject.getUsers();
 
         if (fragment != null) {
             switch (flag) {
@@ -77,9 +78,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
                     if (messages.isEmpty()) {
                         fragment.setupLayouts(true, false);
                         notifyViewCreated(Consts.STATE_NO_DATA);
-                        this.messages = messages;
                     } else if (!fragment.isAdapterExists() || fragment.isListEmpty()) {
-                        this.messages = messages;
                         fragment.setupLayouts(true, true);
                         notifyViewCreated(Consts.STATE_CONTENT);
                     }
@@ -102,7 +101,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     }
 
     public void loadMoreMessages(int totalCount) {
-        model.sendTelegramMessagesRequest(context, presenter, chatId, Consts.FLAG_LOAD_NEW_MESSAGES, totalCount);
+        model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_NEW_MESSAGES, totalCount, users);
     }
 
     private void notifyViewCreated(int state) {
@@ -127,32 +126,33 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
             telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                 @Override
                 public void onMessage(TelegramMessageEvent telegramMessageEvent) {
-                    Log.d("debug", "Received a message with id: " + telegramMessageEvent.getMessageId() + " from id: " + telegramMessageEvent.getFromId() + " to id: " + telegramMessageEvent.getToId() + " current chat id is: " + chatId);
-                    if (telegramMessageEvent.getToId() == Integer.valueOf(chatId)) {
+                    //Log.d("debug", "Received a message with id: " + telegramMessageEvent.getMessageId() + " from id: " + telegramMessageEvent.getFromId() + " to id: " + telegramMessageEvent.getToId() + " current chat id is: " + chatId);
+                    if (telegramMessageEvent.getToId() == Integer.valueOf(chat.getId())) {
                         int messageId = telegramMessageEvent.getMessageId();
                         String messageText = telegramMessageEvent.getMessage();
                         Date createdAt = new Date(telegramMessageEvent.getDate());
                         int fromId = telegramMessageEvent.getFromId();
 
-                        SparseArray<User> users;
-                        User user = null;
-                        try {
-                            if (fromId == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
-                                user = App.INSTANCE.getCurrentUser().getTelegramChatUser();
-                            else {
-                                TLAbsMessages tlAbsMessages = client.messagesGetHistory(chat.getInputPeer(), 0, 0, 0, 40, 0, 1);
-                                users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context);
+                        User user = users.get(fromId);
+                        if (user == null) {
+                            try {
+                                if (fromId == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
+                                    user = App.INSTANCE.getCurrentUser().getTelegramChatUser();
+                                else {
+                                    TLAbsMessages tlAbsMessages = client.messagesGetHistory(chat.getInputPeer(), 0, 0, 0, 40, 0, 1);
+                                    users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context);
 
-                                try {
-                                    Log.d("debug", "Trying to get user with id: " + fromId);
-                                    user = users.get(fromId);
-                                } catch (Exception e) {
-                                    Log.d("debug", "Is not a user, trying to get chat with id: " + fromId);
-                                    user = TelegramHelper.Chats.getChatAsUser(client.getDownloaderClient(), fromId, context);
+                                    try {
+                                        Log.d("debug", "Trying to get user with id: " + fromId);
+                                        user = users.get(fromId);
+                                    } catch (Exception e) {
+                                        Log.d("debug", "Is not a user, trying to get chat with id: " + fromId);
+                                        user = TelegramHelper.Chats.getChatAsUser(client.getDownloaderClient(), fromId, context);
+                                    }
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
 
                         if (user != null) {
@@ -175,7 +175,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     }
 
     public void onRetryBtnClick() {
-        model.sendTelegramMessagesRequest(context, presenter, chatId, Consts.FLAG_LOAD_FIRST_MESSAGES, 0);
+        model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_FIRST_MESSAGES, 0, users);
     }
 
     private boolean messageAlreadyAdded(ChatMessage chatMessage) {

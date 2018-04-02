@@ -11,6 +11,7 @@ import com.fa.grubot.abstractions.MessagesListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.chat.ChatMessage;
+import com.fa.grubot.objects.misc.CombinedMessagesListObject;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.Consts;
@@ -39,8 +40,8 @@ public class ChatModel {
     public ChatModel() {
     }
 
-    public void sendTelegramMessagesRequest(Context context, ChatPresenter presenter, String chatId, int flag, int messagesCounter) {
-        GetMessagesList request = new GetMessagesList(context, chatId, flag, messagesCounter);
+    public void sendTelegramMessagesRequest(Context context, ChatPresenter presenter, Chat chat, int flag, int totalMessages, SparseArray<User> users) {
+        GetMessagesList request = new GetMessagesList(context, chat, flag, totalMessages, users);
         request.response = presenter;
         request.execute();
     }
@@ -133,18 +134,27 @@ public class ChatModel {
         }
     }
 
+    private static SparseArray<User> mergeUsersArrays(SparseArray<User> mergeTo, SparseArray<User> mergeFrom) {
+        for (int i = 0; i < mergeFrom.size(); i++)
+            mergeTo.put(mergeFrom.keyAt(i), mergeFrom.valueAt(i));
+
+        return mergeTo;
+    }
+
     public static class GetMessagesList extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
-        private String chatId;
-        private int messagesCounter;
+        private Chat chat;
+        private int totalMessages;
         private int flag;
+        private SparseArray<User> users;
         private MessagesListRequestResponse response = null;
 
-        private GetMessagesList(Context context, String chatId, int flag, int messagesCounter) {
+        private GetMessagesList(Context context, Chat chat, int flag, int totalMessages, SparseArray<User> users) {
             this.context = new WeakReference<>(context);
-            this.chatId = chatId;
+            this.chat = chat;
             this.flag = flag;
-            this.messagesCounter = messagesCounter;
+            this.totalMessages = totalMessages;
+            this.users = users;
         }
 
         @Override
@@ -159,10 +169,11 @@ public class ChatModel {
 
             try {
                 ArrayList<ChatMessage> messages = new ArrayList<>();
-                TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000);
-                TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
-                TLAbsMessages tlAbsMessages = client.messagesGetHistory(inputPeer, 0, 0, messagesCounter, Consts.defaultMessagesCountToLoad, 0, 0); //TODO add an offset here
-                SparseArray<User> users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context.get());
+                TLAbsInputPeer inputPeer = chat.getInputPeer();
+                TLAbsMessages tlAbsMessages = client.messagesGetHistory(inputPeer, 0, 0, totalMessages, Consts.defaultMessagesCountToLoad, 0, 0);
+
+                if (users == null || users.size() == 0)
+                    users = mergeUsersArrays(users, TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context.get()));
 
                 tlAbsMessages.getMessages().forEach(message -> {
                     if (message instanceof TLMessage) {
@@ -170,11 +181,16 @@ public class ChatModel {
 
                         User user;
                         try {
-                            Log.d("debug", "Trying to get user with id: " + tlMessage.getFromId());
+                            int userId = tlMessage.getFromId();
+                            if (users.get(userId) == null)
+                                users = mergeUsersArrays(users, TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context.get()));
+
                             user = users.get(tlMessage.getFromId());
                         } catch (Exception e) {
-                            Log.d("debug", "Is not a user, trying to get chat with id: " + chatId);
                             int chatId = ((TLPeerChannel) tlMessage.getToId()).getChannelId();
+                            if (users.get(chatId) == null)
+                                users = mergeUsersArrays(users, TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context.get()));
+
                             user = users.get(chatId);
                         }
 
@@ -187,7 +203,7 @@ public class ChatModel {
                     } else
                         System.out.println("Service message");
                 });
-                returnObject = messages;
+                returnObject = new CombinedMessagesListObject(messages, users);
             } catch (Exception e) {
                 e.printStackTrace();
                 returnObject = e;
@@ -201,8 +217,8 @@ public class ChatModel {
         @SuppressWarnings("unchecked")
         @Override
         protected void onPostExecute(Object result) {
-            if (response != null && result != null && result instanceof ArrayList<?>)
-                response.onMessagesListResult((ArrayList<ChatMessage>) result, flag, false);
+            if (response != null && result != null && result instanceof CombinedMessagesListObject)
+                response.onMessagesListResult((CombinedMessagesListObject) result, flag, false);
         }
     }
 }

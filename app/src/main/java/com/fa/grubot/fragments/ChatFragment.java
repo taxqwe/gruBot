@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,6 +84,7 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
 
     @Override
     public void onResume() {
+        Log.d("tag", "onResume called");
         presenter.notifyFragmentStarted(chat);
         //presenter.setUpdateCallback();
         super.onResume();
@@ -90,12 +92,14 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
 
     @Override
     public void onStop() {
-        App.INSTANCE.closeTelegramClient();
+        Log.d("tag", "onStop called");
+        //App.INSTANCE.closeTelegramClient();
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
+        Log.d("tag", "onDestroy called");
         App.INSTANCE.closeTelegramClient();
         presenter.destroy();
         unbinder.unbind();
