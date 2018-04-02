@@ -10,6 +10,7 @@ import com.github.badoualy.telegram.api.Kotlogram;
 import com.github.badoualy.telegram.api.TelegramApp;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.api.UpdateCallback;
+import com.github.badoualy.telegram.mtproto.model.DataCenter;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrPosition;
 import com.vk.sdk.VKAccessToken;
@@ -76,9 +77,9 @@ public class App extends Application {
 
         TmApiStorage apiStorage = new TmApiStorage(authKeyFile, nearestDcFile);
         if (callback != null)
-            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, apiStorage.loadDc(), callback);
+            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, new DataCenter("149.154.167.50", 443), callback);
         else
-            telegramClient = Kotlogram.getDefaultClient(application, apiStorage);
+            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, new DataCenter("149.154.167.50", 443));
         return telegramClient;
     }
 
