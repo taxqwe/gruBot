@@ -84,7 +84,6 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
 
     @Override
     public void onResume() {
-        Log.d("tag", "onResume called");
         presenter.notifyFragmentStarted(chat);
         //presenter.setUpdateCallback();
         super.onResume();
@@ -93,13 +92,12 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     @Override
     public void onStop() {
         Log.d("tag", "onStop called");
-        //App.INSTANCE.closeTelegramClient();
+        App.INSTANCE.closeTelegramClient();
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        Log.d("tag", "onDestroy called");
         App.INSTANCE.closeTelegramClient();
         presenter.destroy();
         unbinder.unbind();
