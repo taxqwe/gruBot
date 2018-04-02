@@ -13,6 +13,7 @@ import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
+import com.fa.grubot.util.Consts;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
@@ -38,8 +39,8 @@ public class ChatModel {
     public ChatModel() {
     }
 
-    public void sendTelegramMessagesRequest(Context context, ChatPresenter presenter, String chatId) {
-        GetMessagesList request = new GetMessagesList(context, chatId);
+    public void sendTelegramMessagesRequest(Context context, ChatPresenter presenter, String chatId, int flag, int messagesCounter) {
+        GetMessagesList request = new GetMessagesList(context, chatId, flag, messagesCounter);
         request.response = presenter;
         request.execute();
     }
@@ -135,11 +136,15 @@ public class ChatModel {
     public static class GetMessagesList extends AsyncTask<Void, Void, Object> {
         private WeakReference<Context> context;
         private String chatId;
+        private int messagesCounter;
+        private int flag;
         private MessagesListRequestResponse response = null;
 
-        private GetMessagesList(Context context, String chatId) {
+        private GetMessagesList(Context context, String chatId, int flag, int messagesCounter) {
             this.context = new WeakReference<>(context);
             this.chatId = chatId;
+            this.flag = flag;
+            this.messagesCounter = messagesCounter;
         }
 
         @Override
@@ -156,7 +161,7 @@ public class ChatModel {
                 ArrayList<ChatMessage> messages = new ArrayList<>();
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000);
                 TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, chatId);
-                TLAbsMessages tlAbsMessages = client.messagesGetHistory(inputPeer, 0, 0, 0, 40, 0, 0); //TODO add an offset here
+                TLAbsMessages tlAbsMessages = client.messagesGetHistory(inputPeer, 0, 0, messagesCounter, Consts.defaultMessagesCountToLoad, 0, 0); //TODO add an offset here
                 SparseArray<User> users = TelegramHelper.Chats.getChatUsers(client, tlAbsMessages, context.get());
 
                 tlAbsMessages.getMessages().forEach(message -> {
@@ -197,7 +202,7 @@ public class ChatModel {
         @Override
         protected void onPostExecute(Object result) {
             if (response != null && result != null && result instanceof ArrayList<?>)
-                response.onMessagesListResult((ArrayList<ChatMessage>) result, true);
+                response.onMessagesListResult((ArrayList<ChatMessage>) result, flag, false);
         }
     }
 }

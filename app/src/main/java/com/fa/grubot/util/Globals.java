@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
-import android.util.Patterns;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amulyakhare.textdrawable.TextDrawable;
@@ -19,6 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class Globals {
+
     public static class ImageMethods {
         /**
          * Метод, создающий круглую картинку

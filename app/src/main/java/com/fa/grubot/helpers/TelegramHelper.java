@@ -6,7 +6,7 @@ import android.util.SparseArray;
 
 import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.objects.users.User;
-import com.fa.grubot.util.DataType;
+import com.fa.grubot.util.Consts;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.api.utils.InputFileLocation;
 import com.github.badoualy.telegram.api.utils.TLMediaUtilsKt;
@@ -356,7 +356,7 @@ public class TelegramHelper {
                 if (imgUri == null)
                     imgUri = fullname;
 
-                User user = new User(String.valueOf(userId), DataType.Telegram, fullname, userName, imgUri);
+                User user = new User(String.valueOf(userId), Consts.Telegram, fullname, userName, imgUri);
                 users.put(userId, user);
             }
 
@@ -383,7 +383,7 @@ public class TelegramHelper {
                 if (imgUri == null)
                     imgUri = fullname;
 
-                User user = new User(String.valueOf(userId), DataType.Telegram, fullname, fullname, imgUri);
+                User user = new User(String.valueOf(userId), Consts.Telegram, fullname, fullname, imgUri);
                 users.put(userId, user);
             }
             return users;
@@ -409,7 +409,7 @@ public class TelegramHelper {
             if (imgUri == null)
                 imgUri = fullname;
 
-            return new User(String.valueOf(userId), DataType.Telegram, fullname, userName, imgUri);
+            return new User(String.valueOf(userId), Consts.Telegram, fullname, userName, imgUri);
         }
 
         public static User getChatAsUser(TelegramClient client, int chatId, Context context) {
@@ -442,7 +442,7 @@ public class TelegramHelper {
                 imgUri = fullname;
 
             User user = new User(String.valueOf(chatId),
-                    DataType.Telegram,
+                    Consts.Telegram,
                     fullname,
                     userName,
                     imgUri);

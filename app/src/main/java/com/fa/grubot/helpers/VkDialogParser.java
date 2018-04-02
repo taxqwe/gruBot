@@ -4,7 +4,7 @@ import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.chat.RawVkChat;
 import com.fa.grubot.objects.pojos.VkMessagePOJO;
 import com.fa.grubot.objects.pojos.VkUserResponseWithPhoto;
-import com.fa.grubot.util.DataType;
+import com.fa.grubot.util.Consts;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.vk.sdk.api.VKApi;
@@ -77,7 +77,7 @@ public class VkDialogParser {
                     usersInDialog,
                     getPictureLinkFromJson(messagesArrayJson.getJSONObject(i)),
                     messagePOJO.getBody(),
-                    DataType.VK,
+                    Consts.VK,
                     messagePOJO.getDate(),
                     "author's_name_placeholder",
                     isGroupDialog,

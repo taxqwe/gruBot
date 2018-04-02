@@ -19,7 +19,7 @@ import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.objects.users.User;
-import com.fa.grubot.util.FragmentState;
+import com.fa.grubot.util.Consts;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
 
@@ -51,11 +51,10 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
         this.chat = chat;
         this.chatId = chat.getId();
 
-        if (App.INSTANCE.getCurrentUser().hasTelegramUser())
-            model.sendTelegramMessagesRequest(context, presenter, chatId);
-
-        //if (App.INSTANCE.getCurrentUser().hasVkUser())
-        //    model.sendVkChatListRequest(this);
+        if (chat.getType().equals(Consts.Telegram))
+            model.sendTelegramMessagesRequest(context, presenter, chatId, Consts.FLAG_LOAD_FIRST_MESSAGES, 0);
+        //else
+            //model.sendVkMessagesRequest(this);
     }
 
     public void sendMessage(String message) {
@@ -69,24 +68,29 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     }
 
     @Override
-    public void onMessagesListResult(ArrayList<ChatMessage> messages, boolean moveToTop) {
+    public void onMessagesListResult(ArrayList<ChatMessage> messages, int flag, boolean moveToTop) {
         this.messages = messages;
 
         if (fragment != null) {
-            if (messages.isEmpty()) {
-                fragment.setupLayouts(true, false);
-                notifyViewCreated(FragmentState.STATE_NO_DATA);
-                this.messages = messages;
-            } else if (!fragment.isAdapterExists() || fragment.isListEmpty()) {
-                this.messages = messages;
-                fragment.setupLayouts(true, true);
-                notifyViewCreated(FragmentState.STATE_CONTENT);
-            } else if (fragment.isAdapterExists()) {
-                fragment.updateMessagesList(messages, moveToTop);
-            }
+            switch (flag) {
+                case Consts.FLAG_LOAD_FIRST_MESSAGES:
+                    if (messages.isEmpty()) {
+                        fragment.setupLayouts(true, false);
+                        notifyViewCreated(Consts.STATE_NO_DATA);
+                        this.messages = messages;
+                    } else if (!fragment.isAdapterExists() || fragment.isListEmpty()) {
+                        this.messages = messages;
+                        fragment.setupLayouts(true, true);
+                        notifyViewCreated(Consts.STATE_CONTENT);
+                    }
 
-            if (client == null || client.isClosed())
-                setUpdateCallback();
+                    if (client == null || client.isClosed())
+                        setUpdateCallback();
+                    break;
+                case Consts.FLAG_LOAD_NEW_MESSAGES:
+                    fragment.addNewMessagesToList(messages, false);
+                    break;
+            }
         }
     }
 
@@ -97,18 +101,22 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
         }
     }
 
+    public void loadMoreMessages(int totalCount) {
+        model.sendTelegramMessagesRequest(context, presenter, chatId, Consts.FLAG_LOAD_NEW_MESSAGES, totalCount);
+    }
+
     private void notifyViewCreated(int state) {
         fragment.showRequiredViews();
         fragment.setupToolbar();
 
         switch (state) {
-            case FragmentState.STATE_CONTENT:
+            case Consts.STATE_CONTENT:
                 fragment.setupRecyclerView(messages);
                 break;
-            case FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case Consts.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
-            case FragmentState.STATE_NO_DATA:
+            case Consts.STATE_NO_DATA:
                 fragment.setupRecyclerView(messages);
                 break;
         }
@@ -167,7 +175,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     }
 
     public void onRetryBtnClick() {
-        model.sendTelegramMessagesRequest(context, presenter, chatId);
+        model.sendTelegramMessagesRequest(context, presenter, chatId, Consts.FLAG_LOAD_FIRST_MESSAGES, 0);
     }
 
     private boolean messageAlreadyAdded(ChatMessage chatMessage) {
