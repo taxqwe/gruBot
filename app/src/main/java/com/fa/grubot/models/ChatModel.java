@@ -23,7 +23,6 @@ import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewChannelMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewMessage;
-import com.github.badoualy.telegram.tl.api.TLUpdateShort;
 import com.github.badoualy.telegram.tl.api.TLUpdateShortSentMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdates;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
@@ -169,9 +168,9 @@ public class ChatModel {
                             Log.d("debug", "Trying to get user with id: " + tlMessage.getFromId());
                             user = users.get(tlMessage.getFromId());
                         } catch (Exception e) {
-                            int chatId = ((TLPeerChannel) tlMessage.getToId()).getChannelId();
                             Log.d("debug", "Is not a user, trying to get chat with id: " + chatId);
-                            user = TelegramHelper.Chats.getChatAsUser(client, chatId, context.get());
+                            int chatId = ((TLPeerChannel) tlMessage.getToId()).getChannelId();
+                            user = users.get(chatId);
                         }
 
                         ChatMessage chatMessage = new ChatMessage(String.valueOf(tlMessage.getId()),

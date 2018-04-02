@@ -168,6 +168,8 @@ public class ChatsListModel {
 
                     TelegramPhoto telegramPhoto = photoMap.get(chatId);
                     String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context.get());
+                    if (imgUri == null)
+                        imgUri = chatName;
 
                     chat = new Chat(String.valueOf(chatId), chatName, null, imgUri, lastMessageText, DataType.Telegram, lastMessageDate * 1000, fromName);
                     chat.setInputPeer(inputPeer);

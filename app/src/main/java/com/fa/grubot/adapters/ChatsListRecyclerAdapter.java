@@ -82,10 +82,10 @@ public class ChatsListRecyclerAdapter extends RecyclerView.Adapter<ChatsListRecy
         holder.lastMessageDate.setText(chat.getLastMessageDateAsString());
 
         String imgUri = chat.getImgURI();
-        if (imgUri == null)
-            holder.chatImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, chat.getName()));
-        else
+        if (Globals.ImageMethods.isValidUri(imgUri))
             Glide.with(context).load(imgUri).apply(RequestOptions.circleCropTransform()).into(holder.chatImage);
+        else
+            Glide.with(context).load("").apply(new RequestOptions().placeholder(Globals.ImageMethods.getRoundImage(context, imgUri))).into(holder.chatImage);
 
         if (chat.getType().equals(DataType.Telegram)) {
             Glide.with(context).load(R.drawable.ic_telegram).into(holder.chatTypeImage);

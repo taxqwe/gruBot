@@ -326,7 +326,6 @@ public class TelegramHelper {
                     photoId = absPhoto.getAsChatPhoto().getPhotoBig().getLocalId();
                 }
 
-
                 TelegramPhoto telegramPhoto = new TelegramPhoto(inputFileLocation, photoId);
                 photoMap.put(chat.getId(), telegramPhoto);
             });
@@ -354,8 +353,37 @@ public class TelegramHelper {
 
                 TelegramPhoto telegramPhoto = new TelegramPhoto(inputFileLocation, photoId);
                 String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context);
+                if (imgUri == null)
+                    imgUri = fullname;
 
                 User user = new User(String.valueOf(userId), DataType.Telegram, fullname, userName, imgUri);
+                users.put(userId, user);
+            }
+
+            for (TLAbsChat absChat : messages.getChats()) {
+                int userId = absChat.getId();
+                String fullname = TelegramHelper.Chats.extractChatTitle(absChat);
+
+                TLAbsChatPhoto absPhoto = Chats.extractChatPhoto(absChat);
+                TLChatPhoto chatPhoto = null;
+
+                if (absPhoto != null)
+                    chatPhoto = absPhoto.getAsChatPhoto();
+
+                InputFileLocation inputFileLocation = null;
+                long photoId = 0;
+
+                if (chatPhoto != null) {
+                    inputFileLocation = TLMediaUtilsKt.toInputFileLocation(chatPhoto.getPhotoBig());
+                    photoId = absPhoto.getAsChatPhoto().getPhotoBig().getLocalId();
+                }
+
+                TelegramPhoto telegramPhoto = new TelegramPhoto(inputFileLocation, photoId);
+                String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context);
+                if (imgUri == null)
+                    imgUri = fullname;
+
+                User user = new User(String.valueOf(userId), DataType.Telegram, fullname, fullname, imgUri);
                 users.put(userId, user);
             }
             return users;
@@ -378,6 +406,8 @@ public class TelegramHelper {
 
             TelegramPhoto telegramPhoto = new TelegramPhoto(inputFileLocation, photoId);
             String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context);
+            if (imgUri == null)
+                imgUri = fullname;
 
             return new User(String.valueOf(userId), DataType.Telegram, fullname, userName, imgUri);
         }
@@ -408,6 +438,9 @@ public class TelegramHelper {
             userName = fullname;
 
             imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context);
+            if (imgUri == null)
+                imgUri = fullname;
+
             User user = new User(String.valueOf(chatId),
                     DataType.Telegram,
                     fullname,
