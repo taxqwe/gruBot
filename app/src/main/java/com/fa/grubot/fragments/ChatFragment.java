@@ -16,11 +16,15 @@ import android.widget.ProgressBar;
 import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatFragmentBase;
+import com.fa.grubot.holders.IncomingImageMessageViewHolder;
+import com.fa.grubot.holders.OutcomingImageMessageViewHolder;
 import com.fa.grubot.objects.chat.Chat;
+import com.fa.grubot.objects.chat.ChatImageMessage;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.chat.MessagesListParcelable;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.Consts;
+import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
@@ -37,7 +41,8 @@ import butterknife.Unbinder;
 import icepick.Icepick;
 import io.reactivex.annotations.Nullable;
 
-public class ChatFragment extends Fragment implements ChatFragmentBase, Serializable, MessagesListAdapter.OnLoadMoreListener, MessageInput.InputListener {
+public class ChatFragment extends Fragment
+        implements ChatFragmentBase, Serializable, MessagesListAdapter.OnLoadMoreListener, MessageInput.InputListener, MessageHolders.ContentChecker<ChatMessage> {
 
     @Nullable @BindView(R.id.messagesList) MessagesListParcelable messagesList;
     @Nullable @BindView(R.id.input) MessageInput messageInput;
@@ -123,6 +128,15 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     }
 
     @Override
+    public boolean hasContentFor(ChatMessage message, byte type) {
+        switch (type) {
+            case Consts.MESSAGE_CONTENT_TYPE_IMAGE:
+                return (message instanceof ChatImageMessage);
+        }
+        return false;
+    }
+
+    @Override
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
@@ -170,10 +184,14 @@ public class ChatFragment extends Fragment implements ChatFragmentBase, Serializ
     @Override
     public void setupRecyclerView(ArrayList<ChatMessage> messages) {
         MessageHolders holdersConfig = new MessageHolders()
-                .setIncomingTextLayout(R.layout.item_custom_incoming_text_message)
-                .setOutcomingTextLayout(R.layout.item_custom_outcoming_text_message)
-                .setIncomingImageLayout(R.layout.item_custom_incoming_image_message)
-                .setOutcomingImageLayout(R.layout.item_custom_outcoming_image_message);
+                .setIncomingTextLayout(R.layout.item_incoming_text_message)
+                .setOutcomingTextLayout(R.layout.item_outcoming_text_message)
+                .registerContentType(Consts.MESSAGE_CONTENT_TYPE_IMAGE,
+                        IncomingImageMessageViewHolder.class,
+                        R.layout.item_incoming_image_message,
+                        OutcomingImageMessageViewHolder.class,
+                        R.layout.item_outcoming_image_message,
+                        this);
 
         ImageLoader imageLoader = new ImageLoader(this);
 

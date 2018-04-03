@@ -152,7 +152,7 @@ public class ChatsListModel {
                             if (peer instanceof TLPeerUser && message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
                                 fromName = "Вы";
                         } catch (Exception e) {
-                            Log.e("TAG", "Is not a user");
+
                         }
 
                         if (message.getMedia() != null && message.getMessage().isEmpty())
