@@ -111,6 +111,8 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
     }
 
     public void destroy() {
+        if (client != null && !client.isClosed())
+            client.close(false);
         fragment = null;
         model = null;
     }

@@ -24,7 +24,6 @@ import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.chat.MessagesListParcelable;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.Consts;
-import com.fa.grubot.util.Globals;
 import com.fa.grubot.util.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
@@ -90,8 +89,14 @@ public class ChatFragment extends Fragment
     @Override
     public void onResume() {
         presenter.notifyFragmentStarted(chat);
-        //presenter.setUpdateCallback();
+        presenter.setUpdateCallback();
         super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        App.INSTANCE.closeTelegramClient();
+        super.onPause();
     }
 
     @Override
@@ -173,7 +178,8 @@ public class ChatFragment extends Fragment
     }
 
     public void addNewMessagesToList(ArrayList<ChatMessage> messages, boolean moveToTop) {
-        messagesListAdapter.addToEnd(messages, true);
+        if (!messages.isEmpty())
+            messagesListAdapter.addToEnd(messages, true);
     }
 
     @Override

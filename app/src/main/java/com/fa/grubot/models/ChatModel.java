@@ -2,7 +2,6 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.fa.grubot.App;
@@ -20,14 +19,12 @@ import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdate;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdates;
-import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewChannelMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateShortSentMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdates;
-import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
 
 import java.lang.ref.WeakReference;
@@ -213,6 +210,8 @@ public class ChatModel {
 
             return returnObject;
         }
+
+
 
         @SuppressWarnings("unchecked")
         @Override
