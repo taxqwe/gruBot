@@ -188,7 +188,7 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
     }
 
     public void destroy() {
-        if (client != null)
+        if (client != null && !client.isClosed())
             client.close(false);
         fragment = null;
         model = null;
