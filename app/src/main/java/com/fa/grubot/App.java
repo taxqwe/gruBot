@@ -77,9 +77,9 @@ public class App extends Application {
 
         TmApiStorage apiStorage = new TmApiStorage(authKeyFile, nearestDcFile);
         if (callback != null)
-            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, new DataCenter("149.154.167.50", 443), callback);
+            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, new DataCenter("149.154.167.51", 443), callback);
         else
-            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, new DataCenter("149.154.167.50", 443));
+            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, new DataCenter("149.154.167.51", 443));
         return telegramClient;
     }
 
