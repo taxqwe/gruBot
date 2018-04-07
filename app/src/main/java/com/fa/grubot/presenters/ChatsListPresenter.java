@@ -21,6 +21,8 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
+import io.reactivex.Observable;
+
 public class ChatsListPresenter implements ChatsListRequestResponse {
 
     private ChatsListFragmentBase fragment;
@@ -42,10 +44,12 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
     public void notifyFragmentStarted() throws JSONException {
         fragment.setupToolbar();
         if (App.INSTANCE.getCurrentUser().hasTelegramUser())
-            model.sendChatsListRequest(context, presenter);
+            model.sendChatsListRequest(context, presenter).subscribe(tChats ->
+                    onChatsListResult(new ArrayList<>(tChats), false);
 
         if (App.INSTANCE.getCurrentUser().hasVkUser())
-            model.sendVkChatListRequest(this);
+            model.sendVkChatListRequest(this).subscribe(vkChats ->
+                    onChatsListResult(new ArrayList<>(vkChats), false));
     }
 
     private void notifyViewCreated(int state) {

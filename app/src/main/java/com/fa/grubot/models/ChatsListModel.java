@@ -41,6 +41,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -56,33 +57,39 @@ public class ChatsListModel {
         request.execute();
     }
 
-    public void sendVkChatListRequest(ChatsListPresenter presenter) {
-        Log.d("VK DIALOGS", "trying to get list of dialogs... ");
-        VKRequest request = VKApi.messages()
-                .getDialogs(VKParameters.from(VKApiConst.COUNT, 20));
-        request.executeWithListener(new VKRequest.VKRequestListener() {
-            @Override
-            public void onComplete(VKResponse response) {
-                Log.d("VK DIALOGS", "dialogs successfully received");
-                VkDialogParser parser = new VkDialogParser(response);
-                List<Chat> dialogs = new ArrayList<>();
-                parser.getDialogsSubscription()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                        chat -> {
-                            dialogs.add(chat);
-                        },
-                        error -> error.printStackTrace(),
-                        () -> presenter.onChatsListResult(new ArrayList<>(dialogs), true)
-                );
-            }
+    public Observable<List<Chat>> sendVkChatListRequest(ChatsListPresenter presenter) {
+        return Observable.create(observableVkMessages -> {
+            Log.d("VK DIALOGS", "trying to get list of dialogs... ");
+            VKRequest request = VKApi.messages()
+                    .getDialogs(VKParameters.from(VKApiConst.COUNT, 20));
+            request.executeWithListener(new VKRequest.VKRequestListener() {
+                @Override
+                public void onComplete(VKResponse response) {
+                    Log.d("VK DIALOGS", "dialogs successfully received");
+                    VkDialogParser parser = new VkDialogParser(response);
+                    List<Chat> dialogs = new ArrayList<>();
+                    parser.getDialogsSubscription()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    chat -> {
+                                        dialogs.add(chat);
+                                    },
+                                    error -> {
+                                        error.printStackTrace();
+                                        observableVkMessages.onError(error);
+                                    },
+                                    () -> observableVkMessages.onNext(dialogs)
 
-            @Override
-            public void onError(VKError error) {
-                Log.d("VK DIALOGS", "dialogs not received with error: " + error.toString());
+                            );
+                }
 
-            }
+                @Override
+                public void onError(VKError error) {
+                    Log.d("VK DIALOGS", "dialogs not received with error: " + error.toString());
+                    observableVkMessages.onError(error.httpError);
+                }
+            });
         });
     }
 
