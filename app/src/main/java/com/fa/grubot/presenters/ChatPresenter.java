@@ -189,6 +189,10 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
             model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_FIRST_MESSAGES, 0, users);
     }
 
+    public void retryLoad(Chat chat, int flag, int totalMessages, SparseArray<User> users) {
+        model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_NEW_MESSAGES, totalMessages, users);
+    }
+
     private boolean messageAlreadyAdded(ChatMessage chatMessage) {
         for (ChatMessage message : messages) {
             if (message.getId().equals(chatMessage.getId()))

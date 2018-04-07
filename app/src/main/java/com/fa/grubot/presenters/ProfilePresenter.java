@@ -1,5 +1,6 @@
 package com.fa.grubot.presenters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -15,10 +16,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-/**
- * Created by ni.petrov on 04/04/2018.
- */
-
 public class ProfilePresenter {
     private ProfileItemFragmentBase fragment;
     private ProfileModel model;
@@ -31,6 +28,7 @@ public class ProfilePresenter {
         model = new ProfileModel();
     }
 
+    @SuppressLint("CheckResult")
     public void requestVkUser(final int userId) {
         Observable.just(true).map(x -> {
             Log.d("PROFILE", "profile asks for model");
