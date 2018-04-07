@@ -15,9 +15,8 @@ import com.fa.grubot.objects.events.telegram.TelegramMessageEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserNameEvent;
 import com.fa.grubot.objects.events.telegram.TelegramUpdateUserPhotoEvent;
 import com.fa.grubot.util.Consts;
+import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.api.TelegramClient;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +24,8 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+
+import static com.fa.grubot.util.Consts.STATE_NO_INTERNET_CONNECTION;
 
 public class ChatsListPresenter implements ChatsListRequestResponse {
 
@@ -50,8 +51,19 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         this.context = context;
     }
 
-    public void notifyFragmentStarted() throws JSONException {
+    public void notifyFragmentStarted() {
         fragment.setupToolbar();
+
+        if (Globals.InternetMethods.isNetworkAvailable(context)) {
+            if (App.INSTANCE.getCurrentUser().hasTelegramUser())
+                model.sendChatsListRequest(context, presenter);
+
+            if (App.INSTANCE.getCurrentUser().hasVkUser())
+                model.sendVkChatListRequest(this);
+        } else {
+            notifyViewCreated(STATE_NO_INTERNET_CONNECTION);
+        }
+
         if (App.INSTANCE.getCurrentUser().hasTelegramUser()) {
             tListObservable = model.sendChatsListRequest(context, presenter);
         } else {
@@ -83,7 +95,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
             case Consts.STATE_CONTENT:
                 fragment.setupRecyclerView(chats);
                 break;
-            case Consts.STATE_NO_INTERNET_CONNECTION:
+            case STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
             case Consts.STATE_NO_DATA:
@@ -121,6 +133,12 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                if (Globals.InternetMethods.isNetworkAvailable(context))
+                    client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener, context));
+                else
+                    notifyViewCreated(STATE_NO_INTERNET_CONNECTION);
+
                 telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                     @Override
                     public void onMessage(TelegramMessageEvent telegramMessageEvent) {
@@ -143,13 +161,19 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
                                 false));
                     }
                 };
-                client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener, context));
             });
         }
     }
 
+    @Override
+    public void onFloodException() {
+        if (Globals.InternetMethods.isNetworkAvailable(context))
+            model.sendChatsListRequest(context, presenter);
+    }
+
     public void onRetryBtnClick() {
-        //model.sendChatsListRequest(context, presenter);
+        if (Globals.InternetMethods.isNetworkAvailable(context))
+            model.sendChatsListRequest(context, presenter);
     }
 
     public void destroy() {

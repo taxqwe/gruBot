@@ -61,7 +61,6 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.10'
     implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
-    //implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar' когда-то добавил и забыл. Не знаю, нужно ли.
     //butterknife
     implementation 'com.jakewharton:butterknife:9.0.0-SNAPSHOT'
     //slidr
@@ -85,12 +84,11 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:3.0.1'
     //network utils
     implementation 'org.immutables:gson:2.6.0.alpha0'
+
+    //annotations
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
     annotationProcessor 'frankiesardo:icepick-processor:3.2.0'
-    //views
-    compile 'com.rengwuxian.materialedittext:library:2.1.4'
 }
-
 
 apply plugin: 'com.google.gms.google-services'

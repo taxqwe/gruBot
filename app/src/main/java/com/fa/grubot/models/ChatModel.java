@@ -2,6 +2,7 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.SparseArray;
 
 import com.fa.grubot.App;
@@ -14,6 +15,7 @@ import com.fa.grubot.objects.misc.CombinedMessagesListObject;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.Consts;
+import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
@@ -26,6 +28,7 @@ import com.github.badoualy.telegram.tl.api.TLUpdateNewMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdateShortSentMessage;
 import com.github.badoualy.telegram.tl.api.TLUpdates;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import java.lang.ref.WeakReference;
 import java.sql.Date;
@@ -211,13 +214,17 @@ public class ChatModel {
             return returnObject;
         }
 
-
-
         @SuppressWarnings("unchecked")
         @Override
         protected void onPostExecute(Object result) {
             if (response != null && result != null && result instanceof CombinedMessagesListObject)
                 response.onMessagesListResult((CombinedMessagesListObject) result, flag, false);
+            else if (response != null && result instanceof RpcErrorException && ((RpcErrorException) result).getCode() == 420) {
+                int floodTime = Globals.extractMillisFromRpcException((RpcErrorException) result);
+                (new Handler()).postDelayed(() -> {
+                    response.retryLoad(chat, flag, totalMessages, users);
+                }, floodTime + 500);
+            }
         }
     }
 }

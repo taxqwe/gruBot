@@ -22,7 +22,6 @@ import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.Consts;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,11 +79,7 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     @Override
     public void onResume() {
-        try {
-            presenter.notifyFragmentStarted();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        presenter.notifyFragmentStarted();
         presenter.setUpdateCallback();
         super.onResume();
     }
