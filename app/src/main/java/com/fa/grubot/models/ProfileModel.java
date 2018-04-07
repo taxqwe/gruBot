@@ -1,7 +1,6 @@
 package com.fa.grubot.models;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
 import com.fa.grubot.App;
@@ -11,7 +10,6 @@ import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
 import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.api.TelegramClient;
-import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -22,10 +20,7 @@ import com.vk.sdk.api.VKResponse;
 
 import org.json.JSONException;
 
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by ni.petrov on 04/04/2018.

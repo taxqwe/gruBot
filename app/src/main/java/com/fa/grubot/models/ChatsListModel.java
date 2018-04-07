@@ -2,13 +2,10 @@ package com.fa.grubot.models;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
 
 import com.fa.grubot.App;
-import com.fa.grubot.abstractions.ChatsListRequestResponse;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.helpers.VkDialogParser;
 import com.fa.grubot.objects.chat.Chat;
@@ -19,7 +16,6 @@ import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.objects.users.CurrentUser;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.Consts;
-import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
@@ -33,7 +29,6 @@ import com.github.badoualy.telegram.tl.api.TLPeerChat;
 import com.github.badoualy.telegram.tl.api.TLPeerUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
-import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
@@ -41,7 +36,6 @@ import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +46,6 @@ import io.reactivex.schedulers.Schedulers;
 public class ChatsListModel {
 
     public Observable<List<Chat>> sendChatsListRequest(Context context, ChatsListPresenter presenter) {
-
         return Observable.create(observableTMessages -> {
             ArrayList<Chat> chatsList = new ArrayList<>();
             TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();

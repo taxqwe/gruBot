@@ -2,15 +2,12 @@ package com.fa.grubot.presenters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
-import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ProfileItemFragmentBase;
 import com.fa.grubot.models.ProfileModel;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
-import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

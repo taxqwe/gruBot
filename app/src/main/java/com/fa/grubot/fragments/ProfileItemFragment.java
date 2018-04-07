@@ -12,17 +12,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileItemFragmentBase;
-import com.fa.grubot.objects.pojos.VkUserResponseWithPhoto;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Consts;
 import com.fa.grubot.util.ImageLoader;
-import com.github.badoualy.telegram.tl.api.TLUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
