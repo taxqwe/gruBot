@@ -1,221 +1,246 @@
 package com.fa.grubot.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatFragmentBase;
+import com.fa.grubot.holders.IncomingImageMessageViewHolder;
+import com.fa.grubot.holders.OutcomingImageMessageViewHolder;
+import com.fa.grubot.objects.chat.Chat;
+import com.fa.grubot.objects.chat.ChatImageMessage;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.chat.MessagesListParcelable;
 import com.fa.grubot.presenters.ChatPresenter;
-import com.fa.grubot.util.PreferencesStorage;
-import com.stfalcon.chatkit.commons.ImageLoader;
+import com.fa.grubot.util.Consts;
+import com.fa.grubot.util.ImageLoader;
+import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import icepick.Icepick;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.annotations.Nullable;
 
-/**
- * Created by ni.petrov on 22/10/2017.
- */
+public class ChatFragment extends Fragment
+        implements ChatFragmentBase, Serializable, MessagesListAdapter.OnLoadMoreListener, MessageInput.InputListener, MessageHolders.ContentChecker<ChatMessage> {
 
-public class ChatFragment extends Fragment implements ChatFragmentBase, Serializable {
+    @Nullable @BindView(R.id.messagesList) MessagesListParcelable messagesList;
+    @Nullable @BindView(R.id.input) MessageInput messageInput;
+    @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+
+    @Nullable @BindView(R.id.retryBtn) Button retryBtn;
+
+    @Nullable @BindView(R.id.progressBar) ProgressBar progressBar;
+    @Nullable @BindView(R.id.content) View content;
+    @Nullable @BindView(R.id.noInternet) View noInternet;
+    @Nullable @BindView(R.id.noData) View noData;
 
     private ChatPresenter presenter;
-
-    private MessagesListAdapter<ChatMessage> messageAdapter;
-
-    private String senderId;
-
-    private int myId;
-
+    private MessagesListAdapter<ChatMessage> messagesListAdapter;
     private Unbinder unbinder;
 
-    private boolean isSmartEnabled;
+    private int state;
+    private Chat chat;
 
-    private PreferencesStorage preferences;
-
-    private Menu menu;
-
-    private ArrayList<ChatMessage> messages;
-
-    @BindView(R.id.messagesList)
-    MessagesListParcelable messagesListView;
-
-    @BindView(R.id.input)
-    MessageInput inputView;
-
-    @BindView(R.id.toolbar)
-    Toolbar chatToolbar;
-
-    private Disposable messagesDisposable;
-
-
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_chat, container, false);
-        setHasOptionsMenu(true);
-
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
+    }
 
+    public static ChatFragment newInstance(Chat chat) {
+        Bundle args = new Bundle();
+        args.putSerializable("chat", chat);
+        ChatFragment fragment = new ChatFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_chat, container, false);
+        presenter = new ChatPresenter(this, getActivity());
+        setHasOptionsMenu(true);
         unbinder = ButterKnife.bind(this, v);
-
-        init(v);
-
+        chat = (Chat) this.getArguments().getSerializable("chat");
 
         return v;
     }
 
-
-    private void init(View view) {
-        preferences = new PreferencesStorage(view.getContext());
-
-        presenter = new ChatPresenter(this);
-
-        chatToolbar.bringToFront();
-
-        ((AppCompatActivity) getActivity()).setSupportActionBar(chatToolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Чат");
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        ImageLoader imageLoader = new com.fa.grubot.util.ImageLoader(this);
-
-        messageAdapter = new MessagesListAdapter<>(App.INSTANCE.getCurrentUser().getId(), imageLoader); // sender id must be equals id of loggined user
-        messagesListView.setAdapter(messageAdapter);
-
-        inputView.setInputListener(input -> {
-            // validate and send message here
-            ChatMessage message = new ChatMessage("2",
-                    inputView.getInputEditText().getText().toString(),
-                    App.INSTANCE.getCurrentUser(), new Date());
-            messageAdapter.addToStart(message, true);
-            presenter.sendMessage(message);
-            return true;
-        });
-
-        messages = new ArrayList<>();
-
-        presenter.onNotifyViewCreated();
+    @Override
+    public void onResume() {
+        presenter.notifyFragmentStarted(chat);
+        presenter.setUpdateCallback();
+        super.onResume();
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_chat, menu);
-        this.menu = menu;
-        refreshMenuItems();
+    public void onPause() {
+        App.INSTANCE.closeTelegramClient();
+        super.onPause();
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+    public void onStop() {
+        Log.d("tag", "onStop called");
+        App.INSTANCE.closeTelegramClient();
+        super.onStop();
     }
 
     @Override
-    public void subscribeOnNewMessages(Observable<ChatMessage> messagesObservable) {
-        messagesDisposable = messagesObservable
-                .subscribeOn(AndroidSchedulers.mainThread())
-
-                .observeOn(AndroidSchedulers.mainThread())
-
-                .subscribe(message -> {
-                    //messages.add(message);
-                    //todo hardcode
-                    if (messagesListView != null) {
-                        messageAdapter.addToStart(message,
-                                !messagesListView.canScrollVertically(1));
-                    }
-
-                    Log.d("BUG1", "count of items: " + messageAdapter.getItemCount());
-                });
+    public void onDestroy() {
+        App.INSTANCE.closeTelegramClient();
+        presenter.destroy();
+        unbinder.unbind();
+        super.onDestroy();
     }
 
     @Override
-    public void setUserId(int id) {
-        myId = id;
+    public void onSaveInstanceState(@NotNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     @Override
-    public void drawMessage(ChatMessage msg, boolean needToScroll) {
-        messageAdapter.addToStart(msg, needToScroll);
+    public boolean onSubmit(CharSequence input) {
+        presenter.sendMessage(input.toString());
+        messageInput.getInputEditText().setText(null);
+        return false;
     }
 
     @Override
-    public void drawCachedMessages(List<ChatMessage> messages) {
-        messageAdapter.addToEnd(messages, false);
+    public void onLoadMore(int page, int totalItemsCount) {
+        presenter.loadMoreMessages(totalItemsCount);
+    }
+
+    @Override
+    public boolean hasContentFor(ChatMessage message, byte type) {
+        switch (type) {
+            case Consts.MESSAGE_CONTENT_TYPE_IMAGE:
+                return (message instanceof ChatImageMessage);
+        }
+        return false;
+    }
+
+    @Override
+    public void showRequiredViews() {
+        progressBar.setVisibility(View.GONE);
+        noInternet.setVisibility(View.GONE);
+        noData.setVisibility(View.GONE);
+        content.setVisibility(View.GONE);
+
+        switch (state) {
+            case Consts.STATE_CONTENT:
+                content.setVisibility(View.VISIBLE);
+                break;
+            case Consts.STATE_NO_INTERNET_CONNECTION:
+                noInternet.setVisibility(View.VISIBLE);
+                break;
+            case Consts.STATE_NO_DATA:
+                content.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    @Override
+    public void setupLayouts(boolean isNetworkAvailable, boolean isHasData) {
+        if (isNetworkAvailable) {
+            if (isHasData)
+                state = Consts.STATE_CONTENT;
+            else {
+                state = Consts.STATE_NO_DATA;
+                messagesListAdapter = null;
+            }
+        }
+        else {
+            state = Consts.STATE_NO_INTERNET_CONNECTION;
+            messagesListAdapter = null;
+        }
+    }
+
+    public void addNewMessagesToList(ArrayList<ChatMessage> messages, boolean moveToTop) {
+        if (!messages.isEmpty())
+            messagesListAdapter.addToEnd(messages, true);
+    }
+
+    @Override
+    public void onMessageReceived(ChatMessage chatMessage) {
+        messagesListAdapter.addToStart(chatMessage, true);
+    }
+
+    @Override
+    public void setupRecyclerView(ArrayList<ChatMessage> messages) {
+        MessageHolders holdersConfig = new MessageHolders()
+                .setIncomingTextLayout(R.layout.item_incoming_text_message)
+                .setOutcomingTextLayout(R.layout.item_outcoming_text_message)
+                .registerContentType(Consts.MESSAGE_CONTENT_TYPE_IMAGE,
+                        IncomingImageMessageViewHolder.class,
+                        R.layout.item_incoming_image_message,
+                        OutcomingImageMessageViewHolder.class,
+                        R.layout.item_outcoming_image_message,
+                        this);
+
+        ImageLoader imageLoader = new ImageLoader(this);
+
+        messagesListAdapter = new MessagesListAdapter<>(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), holdersConfig, imageLoader);
+        messagesListAdapter.addToEnd(messages, false);
+        messagesListAdapter.setLoadMoreListener(this);
+        messagesList.setAdapter(messagesListAdapter);
+        messageInput.setInputListener(this);
+    }
+
+    @Override
+    public void setupToolbar() {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setTitle(chat.getName());
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.bringToFront();
+    }
+
+    @Override
+    public void setupRetryButton() {
+        retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
+    }
+
+    @Override
+    public boolean isListEmpty() {
+        return messagesListAdapter == null || messagesListAdapter.getItemCount() == 0;
+    }
+
+    @Override
+    public boolean isAdapterExists() {
+        return messagesListAdapter != null;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            //todo REMOVE IS SMART ENABLE LOGIC TO PRESENTER
-            case R.id.smart_chat_menu_item:
-                refreshMenuItems();
-                isSmartEnabled = !isSmartEnabled;
-                preferences.putBoolean("isSmartEnabled", isSmartEnabled);
-                refreshMenuItems();
-                Toast.makeText(getActivity(),
-                        isSmartEnabled ? "Умный фильтр включен" : "Умный фильтр выключен", Toast.LENGTH_SHORT).show();
-                presenter.notifySmartFilterStatusChanged(isSmartEnabled);
-                break;
             case android.R.id.home:
                 getActivity().onBackPressed();
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-        presenter.destroy();
-        messagesDisposable.dispose();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        Icepick.saveInstanceState(this, outState);
-    }
-
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    private void refreshMenuItems() {
-        isSmartEnabled = preferences.getBoolean("isSmartEnabled", false);
-
-        menu.getItem(0).setIcon(isSmartEnabled ? R.drawable.brain_enabled : R.drawable.brain_disabled);
     }
 }

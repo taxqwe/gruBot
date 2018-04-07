@@ -10,16 +10,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fa.grubot.BranchesActivity;
 import com.fa.grubot.ChatActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.fragments.BaseFragment;
-import com.fa.grubot.fragments.ProfileFragment;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionVote;
-import com.fa.grubot.objects.group.GroupInfoButton;
-import com.fa.grubot.objects.group.User;
+import com.fa.grubot.objects.misc.GroupInfoButton;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Globals;
 import com.innodroid.expandablerecycler.ExpandableRecyclerAdapter;
 
@@ -80,11 +78,11 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
                     break;
                 case 2:
                     buttonText.getRootView().setOnClickListener(v -> {
-                        Intent intent = new Intent(context, BranchesActivity.class);
-
-                        intent.putExtra("groupId", groupId);
-                        context.startActivity(intent);
-                        ((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                        //Intent intent = new Intent(context, BranchesActivity.class);
+                        //TODO разобраться
+                        //intent.putExtra("groupId", groupId);
+                        //context.startActivity(intent);
+                        //((Activity) context).overridePendingTransition(R.anim.right_in, R.anim.left_out);
                     });
                     break;
             }
@@ -157,11 +155,11 @@ public class GroupInfoRecyclerAdapter extends ExpandableRecyclerAdapter<GroupInf
             User user = visibleItems.get(position).user;
 
             userName.setText(user.getFullname());
-            userPhone.setText(user.getPhoneNumber());
+            //userPhone.setText(user.getPhoneNumber());
             userImage.setImageDrawable(Globals.ImageMethods.getRoundImage(context, user.getFullname()));
 
             userImage.getRootView().setOnClickListener(view -> {
-                fragmentNavigation.pushFragment(ProfileFragment.newInstance(instance + 1, user));
+                //fragmentNavigation.pushFragment(ProfileFragment.newInstance(instance + 1, null, user.getUserId()));
             });
         }
     }
