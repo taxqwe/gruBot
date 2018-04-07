@@ -36,7 +36,7 @@ public class ProfileModel {
         Log.d("PROFILE", "start load vk data");
         return Single.create(singleSubscriber  -> {
             VKApi.users().get(
-                VKParameters.from(VKApiConst.USER_ID, userId, VKApiConst.FIELDS, "photo_200"))
+                VKParameters.from(VKApiConst.USER_ID, userId, VKApiConst.FIELDS, "domain, photo_200"))
                     .executeWithListener(new VKRequest.VKRequestListener() {
                         @Override
                         public void onComplete(VKResponse response) {
@@ -50,6 +50,10 @@ public class ProfileModel {
                                 userVk.setLastName(response.json.getJSONArray("response")
                                         .getJSONObject(0)
                                         .getString("last_name"));
+
+                                userVk.setDomain(response.json.getJSONArray("response")
+                                        .getJSONObject(0)
+                                        .getString("domain"));
 
                                 userVk.setPhoto100(response.json.getJSONArray("response")
                                         .getJSONObject(0)

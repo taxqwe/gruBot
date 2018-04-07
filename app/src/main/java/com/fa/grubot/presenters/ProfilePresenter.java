@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.fa.grubot.abstractions.ProfileItemFragmentBase;
 import com.fa.grubot.models.ProfileModel;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
 
 import io.reactivex.Observable;
@@ -34,7 +35,7 @@ public class ProfilePresenter {
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(vkUserObs -> {
-                    vkUserObs.subscribe(vkusr -> fragment.showVkUser(vkusr));
+                    vkUserObs.subscribe(vkUser -> fragment.showUser(new User(String.valueOf(vkUser.getId()), Consts.VK, vkUser.getFirstName() + " " + vkUser.getLastName(), vkUser.getDomain(), vkUser.getPhoto100())));
                 });
     }
 
@@ -44,7 +45,7 @@ public class ProfilePresenter {
             .filter(user -> user != null)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext(user -> fragment.showTelegramUser(user))
+            .doOnNext(user -> fragment.showUser(user))
             .subscribe();
     }
 }

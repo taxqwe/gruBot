@@ -392,7 +392,7 @@ public class TelegramHelper {
         public static User getChatUser(TelegramClient client, int userId, Context context) {
             TLUser tlUser = Users.getUser(client, userId).getUser().getAsUser();
             String fullname = TelegramHelper.Users.extractName(tlUser);
-            String userName = tlUser.getUsername();
+            String userName = "@" + tlUser.getUsername();
 
             TLAbsUserProfilePhoto absPhoto = tlUser.getPhoto();
             InputFileLocation inputFileLocation = null;

@@ -31,20 +31,16 @@ import butterknife.ButterKnife;
  */
 
 public class ProfileItemFragment extends Fragment implements ProfileItemFragmentBase {
-    @BindView(R.id.btn_profile_exit)
-    Button mExitBtn;
+    @BindView(R.id.image_profile) ImageView mImage;
 
-    @BindView(R.id.image_profile)
-    ImageView mImage;
+    @BindView(R.id.name_profile) EditText mNameEditText;
+    @BindView(R.id.name_profile_layout) TextInputLayout mNameEditTextLayout;
 
-    @BindView(R.id.name_profile)
-    EditText mNameEditText;
+    @BindView(R.id.username_profile) EditText mUsernameEditText;
+    @BindView(R.id.username_profile_layout) TextInputLayout mUsernameEditTextLayout;
 
-    @BindView(R.id.name_profile_layout)
-    TextInputLayout mNameEditTextLayout;
-
-    @BindView(R.id.progressBar_profile)
-    View mProgressBar;
+    @BindView(R.id.btn_send_message) Button mSendMessgaeButton;
+    @BindView(R.id.progressBar_profile) View mProgressBar;
 
     private ProfilePresenter mPresenter;
 
@@ -100,31 +96,30 @@ public class ProfileItemFragment extends Fragment implements ProfileItemFragment
     }
 
     private void showNotLoggedInMessage() {
-        mExitBtn.setVisibility(View.GONE);
+        mUsernameEditTextLayout.setVisibility(View.GONE);
+        mSendMessgaeButton.setVisibility(View.GONE);
         mImage.setVisibility(View.INVISIBLE);
         mNameEditText.setText("Вход не выполнен");
         mNameEditTextLayout.setError(null);
     }
 
     private void showProgressBar(boolean needProgressBar) {
-        mExitBtn.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
         mImage.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
         mNameEditTextLayout.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
         mNameEditText.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
+        mUsernameEditTextLayout.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
+        mUsernameEditText.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
+        mSendMessgaeButton.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
+
         mProgressBar.setVisibility(needProgressBar ? View.VISIBLE : View.GONE);
     }
 
-    public void showTelegramUser(User user) {
+    public void showUser(User user) {
         showProgressBar(false);
         Glide.with(this).load(user.getImgUrl()).apply(RequestOptions.circleCropTransform()).into(mImage);
         mNameEditText.setText(user.getFullname());
         mNameEditTextLayout.setError("Имя пользователя");
-    }
-
-    public void showVkUser(VkUserResponseWithPhoto userVk) {
-        showProgressBar(false);
-        Glide.with(this).load(userVk.getPhoto100()).apply(RequestOptions.circleCropTransform()).into(mImage);
-        mNameEditText.setText(userVk.getFirstName() + " " + userVk.getLastName());
-        mNameEditTextLayout.setError("Имя пользователя");
+        mUsernameEditText.setText(user.getUserName());
+        mUsernameEditTextLayout.setError("Логин");
     }
 }
