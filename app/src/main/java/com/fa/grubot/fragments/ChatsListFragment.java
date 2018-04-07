@@ -99,7 +99,6 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
     @Override
     public void onDestroy() {
         App.INSTANCE.closeTelegramClient();
-        unbinder.unbind();
         presenter.destroy();
         super.onDestroy();
     }

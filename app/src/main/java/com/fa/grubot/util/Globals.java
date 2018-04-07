@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class Globals {
+
+    public static int extractMillisFromRpcException(RpcErrorException e) {
+        String tag = e.getTag();
+        return Integer.valueOf(tag.substring(tag.lastIndexOf('_') + 1));
+    }
 
     public static class ImageMethods {
         /**

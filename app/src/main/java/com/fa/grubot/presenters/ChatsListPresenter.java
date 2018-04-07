@@ -115,6 +115,12 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         });
     }
 
+    @Override
+    public void onFloodException() {
+        if (Globals.InternetMethods.isNetworkAvailable(context))
+            model.sendChatsListRequest(context, presenter);
+    }
+
     public void onRetryBtnClick() {
         if (Globals.InternetMethods.isNetworkAvailable(context))
             model.sendChatsListRequest(context, presenter);

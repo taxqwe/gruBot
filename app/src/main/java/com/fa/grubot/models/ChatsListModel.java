@@ -2,6 +2,7 @@ package com.fa.grubot.models;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -17,6 +18,7 @@ import com.fa.grubot.objects.misc.TelegramPhoto;
 import com.fa.grubot.objects.users.CurrentUser;
 import com.fa.grubot.presenters.ChatsListPresenter;
 import com.fa.grubot.util.Consts;
+import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
@@ -30,6 +32,7 @@ import com.github.badoualy.telegram.tl.api.TLPeerChat;
 import com.github.badoualy.telegram.tl.api.TLPeerUser;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
@@ -105,11 +108,11 @@ public class ChatsListModel {
             ArrayList<Chat> chatsList = new ArrayList<>();
             TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
 
-            CurrentUser currentUser = App.INSTANCE.getCurrentUser();
-            if (currentUser.getTelegramChatUser() == null)
-                currentUser.setTelegramChatUser(TelegramHelper.Chats.getChatUser(client, currentUser.getTelegramUser().getId(), context.get()));
-
             try {
+                CurrentUser currentUser = App.INSTANCE.getCurrentUser();
+                if (currentUser.getTelegramChatUser() == null)
+                    currentUser.setTelegramChatUser(TelegramHelper.Chats.getChatUser(client, currentUser.getTelegramUser().getId(), context.get()));
+
                 TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000); //have no idea how to avoid the limit without a huge number
 
                 SparseArray<String> namesMap = TelegramHelper.Chats.getChatNamesMap(tlAbsDialogs);
@@ -189,6 +192,12 @@ public class ChatsListModel {
         protected void onPostExecute(Object result) {
             if (response != null && result instanceof ArrayList<?>)
                 response.onChatsListResult((ArrayList<Chat>) result, true);
+            else if (result instanceof RpcErrorException && ((RpcErrorException) result).getCode() == 420) {
+                int floodTime = Globals.extractMillisFromRpcException((RpcErrorException) result);
+                (new Handler()).postDelayed(() -> {
+                    response.onFloodException();
+                }, floodTime + 500);
+            }
         }
     }
 

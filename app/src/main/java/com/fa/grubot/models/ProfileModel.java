@@ -1,6 +1,7 @@
 package com.fa.grubot.models;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.fa.grubot.App;
@@ -8,8 +9,10 @@ import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.pojos.VkUserResponseWithPhoto;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
+import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLUser;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
@@ -76,14 +79,20 @@ public class ProfileModel {
         });
     }
 
-    public User askForTelegramUserInfo(int userId, Context context) {
+    public User askForTelegramUserInfo(int userId, Context context) throws Exception {
         TelegramClient client = App.INSTANCE.getNewDownloaderClient();
 
         User telegramUser;
         try {
             telegramUser = TelegramHelper.Chats.getChatUser(client, userId, context);
         } catch (Exception e) {
-            telegramUser = new User("0", Consts.Telegram, "error", "error", "error");
+            if (e instanceof RpcErrorException && ((RpcErrorException) e).getCode() == 420) {
+                int floodTime = Globals.extractMillisFromRpcException((RpcErrorException) e);
+                Thread.sleep(floodTime + 500);
+                telegramUser = askForTelegramUserInfo(userId, context);
+            } else {
+                telegramUser = new User(e.getMessage(), Consts.Telegram, e.getMessage(), e.getMessage(), e.getMessage());
+            }
         } finally {
             client.close(false);
         }
