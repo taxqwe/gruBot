@@ -1,24 +1,24 @@
-package com.fa.grubot.profile;
+package com.fa.grubot.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.pojos.VkUserResponseWithPhoto;
+import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Consts;
-import com.rengwuxian.materialedittext.MaterialEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,12 +37,15 @@ public class ProfileItemFragment extends Fragment {
     ImageView mImage;
 
     @BindView(R.id.name_profile)
-    MaterialEditText mNameEditText;
+    EditText mNameEditText;
+
+    @BindView(R.id.name_profile_layout)
+    TextInputLayout mNameEditTextLayout;
 
     @BindView(R.id.progressBar_profile)
     View mProgressBar;
 
-    private ProfilePresenterV2 mPresenter;
+    private ProfilePresenter mPresenter;
 
     @Nullable
     @Override
@@ -52,7 +55,7 @@ public class ProfileItemFragment extends Fragment {
 
         type = getArguments().getString("type");
 
-        mPresenter = new ProfilePresenterV2(this);
+        mPresenter = new ProfilePresenter(this);
 
         init();
 
@@ -91,7 +94,7 @@ public class ProfileItemFragment extends Fragment {
         mExitBtn.setVisibility(View.GONE);
         mImage.setVisibility(View.INVISIBLE);
         mNameEditText.setText("Вход не выполнен");
-        mNameEditText.setHelperText(null);
+        mNameEditTextLayout.setError(null);
     }
 
     private void showProgressBar(boolean needProgressBar) {
@@ -105,5 +108,6 @@ public class ProfileItemFragment extends Fragment {
         showProgressBar(false);
         Glide.with(this).load(userVk.getPhoto100()).apply(RequestOptions.circleCropTransform()).into(mImage);
         mNameEditText.setText(userVk.getFirstName() + " " + userVk.getLastName());
+        mNameEditTextLayout.setError("Имя пользователя");
     }
 }

@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.fa.grubot.profile.ProfileItemFragment;
+import com.fa.grubot.fragments.ProfileItemFragment;
 import com.fa.grubot.util.Consts;
 
 /**
