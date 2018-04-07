@@ -24,9 +24,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return ProfileItemFragment.newInstance(0, App.INSTANCE.getCurrentUser().getVkUser().getId(), Consts.VK);
+                return ProfileItemFragment.newInstance(0,
+                        App.INSTANCE.getCurrentUser().hasVkUser() ?
+                        App.INSTANCE.getCurrentUser().getVkUser().getId() : -1, Consts.VK);
             case 1:
-                return ProfileItemFragment.newInstance(0, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), Consts.Telegram);
+                return ProfileItemFragment.newInstance(0,
+                        App.INSTANCE.getCurrentUser().hasTelegramUser() ?
+                        App.INSTANCE.getCurrentUser().getTelegramUser().getId() : -1, Consts.Telegram);
             default:
                 return null;
         }

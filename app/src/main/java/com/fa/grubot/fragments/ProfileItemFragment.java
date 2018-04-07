@@ -19,6 +19,8 @@ import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Consts;
 import com.fa.grubot.util.ImageLoader;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKSdk;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,7 +64,16 @@ public class ProfileItemFragment extends Fragment implements ProfileItemFragment
         ButterKnife.bind(this, v);
 
         userType = getArguments().getString("userType");
-        userId = getArguments().getInt("userId");
+
+        if (userType.equals(Consts.VK)) {
+            userId = VKSdk.isLoggedIn() ? Integer.valueOf(VKAccessToken.currentToken().userId)
+                    : getArguments().getInt("userId");
+        } else if (userType.equals(Consts.Telegram)){
+            userId = App.INSTANCE.getCurrentUser().hasTelegramUser() ?
+                    App.INSTANCE.getCurrentUser().getTelegramUser().getId()
+                    : getArguments().getInt("userId");
+        }
+
         instance = getArguments().getInt("instance");
 
         mPresenter = new ProfilePresenter(this, getActivity());
@@ -75,16 +86,16 @@ public class ProfileItemFragment extends Fragment implements ProfileItemFragment
     private void init() {
         if (checkIfCurrentTypeLoginned()){
             showProgressBar(true);
-            if (userType.equals(Consts.VK)){
+            if (userType.equals(Consts.VK) && VKSdk.isLoggedIn()){
                 mPresenter.requestVkUser(userId);
-            } else if (userType.equals(Consts.Telegram)){
+            } else if (userType.equals(Consts.Telegram) && App.INSTANCE.getCurrentUser().hasTelegramUser()){
                 mPresenter.requestTelegramUser(userId);
             }
         }
     }
 
     private boolean checkIfCurrentTypeLoginned() {
-        if ((userType.equals(Consts.VK) && !App.INSTANCE.getCurrentUser().hasVkUser()) ||
+        if ((userType.equals(Consts.VK) && !VKSdk.isLoggedIn()) ||
                 (userType.equals(Consts.Telegram) && !App.INSTANCE.getCurrentUser().hasTelegramUser())){
             showNotLoggedInMessage();
             return false;
@@ -113,10 +124,28 @@ public class ProfileItemFragment extends Fragment implements ProfileItemFragment
 
     public void showUser(User user) {
         showProgressBar(false);
-        (new ImageLoader(this)).loadImage(mImage, user.getImgUrl());
-        mNameEditText.setText(user.getFullname());
-        mNameEditTextLayout.setError("Имя пользователя");
-        mUsernameEditText.setText(user.getUserName());
-        mUsernameEditTextLayout.setError("Логин");
+        if (userType.equals(Consts.VK)){
+            if (VKSdk.isLoggedIn()){
+                (new ImageLoader(this)).loadImage(mImage, user.getImgUrl());
+                mNameEditText.setText(user.getFullname());
+                mNameEditTextLayout.setError("Имя пользователя");
+                mUsernameEditText.setText(user.getUserName());
+                mUsernameEditTextLayout.setError("Логин");
+            } else {
+                showNotLoggedInMessage();
+            }
+        }
+
+        if (userType.equals(Consts.Telegram)){
+            if (App.INSTANCE.getCurrentUser().hasTelegramUser()){
+                (new ImageLoader(this)).loadImage(mImage, user.getImgUrl());
+                mNameEditText.setText(user.getFullname());
+                mNameEditTextLayout.setError("Имя пользователя");
+                mUsernameEditText.setText(user.getUserName());
+                mUsernameEditTextLayout.setError("Логин");
+            } else {
+                showNotLoggedInMessage();
+            }
+        }
     }
 }
