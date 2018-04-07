@@ -47,14 +47,85 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ChatsListModel {
 
-    public ChatsListModel() {
+    public Observable<List<Chat>> sendChatsListRequest(Context context, ChatsListPresenter presenter) {
 
-    }
+        return Observable.create(observableTMessages -> {
+            ArrayList<Chat> chatsList = new ArrayList<>();
+            TelegramClient client = App.INSTANCE.getNewTelegramClient(null).getDownloaderClient();
 
-    public void sendChatsListRequest(Context context, ChatsListPresenter presenter) {
-        GetChatsList request = new GetChatsList(context);
-        request.response = presenter;
-        request.execute();
+            CurrentUser currentUser = App.INSTANCE.getCurrentUser();
+            if (currentUser.getTelegramChatUser() == null)
+                currentUser.setTelegramChatUser(TelegramHelper.Chats.getChatUser(client, currentUser.getTelegramUser().getId(), context));
+
+                TLAbsDialogs tlAbsDialogs = client.messagesGetDialogs(false, 0, 0, new TLInputPeerEmpty(), 10000); //have no idea how to avoid the limit without a huge number
+
+                SparseArray<String> namesMap = TelegramHelper.Chats.getChatNamesMap(tlAbsDialogs);
+                SparseArray<TelegramPhoto> photoMap = TelegramHelper.Chats.getPhotoMap(tlAbsDialogs);
+                SparseArray<TLAbsMessage> messagesMap = new SparseArray<>();
+
+                tlAbsDialogs.getMessages().forEach(message -> messagesMap.put(message.getId(), message));
+
+                tlAbsDialogs.getDialogs().forEach(dialog -> {
+                    TLAbsPeer peer = dialog.getPeer();
+                    Chat chat;
+                    String lastMessageText = "";
+
+                    int chatId = TelegramHelper.Chats.getId(peer);
+                    long lastMessageDate = 0;
+                    String chatName = namesMap.get(chatId);
+                    String fromName = null;
+
+                    TLAbsMessage lastMessage = messagesMap.get(dialog.getTopMessage());
+                    TLAbsInputPeer inputPeer = TelegramHelper.Chats.getInputPeer(tlAbsDialogs, String.valueOf(chatId));
+
+                    if (lastMessage instanceof TLMessage) {
+                        TLMessage message = (TLMessage) lastMessage;
+                        lastMessageDate = ((TLMessage) lastMessage).getDate();
+
+                        try {
+                            if (peer instanceof TLPeerChat || peer instanceof TLPeerChannel) {
+                                if (message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId()) {
+                                    fromName = "Вы";
+                                } else {
+                                    TLUser user = TelegramHelper.Users.getUser(client, message.getFromId()).getUser().getAsUser();
+                                    fromName = user.getFirstName();
+                                    fromName = fromName.replace("null", "").trim();
+
+                                    if (fromName.isEmpty())
+                                        fromName = user.getUsername();
+                                }
+                            }
+
+                            if (peer instanceof TLPeerUser && message.getFromId() == App.INSTANCE.getCurrentUser().getTelegramUser().getId())
+                                fromName = "Вы";
+                        } catch (Exception e) {
+                            Log.e("TAG", "Is not a user");
+                        }
+
+                        if (message.getMedia() != null && message.getMessage().isEmpty())
+                            lastMessageText = TelegramHelper.Chats.extractMediaType(message.getMedia());
+                        else
+                            lastMessageText = message.getMessage();
+
+                    } else if (lastMessage instanceof TLMessageService) {
+                        TLAbsMessageAction action = ((TLMessageService) lastMessage).getAction();
+                        lastMessageText = TelegramHelper.Chats.extractActionType(action);
+                        lastMessageDate = ((TLMessageService) lastMessage).getDate();
+                    }
+
+                    TelegramPhoto telegramPhoto = photoMap.get(chatId);
+                    String imgUri = TelegramHelper.Files.getImgById(client, telegramPhoto, context);
+                    if (imgUri == null)
+                        imgUri = chatName;
+
+                    chat = new Chat(String.valueOf(chatId), chatName, null, imgUri, lastMessageText, Consts.Telegram, lastMessageDate * 1000, fromName);
+                    chat.setInputPeer(inputPeer);
+                    chatsList.add(chat);
+                });
+                client.close(false);
+                observableTMessages.onNext(chatsList);
+        });
+
     }
 
     public Observable<List<Chat>> sendVkChatListRequest(ChatsListPresenter presenter) {
