@@ -16,9 +16,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.fa.grubot.App;
 import com.fa.grubot.R;
+import com.fa.grubot.abstractions.ProfileItemFragmentBase;
 import com.fa.grubot.objects.pojos.VkUserResponseWithPhoto;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Consts;
+import com.github.badoualy.telegram.tl.api.TLUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,9 +30,7 @@ import butterknife.ButterKnife;
  * Created by ni.petrov on 03/04/2018.
  */
 
-public class ProfileItemFragment extends Fragment {
-    private String type;
-
+public class ProfileItemFragment extends Fragment implements ProfileItemFragmentBase {
     @BindView(R.id.btn_profile_exit)
     Button mExitBtn;
 
@@ -47,15 +48,31 @@ public class ProfileItemFragment extends Fragment {
 
     private ProfilePresenter mPresenter;
 
+    private int instance = 0;
+    private int userId;
+    private String userType;
+
+    public static ProfileItemFragment newInstance(int instance, int userId, String userType) {
+        Bundle args = new Bundle();
+        args.putInt("instance", instance);
+        args.putString("userType", userType);
+        args.putInt("userId", userId);
+        ProfileItemFragment fragment = new ProfileItemFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.content_profile, container, false);
         ButterKnife.bind(this, v);
 
-        type = getArguments().getString("type");
+        userType = getArguments().getString("userType");
+        userId = getArguments().getInt("userId");
+        instance = getArguments().getInt("instance");
 
-        mPresenter = new ProfilePresenter(this);
+        mPresenter = new ProfilePresenter(this, getActivity());
 
         init();
 
@@ -65,32 +82,24 @@ public class ProfileItemFragment extends Fragment {
     private void init() {
         if (checkIfCurrentTypeLoginned()){
             showProgressBar(true);
-            if (type.equals(Consts.VK)){
-                doVkStuff();
-            } else if (type.equals(Consts.Telegram)){
-                doTelegramStuff();
+            if (userType.equals(Consts.VK)){
+                mPresenter.requestVkUser(userId);
+            } else if (userType.equals(Consts.Telegram)){
+                mPresenter.requestTelegramUser(userId);
             }
         }
     }
 
-    private void doTelegramStuff() {
-        // todo
-    }
-
-    private void doVkStuff() {
-        mPresenter.askForVkStuff();
-    }
-
     private boolean checkIfCurrentTypeLoginned() {
-        if ((type.equals(Consts.VK) && !App.INSTANCE.getCurrentUser().hasVkUser()) ||
-                (type.equals(Consts.Telegram) && !App.INSTANCE.getCurrentUser().hasTelegramUser())){
-            showNotLoginnedMessage();
+        if ((userType.equals(Consts.VK) && !App.INSTANCE.getCurrentUser().hasVkUser()) ||
+                (userType.equals(Consts.Telegram) && !App.INSTANCE.getCurrentUser().hasTelegramUser())){
+            showNotLoggedInMessage();
             return false;
         }
         return true;
     }
 
-    private void showNotLoginnedMessage() {
+    private void showNotLoggedInMessage() {
         mExitBtn.setVisibility(View.GONE);
         mImage.setVisibility(View.INVISIBLE);
         mNameEditText.setText("Вход не выполнен");
@@ -100,11 +109,19 @@ public class ProfileItemFragment extends Fragment {
     private void showProgressBar(boolean needProgressBar) {
         mExitBtn.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
         mImage.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
+        mNameEditTextLayout.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
         mNameEditText.setVisibility(needProgressBar ? View.GONE : View.VISIBLE);
         mProgressBar.setVisibility(needProgressBar ? View.VISIBLE : View.GONE);
     }
 
-    public void drawVkUser(VkUserResponseWithPhoto userVk) {
+    public void showTelegramUser(User user) {
+        showProgressBar(false);
+        Glide.with(this).load(user.getImgUrl()).apply(RequestOptions.circleCropTransform()).into(mImage);
+        mNameEditText.setText(user.getFullname());
+        mNameEditTextLayout.setError("Имя пользователя");
+    }
+
+    public void showVkUser(VkUserResponseWithPhoto userVk) {
         showProgressBar(false);
         Glide.with(this).load(userVk.getPhoto100()).apply(RequestOptions.circleCropTransform()).into(mImage);
         mNameEditText.setText(userVk.getFirstName() + " " + userVk.getLastName());

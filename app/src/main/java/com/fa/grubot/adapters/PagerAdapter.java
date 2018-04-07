@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.fa.grubot.App;
 import com.fa.grubot.fragments.ProfileItemFragment;
 import com.fa.grubot.util.Consts;
 
@@ -24,17 +25,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                ProfileItemFragment tab1 = new ProfileItemFragment();
-                Bundle args1 = new Bundle();
-                args1.putString("type", Consts.VK);
-                tab1.setArguments(args1);
-                return tab1;
+                return ProfileItemFragment.newInstance(0, App.INSTANCE.getCurrentUser().getVkUser().getId(), Consts.VK);
             case 1:
-                ProfileItemFragment tab2 = new ProfileItemFragment();
-                Bundle args2 = new Bundle();
-                args2.putString("type", Consts.Telegram);
-                tab2.setArguments(args2);
-                return tab2;
+                return ProfileItemFragment.newInstance(0, App.INSTANCE.getCurrentUser().getTelegramUser().getId(), Consts.Telegram);
             default:
                 return null;
         }

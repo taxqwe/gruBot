@@ -80,7 +80,7 @@ public class App extends Application {
         if (callback != null)
             telegramClient = Kotlogram.getDefaultClient(application, apiStorage, apiStorage.loadDc(), callback);
         else
-            telegramClient = Kotlogram.getDefaultClient(application, apiStorage);
+            telegramClient = Kotlogram.getDefaultClient(application, apiStorage, apiStorage.loadDc());
         return telegramClient;
     }
 

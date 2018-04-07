@@ -1,10 +1,14 @@
 package com.fa.grubot.models;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.fa.grubot.App;
+import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.pojos.VkUserResponseWithPhoto;
-import com.fa.grubot.presenters.ProfilePresenter;
-import com.vk.sdk.VKAccessToken;
+import com.fa.grubot.objects.users.User;
+import com.github.badoualy.telegram.api.TelegramClient;
+import com.github.badoualy.telegram.tl.api.TLUser;
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
@@ -14,26 +18,25 @@ import com.vk.sdk.api.VKResponse;
 
 import org.json.JSONException;
 
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by ni.petrov on 04/04/2018.
  */
 
 public class ProfileModel {
-    private ProfilePresenter presenter;
 
-
-    public ProfileModel(ProfilePresenter presenter) {
-        this.presenter = presenter;
+    public ProfileModel() {
     }
 
-    public Single<VkUserResponseWithPhoto> askForMyInfo() {
-        Log.d("PROFILE", "start load data");
+    public Single<VkUserResponseWithPhoto> askForVkUserInfo(int userId) {
+        Log.d("PROFILE", "start load vk data");
         return Single.create(singleSubscriber  -> {
             VKApi.users().get(
-                    VKParameters.from(VKApiConst.USER_ID,
-                            VKAccessToken.currentToken().userId, VKApiConst.FIELDS, "photo_200"))
+                VKParameters.from(VKApiConst.USER_ID, userId, VKApiConst.FIELDS, "photo_200"))
                     .executeWithListener(new VKRequest.VKRequestListener() {
                         @Override
                         public void onComplete(VKResponse response) {
@@ -66,5 +69,21 @@ public class ProfileModel {
                         }
                     });
         });
+    }
+
+    public User askForTelegramUserInfo(int userId, Context context) {
+        TelegramClient client = App.INSTANCE.getNewDownloaderClient();
+
+        User telegramUser;
+        try {
+            telegramUser = TelegramHelper.Chats.getChatUser(client, userId, context);
+        } catch (Exception e) {
+            e.printStackTrace();
+            telegramUser = null;
+        } finally {
+            client.close(false);
+        }
+
+        return telegramUser;
     }
 }

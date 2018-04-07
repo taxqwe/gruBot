@@ -76,12 +76,12 @@ public class ProfileFragment extends Fragment {
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
-    public static ProfileFragment getInstanse(){
+    public static ProfileFragment getInstanse() {
         return new ProfileFragment();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
     }
