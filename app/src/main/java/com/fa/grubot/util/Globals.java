@@ -29,7 +29,7 @@ public class Globals {
             ColorGenerator generator = ColorGenerator.MATERIAL;
             int color = generator.getColor(name);
 
-            TextDrawable drawable = TextDrawable.builder()
+            return TextDrawable.builder()
                     .beginConfig()
                     .useFont(Typeface.createFromAsset(context.getAssets(), "OpenSans-Light.ttf"))
                     .bold()
@@ -38,7 +38,6 @@ public class Globals {
                     .height(100)
                     .endConfig()
                     .buildRound(String.valueOf(name.charAt(0)).toUpperCase(), color);
-            return drawable;
         }
 
         public static boolean isValidUri(String uri) {
@@ -47,7 +46,7 @@ public class Globals {
     }
 
     public static class InternetMethods {
-        private static boolean isNetworkAvailable(Context context) {
+        public static boolean isNetworkAvailable(Context context) {
             Runtime runtime = Runtime.getRuntime();
             int exitValue = -1;
 

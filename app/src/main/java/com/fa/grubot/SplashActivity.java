@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.fa.grubot.objects.users.CurrentUser;
 import com.fa.grubot.objects.users.VkUser;
+import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLInputUserSelf;
 import com.github.badoualy.telegram.tl.api.TLUser;
@@ -34,12 +35,17 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         loadPreferences();
-        (new TryToLoginAsyncTask(this)).execute();
-        if (VKSdk.isLoggedIn() && VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()) != null){
-            vkUser = new VkUser(VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()).accessToken);
+        if (Globals.InternetMethods.isNetworkAvailable(this)) {
+            (new TryToLoginAsyncTask(this)).execute();
+            if (VKSdk.isLoggedIn() && VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()) != null) {
+                vkUser = new VkUser(VKAccessToken.tokenFromFile(App.INSTANCE.getVkTokenFilePath()).accessToken);
+            }
+            vkUserChecked = true;
+            nextIfBothAccountsChecked();
+        } else {
+            Toast.makeText(this, "Нет подключения к сети", Toast.LENGTH_LONG).show();
+            this.finishAffinity();
         }
-        vkUserChecked = true;
-        nextIfBothAccountsChecked();
     }
 
     private void loadPreferences() {
