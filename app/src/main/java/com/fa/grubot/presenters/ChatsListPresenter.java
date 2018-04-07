@@ -63,6 +63,7 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
         } else {
             notifyViewCreated(STATE_NO_INTERNET_CONNECTION);
         }
+
         if (App.INSTANCE.getCurrentUser().hasTelegramUser()) {
             tListObservable = model.sendChatsListRequest(context, presenter);
         } else {
@@ -133,16 +134,11 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
                     e.printStackTrace();
                 }
 
-                @Override
-                public void onUserPhotoUpdate(TelegramUpdateUserPhotoEvent telegramUpdateUserPhotoEvent) {
-                    ((AppCompatActivity) context).runOnUiThread(() -> onChatsListResult(model.onUserPhotoUpdate(chats, telegramUpdateUserPhotoEvent), false));
-                }
-            };
-            if (Globals.InternetMethods.isNetworkAvailable(context))
-                client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener, context));
-            else
-                notifyViewCreated(STATE_NO_INTERNET_CONNECTION);
-        });
+                if (Globals.InternetMethods.isNetworkAvailable(context))
+                    client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener, context));
+                else
+                    notifyViewCreated(STATE_NO_INTERNET_CONNECTION);
+
                 telegramEventListener = new TelegramEventCallback.TelegramEventListener() {
                     @Override
                     public void onMessage(TelegramMessageEvent telegramMessageEvent) {
@@ -165,7 +161,6 @@ public class ChatsListPresenter implements ChatsListRequestResponse {
                                 false));
                     }
                 };
-                client = App.INSTANCE.getNewTelegramClient(new TelegramEventCallback(telegramEventListener, context));
             });
         }
     }
