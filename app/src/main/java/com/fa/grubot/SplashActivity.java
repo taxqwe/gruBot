@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.users.CurrentUser;
 import com.fa.grubot.objects.users.VkUser;
 import com.fa.grubot.util.Globals;
@@ -95,6 +96,7 @@ public class SplashActivity extends AppCompatActivity {
             try {
                 TLUserFull userFull = client.usersGetFullUser(new TLInputUserSelf());
                 returnObject = userFull.getUser().getAsUser();
+                App.INSTANCE.getCurrentUser().setTelegramChatUser(TelegramHelper.Chats.getChatUser(client, userFull.getUser().getId(), context.get()));
             } catch (RpcErrorException e) {
                 returnObject = e;
             } catch (Exception e) {

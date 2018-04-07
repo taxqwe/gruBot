@@ -7,6 +7,7 @@ import com.fa.grubot.App;
 import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.pojos.VkUserResponseWithPhoto;
 import com.fa.grubot.objects.users.User;
+import com.fa.grubot.util.Consts;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLUser;
 import com.vk.sdk.api.VKApi;
@@ -82,8 +83,7 @@ public class ProfileModel {
         try {
             telegramUser = TelegramHelper.Chats.getChatUser(client, userId, context);
         } catch (Exception e) {
-            e.printStackTrace();
-            telegramUser = null;
+            telegramUser = new User("0", Consts.Telegram, "error", "error", "error");
         } finally {
             client.close(false);
         }

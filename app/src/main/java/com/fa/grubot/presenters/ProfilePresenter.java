@@ -1,12 +1,15 @@
 package com.fa.grubot.presenters;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
+import com.fa.grubot.App;
 import com.fa.grubot.abstractions.ProfileItemFragmentBase;
 import com.fa.grubot.models.ProfileModel;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -40,12 +43,11 @@ public class ProfilePresenter {
     }
 
     public void requestTelegramUser(final int userId) {
-        Observable.just(userId)
-            .map(id -> model.askForTelegramUserInfo(id, context))
-            .filter(user -> user != null)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext(user -> fragment.showUser(user))
-            .subscribe();
+        Observable.defer(() -> Observable.just(model.askForTelegramUserInfo(userId, context)))
+                .filter(user -> user != null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(user -> fragment.showUser(user))
+                .subscribe();
     }
 }

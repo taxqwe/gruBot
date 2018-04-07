@@ -21,6 +21,7 @@ import com.fa.grubot.objects.pojos.VkUserResponseWithPhoto;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Consts;
+import com.fa.grubot.util.ImageLoader;
 import com.github.badoualy.telegram.tl.api.TLUser;
 
 import butterknife.BindView;
@@ -116,7 +117,7 @@ public class ProfileItemFragment extends Fragment implements ProfileItemFragment
 
     public void showUser(User user) {
         showProgressBar(false);
-        Glide.with(this).load(user.getImgUrl()).apply(RequestOptions.circleCropTransform()).into(mImage);
+        (new ImageLoader(this)).loadImage(mImage, user.getImgUrl());
         mNameEditText.setText(user.getFullname());
         mNameEditTextLayout.setError("Имя пользователя");
         mUsernameEditText.setText(user.getUserName());
