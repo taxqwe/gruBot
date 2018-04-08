@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -175,4 +178,22 @@ public class ProfileItemFragment extends Fragment implements ProfileItemFragment
         if (fragmentMode == Consts.PROFILE_MODE_SINGLE)
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(user.getFullname());
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (fragmentMode == Consts.PROFILE_MODE_SINGLE)
+            inflater.inflate(R.menu.menu_group_info, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.closeBtn:
+                getActivity().onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

@@ -26,6 +26,7 @@ import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.chat.ChatImageMessage;
 import com.fa.grubot.objects.chat.ChatMessage;
 import com.fa.grubot.objects.chat.MessagesListParcelable;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.Consts;
 import com.fa.grubot.util.ImageLoader;
@@ -208,10 +209,21 @@ public class ChatFragment extends Fragment
         ImageLoader imageLoader = new ImageLoader(this);
 
         messagesListAdapter = new MessagesListAdapter<>(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), holdersConfig, imageLoader);
+        messagesListAdapter.registerViewClickListener(R.id.messageUserAvatar, (view, message) -> showUserProfile((User) message.getUser()));
         messagesListAdapter.addToEnd(messages, false);
         messagesListAdapter.setLoadMoreListener(this);
         messagesList.setAdapter(messagesListAdapter);
         messageInput.setInputListener(this);
+    }
+
+    private void showUserProfile(User user) {
+        Fragment profileItemFragment = ProfileItemFragment.newInstance(Integer.valueOf(user.getId()), user.getUserType(), user, Consts.PROFILE_MODE_SINGLE);
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.addToBackStack(null);
+        transaction.add(R.id.content, profileItemFragment);
+        transaction.commit();
     }
 
     @Override
@@ -221,7 +233,6 @@ public class ChatFragment extends Fragment
         activity.getSupportActionBar().setTitle(chat.getName());
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.getMenu().clear();
         toolbar.bringToFront();
 
         toolbar.setOnClickListener(v -> {

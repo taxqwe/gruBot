@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.fa.grubot.R;
-import com.fa.grubot.fragments.GroupInfoFragment;
 import com.fa.grubot.fragments.ProfileItemFragment;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
