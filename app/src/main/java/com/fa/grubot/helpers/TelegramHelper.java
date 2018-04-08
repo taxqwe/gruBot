@@ -2,6 +2,7 @@ package com.fa.grubot.helpers;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.fa.grubot.objects.misc.TelegramPhoto;
@@ -57,6 +58,7 @@ import com.github.badoualy.telegram.tl.api.TLUser;
 import com.github.badoualy.telegram.tl.api.TLUserFull;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsDialogs;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
+import com.github.badoualy.telegram.tl.api.request.TLRequestUsersGetFullUser;
 import com.github.badoualy.telegram.tl.core.TLIntVector;
 import com.github.badoualy.telegram.tl.core.TLVector;
 import com.github.badoualy.telegram.tl.exception.RpcErrorException;
@@ -106,21 +108,12 @@ public class TelegramHelper {
     }
 
     public static class Users {
-        public static String getName(TelegramClient telegramClient, int userId) throws Exception {
-            TLUserFull user = getUser(telegramClient, userId);
-            return extractName(user);
-        }
-
         public static TLUserFull getUser(TelegramClient telegramClient, int userId) throws Exception {
             TLInputUser user = new TLInputUser();
             user.setUserId(userId);
-            return telegramClient.usersGetFullUser(user);
-        }
+            TLRequestUsersGetFullUser requestUsersGetFullUser = new TLRequestUsersGetFullUser(user);
 
-        public static String extractName(TLUserFull tlUserFull) {
-            if (tlUserFull.getUser().isEmpty())
-                return null;
-            return extractName(tlUserFull.getUser().getAsUser());
+            return telegramClient.executeRpcQuery(requestUsersGetFullUser);
         }
 
         public static String extractName(TLUser tlUser) {
@@ -132,17 +125,6 @@ public class TelegramHelper {
                 userName.append(" ").append(tlUser.getLastName());
             }
             return userName.toString();
-        }
-
-        public static Integer extractId(TLUserFull tlUserFull) {
-            if (tlUserFull.getUser().isEmpty())
-                return null;
-
-            return extractId(tlUserFull.getUser());
-        }
-
-        public static Integer extractId(TLAbsUser tlAbsUser) {
-            return tlAbsUser.getId();
         }
     }
 
@@ -354,9 +336,11 @@ public class TelegramHelper {
             SparseArray<User> users = new SparseArray<>();
             for (TLAbsUser absUser : messages.getUsers()) {
                 TLUser tlUser = absUser.getAsUser();
-                int userId = tlUser.getId();
+                int userId = absUser.getId();
                 String fullname = TelegramHelper.Users.extractName(tlUser);
                 String userName = tlUser.getUsername();
+                String phoneNumber = tlUser.getPhone();
+                Log.d("debug", "Helper, user id: " + String.valueOf(userId) + ", name: " + fullname);
 
                 TLAbsUserProfilePhoto absPhoto = tlUser.getPhoto();
                 InputFileLocation inputFileLocation = null;
@@ -375,6 +359,7 @@ public class TelegramHelper {
 
                 User user = new User(String.valueOf(userId), Consts.Telegram, fullname, userName, imgUri);
                 user.setInputUser(new TLInputUser(tlUser.getId(), tlUser.getAccessHash()));
+                user.setPhoneNumber(phoneNumber);
                 users.put(userId, user);
             }
 
@@ -411,6 +396,7 @@ public class TelegramHelper {
             TLUser tlUser = Users.getUser(client, userId).getUser().getAsUser();
             String fullname = TelegramHelper.Users.extractName(tlUser);
             String userName = "@" + tlUser.getUsername();
+            String phoneNumber = tlUser.getPhone();
 
             TLAbsUserProfilePhoto absPhoto = tlUser.getPhoto();
             InputFileLocation inputFileLocation = null;
@@ -429,6 +415,7 @@ public class TelegramHelper {
 
             User user = new User(String.valueOf(userId), Consts.Telegram, fullname, userName, imgUri);
             user.setInputUser(new TLInputUser(tlUser.getId(), tlUser.getAccessHash()));
+            user.setPhoneNumber(phoneNumber);
             return user;
         }
 

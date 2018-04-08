@@ -2,6 +2,10 @@ package com.fa.grubot.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +16,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.fa.grubot.R;
+import com.fa.grubot.fragments.GroupInfoFragment;
+import com.fa.grubot.fragments.ProfileItemFragment;
 import com.fa.grubot.objects.users.User;
+import com.fa.grubot.util.Consts;
 import com.fa.grubot.util.Globals;
 
 import java.util.ArrayList;
@@ -61,6 +68,16 @@ public class UsersRecyclerAdapter extends RecyclerView.Adapter<UsersRecyclerAdap
 
         holder.userName.setText(user.getFullname());
         holder.userRole.setText(user.getChatRole());
+
+        holder.userImage.getRootView().setOnClickListener(v -> {
+            Fragment profileItemFragment = ProfileItemFragment.newInstance(Integer.valueOf(user.getId()), user.getUserType(), user, Consts.PROFILE_MODE_SINGLE);
+
+            FragmentManager fm = ((AppCompatActivity) context).getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction.addToBackStack(null);
+            transaction.add(R.id.content, profileItemFragment);
+            transaction.commit();
+        });
     }
 
     @Override

@@ -13,6 +13,7 @@ public class User implements Serializable, IUser {
     private String userName;
     private String imgUrl;
     private String chatRole;
+    private String phoneNumber;
     private TLAbsInputUser inputUser;
 
     public User(String userId, String userType, String fullname, String userName, String imgUrl) {
@@ -58,8 +59,12 @@ public class User implements Serializable, IUser {
         return imgUrl;
     }
 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public String getPhoneNumber() {
-        return "";
+        return phoneNumber;
     }
 
     public String getChatRole() {
