@@ -13,6 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.dashboard.ActionArticle;
 import com.fa.grubot.objects.dashboard.ActionPoll;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
                         .positiveText(android.R.string.ok)
                         .show();
             });
-        } else {
+        } else if (action instanceof ActionPoll){
             holder.actionTypeText.setText("Голосование");
             holder.viewForeground.setOnClickListener(v -> {
                 new MaterialDialog.Builder(context)
@@ -87,6 +88,15 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
                              **/
                             return true;
                         })
+                        .positiveText(android.R.string.ok)
+                        .show();
+            });
+        } else if (action instanceof ActionArticle){
+            holder.actionTypeText.setText("Статья");
+            holder.viewForeground.setOnClickListener(v -> {
+                new MaterialDialog.Builder(context)
+                        .title(action.getGroupName() + ": " + action.getDesc())
+                        .content(((ActionArticle) action).getText())
                         .positiveText(android.R.string.ok)
                         .show();
             });
@@ -132,7 +142,11 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
     private int getColorFromDashboardEntry(Action entry){
         if (entry instanceof ActionAnnouncement)
             return context.getResources().getColor(R.color.colorAnnouncement);
-        else
+        else if (entry instanceof ActionPoll)
             return context.getResources().getColor(R.color.colorVote);
+        else if (entry instanceof ActionArticle)
+            return context.getResources().getColor(R.color.colorArticle);
+        else
+            return -1;
     }
 }

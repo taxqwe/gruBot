@@ -7,6 +7,7 @@ import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.models.ActionsModel;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
+import com.fa.grubot.objects.dashboard.ActionArticle;
 import com.fa.grubot.objects.dashboard.ActionPoll;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.util.Consts;
@@ -28,12 +29,16 @@ public class ActionsPresenter {
     private Query actionsQuery;
     private ListenerRegistration actionsRegistration;
 
+    private int type;
+
     public ActionsPresenter(ActionsFragmentBase fragment){
         this.fragment = fragment;
         this.model = new ActionsModel();
     }
 
     public void notifyFragmentStarted(int type) {
+        this.type = type;
+
         switch (type) {
             case ActionsFragment.TYPE_ANNOUNCEMENTS:
                 actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "new");
@@ -41,11 +46,14 @@ public class ActionsPresenter {
             case ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE:
                 actionsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "archive");
                 break;
-            case ActionsFragment.TYPE_VOTES:
+            case ActionsFragment.TYPE_POLLS:
                 actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "new");
                 break;
-            case ActionsFragment.TYPE_VOTES_ARCHIVE:
+            case ActionsFragment.TYPE_POLLS_ARCHIVE:
                 actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereGreaterThan("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), 0);
+                break;
+            case ActionsFragment.TYPE_ARTICLES:
+                actionsQuery = FirebaseFirestore.getInstance().collection("articles").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "new");
                 break;
         }
 
@@ -57,6 +65,8 @@ public class ActionsPresenter {
 
         switch (state) {
             case Consts.STATE_CONTENT:
+                if (type == ActionsFragment.TYPE_ARTICLES)
+                    fragment.setupToolbar();
                 fragment.setupRecyclerView(actions);
                 break;
             case Consts.STATE_NO_INTERNET_CONNECTION:
@@ -86,7 +96,20 @@ public class ActionsPresenter {
                                         doc.get("text").toString(),
                                         (Map<String, String>) doc.get("users"),
                                         (long) doc.get("messageId"));
-                    } else {
+                    } else if (type == ActionsFragment.TYPE_ARTICLES) {
+                        action = new ActionArticle(
+                                doc.getId(),
+                                doc.get("group").toString(),
+                                doc.get("groupName").toString(),
+                                doc.get("author").toString(),
+                                doc.get("authorName").toString(),
+                                doc.get("desc").toString(),
+                                (Date) doc.get("date"),
+                                doc.get("text").toString(),
+                                (Map<String, String>) doc.get("users"),
+                                (long) doc.get("messageId"));
+
+                    } else if (type == ActionsFragment.TYPE_POLLS || type == ActionsFragment.TYPE_POLLS_ARCHIVE) {
                         ArrayList<VoteOption> voteOptions = new ArrayList<>();
                         for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
                             voteOptions.add(new VoteOption(option.getValue()));
@@ -102,6 +125,8 @@ public class ActionsPresenter {
                                         voteOptions,
                                         (Map<String, String>) doc.get("users"),
                                         (long) doc.get("messageId"));
+                    } else {
+                        action = null;
                     }
 
                     if (fragment != null) {
@@ -163,7 +188,7 @@ public class ActionsPresenter {
                 .addOnSuccessListener(documentSnapshot -> {
                     Map<String, String> users = (Map<String, String>) documentSnapshot.get("users");
 
-                    users.put(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), "archive");
+                    users.put(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), "-1");
 
                     FirebaseFirestore.getInstance().collection("votes")
                             .document(vote.getId())
@@ -179,7 +204,7 @@ public class ActionsPresenter {
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
             restoreAnnouncementFromArchive((ActionAnnouncement) action);
         } else {
-            restoreVoteFromArchive((ActionPoll) action);
+            restorePollFromArchive((ActionPoll) action);
         }
     }
 
@@ -200,7 +225,7 @@ public class ActionsPresenter {
     }
 
     @SuppressWarnings("unchecked")
-    private void restoreVoteFromArchive(ActionPoll vote) {
+    private void restorePollFromArchive(ActionPoll vote) {
         FirebaseFirestore.getInstance().collection("votes")
                 .document(vote.getId())
                 .get()

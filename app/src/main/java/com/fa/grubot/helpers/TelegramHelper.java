@@ -22,6 +22,7 @@ import com.github.badoualy.telegram.tl.api.TLAbsUser;
 import com.github.badoualy.telegram.tl.api.TLAbsUserProfilePhoto;
 import com.github.badoualy.telegram.tl.api.TLChannel;
 import com.github.badoualy.telegram.tl.api.TLChannelForbidden;
+import com.github.badoualy.telegram.tl.api.TLChannelParticipant;
 import com.github.badoualy.telegram.tl.api.TLChannelParticipantCreator;
 import com.github.badoualy.telegram.tl.api.TLChannelParticipantEditor;
 import com.github.badoualy.telegram.tl.api.TLChannelParticipantKicked;
@@ -246,20 +247,20 @@ public class TelegramHelper {
         }
 
         public static String extractParticipantRole(TLAbsChannelParticipant channelParticipant) {
-            if (channelParticipant instanceof TLChannelParticipantCreator) {
+            if (channelParticipant instanceof TLChannelParticipantCreator)
                 return "Создатель";
-            } else if (channelParticipant instanceof TLChannelParticipantModerator) {
+            else if (channelParticipant instanceof TLChannelParticipantModerator)
                 return "Модератор";
-            } else if (channelParticipant instanceof TLChannelParticipantEditor) {
+            else if (channelParticipant instanceof TLChannelParticipantEditor)
                 return "Редактор";
-            } else if (channelParticipant instanceof TLChannelParticipantKicked) {
+            else if (channelParticipant instanceof TLChannelParticipantKicked)
                 return "Исключен";
-            } else if (channelParticipant instanceof TLChannelParticipantSelf) {
+            else if (channelParticipant instanceof TLChannelParticipantSelf)
                 return "Вы";
-            } else if (channelParticipant instanceof com.github.badoualy.telegram.tl.api.TLChannelParticipant) {
-                return  "Участник";
-            }
-                return "";
+            else if (channelParticipant instanceof TLChannelParticipant)
+                return "Участник";
+            else
+                return "Участник";
         }
 
         public static TLAbsChat getChat(TelegramClient telegramClient, int chatId) {
