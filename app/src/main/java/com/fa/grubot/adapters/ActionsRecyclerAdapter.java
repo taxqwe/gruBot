@@ -1,6 +1,7 @@
 package com.fa.grubot.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
-import com.fa.grubot.objects.dashboard.ActionVote;
+import com.fa.grubot.objects.dashboard.ActionPoll;
 
 import java.util.ArrayList;
 
@@ -47,7 +48,8 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_action, parent, false);
         return new ViewHolder(itemView);
     }
@@ -77,7 +79,7 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
             holder.viewForeground.setOnClickListener(v -> {
                 new MaterialDialog.Builder(context)
                         .title(action.getGroupName() + ": " + action.getDesc())
-                        .items(((ActionVote) action).getOptions())
+                        .items(((ActionPoll) action).getOptions())
                         .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
                             /**
                              * If you use alwaysCallSingleChoiceCallback(), which is discussed below,

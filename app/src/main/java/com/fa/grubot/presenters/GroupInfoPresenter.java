@@ -1,15 +1,14 @@
 package com.fa.grubot.presenters;
 
 
+import android.util.Log;
+
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
-import com.fa.grubot.adapters.GroupInfoRecyclerAdapter;
 import com.fa.grubot.models.GroupInfoModel;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
-import com.fa.grubot.objects.dashboard.ActionVote;
-import com.fa.grubot.objects.misc.GroupInfoButton;
+import com.fa.grubot.objects.dashboard.ActionPoll;
 import com.fa.grubot.objects.misc.VoteOption;
-import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -18,32 +17,18 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
 public class GroupInfoPresenter {
     private GroupInfoFragmentBase fragment;
     private GroupInfoModel model;
-    private ArrayList<GroupInfoRecyclerAdapter.GroupInfoRecyclerItem> buttons = new ArrayList<>(Arrays.asList(
-            new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(1, "Чат", new ArrayList<>())),
-            new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(2, "Ветки осбуждений", new ArrayList<>())),
-            new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(3, "Объявления", new ArrayList<>())),
-            new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(4, "Голосования", new ArrayList<>())),
-            new GroupInfoRecyclerAdapter.GroupInfoRecyclerItem(new GroupInfoButton(5, "Участники", new ArrayList<>()))
-    ));
 
-    private Chat localChat;
-
-    private Query groupQuery;
-    private Query usersQuery;
     private Query announcementsQuery;
-    private Query votesQuery;
+    private Query pollsQuery;
 
-    private ListenerRegistration groupRegistration;
-    private ListenerRegistration usersRegistration;
     private ListenerRegistration announcementsRegistration;
-    private ListenerRegistration votesRegistration;
+    private ListenerRegistration pollsRegistration;
 
     public GroupInfoPresenter(GroupInfoFragmentBase fragment) {
         this.fragment = fragment;
@@ -51,11 +36,14 @@ public class GroupInfoPresenter {
     }
 
     public void notifyFragmentStarted(Chat chat) {
-        String groupId = chat.getId();
-        groupQuery = FirebaseFirestore.getInstance().collection("groups").whereEqualTo("chatId", groupId);
-        usersQuery = FirebaseFirestore.getInstance().collection("users").whereEqualTo("groups." + groupId, true);
-        announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("chat", groupId);
-        votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("chat", groupId);
+        Long chatId = Long.valueOf(chat.getId());
+        String prefix = "";
+        if (chat.getType().equals(Consts.Telegram))
+            prefix = "-100";
+
+        Log.d("debug", prefix + chatId);
+        announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("group", Long.valueOf(prefix + chatId));
+        pollsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("group", Long.valueOf(prefix + chatId));
 
         setRegistration();
     }
@@ -65,9 +53,13 @@ public class GroupInfoPresenter {
 
         switch (state) {
             case Consts.STATE_CONTENT:
+                fragment.setupButtonClickListeners();
                 fragment.setupToolbar();
                 fragment.setupFab();
-                fragment.setupRecyclerView(buttons);
+                fragment.setupRecyclerView(Consts.TYPE_ANNOUNCEMENT);
+                fragment.setupRecyclerView(Consts.TYPE_POLL);
+                fragment.setupRecyclerView(Consts.TYPE_ARTICLE);
+                fragment.setupRecyclerView(Consts.TYPE_USER);
                 break;
             case Consts.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
@@ -77,31 +69,13 @@ public class GroupInfoPresenter {
 
     @SuppressWarnings("unchecked")
     public void setRegistration() {
-        groupRegistration = groupQuery.addSnapshotListener((documentSnapshots, e) -> {
-            if (e == null) {
-                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
-                    DocumentSnapshot doc = dc.getDocument();
-                    //Chat chat = new Chat(doc.get("chatId").toString(), doc.get("name").toString(), (Map<String, Boolean>) doc.get("users"), doc.get("imgUrl").toString());
-
-                    if (fragment != null) {
-                        if (!fragment.isAdapterExists()) {
-                            fragment.setupLayouts(true);
-                            notifyViewCreated(Consts.STATE_CONTENT);
-                        }
-
-                        fragment.handleUIUpdate(null);
-                    }
-                }
-            } else {
-                if (fragment != null) {
-                    fragment.setupLayouts(false);
-                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
-                }
-            }
-        });
-
         announcementsRegistration = announcementsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isOneOfTheAdaptersExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
                     ActionAnnouncement announcement = new ActionAnnouncement(
@@ -113,15 +87,16 @@ public class GroupInfoPresenter {
                                 doc.get("desc").toString(),
                                 (Date) doc.get("date"),
                                 doc.get("text").toString(),
-                                (Map<String, String>) doc.get("users"));
+                                (Map<String, String>) doc.get("users"),
+                                (long) doc.get("messageId"));
 
                     if (fragment != null) {
-                        if (!fragment.isAdapterExists()) {
+                        if (!fragment.isOneOfTheAdaptersExists()) {
                             fragment.setupLayouts(true);
                             notifyViewCreated(Consts.STATE_CONTENT);
                         }
 
-                        fragment.handleActionsUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), announcement);
+                        fragment.handleDataUpdate(Consts.TYPE_ANNOUNCEMENT, dc.getType(), dc.getNewIndex(), dc.getOldIndex(), announcement);
                     }
                 }
             } else {
@@ -132,15 +107,20 @@ public class GroupInfoPresenter {
             }
         });
 
-        votesRegistration = votesQuery.addSnapshotListener((documentSnapshots, e) -> {
+        pollsRegistration = pollsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isOneOfTheAdaptersExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
                         ArrayList<VoteOption> voteOptions = new ArrayList<>();
                         for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
                             voteOptions.add(new VoteOption(option.getValue()));
 
-                        ActionVote vote = new ActionVote(
+                        ActionPoll poll = new ActionPoll(
                                 doc.getId(),
                                 doc.get("group").toString(),
                                 doc.get("groupName").toString(),
@@ -149,42 +129,16 @@ public class GroupInfoPresenter {
                                 doc.get("desc").toString(),
                                 (Date) doc.get("date"),
                                 voteOptions,
-                                (Map<String, String>) doc.get("users"));
+                                (Map<String, String>) doc.get("users"),
+                                (long) doc.get("messageId"));
 
                     if (fragment != null) {
-                        if (!fragment.isAdapterExists()) {
+                        if (!fragment.isOneOfTheAdaptersExists()) {
                             fragment.setupLayouts(true);
                             notifyViewCreated(Consts.STATE_CONTENT);
                         }
 
-                        fragment.handleActionsUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), vote);
-                    }
-                }
-            } else {
-                if (fragment != null) {
-                    fragment.setupLayouts(false);
-                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
-                }
-            }
-        });
-
-        usersRegistration = usersQuery.addSnapshotListener((documentSnapshots, e) -> {
-            if (e == null) {
-                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
-                    DocumentSnapshot doc = dc.getDocument();
-                    User user = new User( doc.get("userId").toString(),
-                            doc.get("username").toString(),
-                            doc.get("fullname").toString(),
-                            doc.get("desc").toString(),
-                            doc.get("imgUrl").toString());
-
-                    if (fragment != null) {
-                        if (!fragment.isAdapterExists()) {
-                            fragment.setupLayouts(true);
-                            notifyViewCreated(Consts.STATE_CONTENT);
-                        }
-
-                        fragment.handleUsersUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), user);
+                        fragment.handleDataUpdate(Consts.TYPE_POLL, dc.getType(), dc.getNewIndex(), dc.getOldIndex(), poll);
                     }
                 }
             } else {
@@ -197,14 +151,10 @@ public class GroupInfoPresenter {
     }
 
     public void removeRegistration() {
-        if (groupRegistration != null)
-            groupRegistration.remove();
-        if (usersRegistration != null)
-            usersRegistration.remove();
         if (announcementsRegistration != null)
             announcementsRegistration.remove();
-        if (votesRegistration != null)
-            votesRegistration.remove();
+        if (pollsRegistration != null)
+            pollsRegistration.remove();
     }
 
     public void onRetryBtnClick() {

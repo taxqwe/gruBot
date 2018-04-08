@@ -3,10 +3,14 @@ package com.fa.grubot.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -215,7 +219,18 @@ public class ChatFragment extends Fragment
         activity.getSupportActionBar().setTitle(chat.getName());
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.getMenu().clear();
         toolbar.bringToFront();
+
+        toolbar.setOnClickListener(v -> {
+            Fragment groupInfoFragment = GroupInfoFragment.newInstance(0, chat);
+
+            FragmentManager fm = this.getActivity().getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction.addToBackStack(null);
+            transaction.add(R.id.content, groupInfoFragment);
+            transaction.commit();
+        });
     }
 
     @Override
@@ -234,9 +249,13 @@ public class ChatFragment extends Fragment
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 getActivity().onBackPressed();
                 break;

@@ -13,6 +13,7 @@ public class Action implements Serializable {
     private String author;
     private String desc;
     private Date date;
+    private long messageId;
     private Map<String, String> users;
 
     private String authorName;
@@ -22,7 +23,7 @@ public class Action implements Serializable {
 
     }
 
-    public Action(String id, String groupId, String groupName, String author, String authorName, String desc, Date date, Map<String, String> users) {
+    public Action(String id, String groupId, String groupName, String author, String authorName, String desc, Date date, Map<String, String> users, long messageId) {
         this.id = id;
         this.groupId = groupId;
         this.author = author;
@@ -31,6 +32,7 @@ public class Action implements Serializable {
         this.users = users;
         this.authorName = authorName;
         this.groupName = groupName;
+        this.messageId = messageId;
     }
 
     public String getId() {
@@ -64,5 +66,13 @@ public class Action implements Serializable {
 
     public Map<String, String> getUsers() {
         return users;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public long getMessageId() {
+        return messageId;
     }
 }

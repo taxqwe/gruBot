@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class VoteRecyclerAdapter extends RecyclerView.Adapter<VoteRecyclerAdapter.ViewHolder>{
+public class PollRecyclerAdapter extends RecyclerView.Adapter<PollRecyclerAdapter.ViewHolder>{
 
     ArrayList<VoteOption> options;
 
@@ -58,7 +58,7 @@ public class VoteRecyclerAdapter extends RecyclerView.Adapter<VoteRecyclerAdapte
         }
     }
 
-    public VoteRecyclerAdapter(ArrayList<VoteOption> options) {
+    public PollRecyclerAdapter(ArrayList<VoteOption> options) {
         this.options = options;
     }
 

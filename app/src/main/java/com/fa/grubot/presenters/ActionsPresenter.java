@@ -7,7 +7,7 @@ import com.fa.grubot.fragments.ActionsFragment;
 import com.fa.grubot.models.ActionsModel;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
-import com.fa.grubot.objects.dashboard.ActionVote;
+import com.fa.grubot.objects.dashboard.ActionPoll;
 import com.fa.grubot.objects.misc.VoteOption;
 import com.fa.grubot.util.Consts;
 import com.google.firebase.firestore.DocumentChange;
@@ -45,7 +45,7 @@ public class ActionsPresenter {
                 actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "new");
                 break;
             case ActionsFragment.TYPE_VOTES_ARCHIVE:
-                actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "archive");
+                actionsQuery = FirebaseFirestore.getInstance().collection("votes").whereGreaterThan("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), 0);
                 break;
         }
 
@@ -84,13 +84,14 @@ public class ActionsPresenter {
                                         doc.get("desc").toString(),
                                         (Date) doc.get("date"),
                                         doc.get("text").toString(),
-                                        (Map<String, String>) doc.get("users"));
+                                        (Map<String, String>) doc.get("users"),
+                                        (long) doc.get("messageId"));
                     } else {
                         ArrayList<VoteOption> voteOptions = new ArrayList<>();
                         for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
                             voteOptions.add(new VoteOption(option.getValue()));
 
-                        action = new ActionVote(
+                        action = new ActionPoll(
                                         doc.getId(),
                                         doc.get("group").toString(),
                                         doc.get("groupName").toString(),
@@ -99,7 +100,8 @@ public class ActionsPresenter {
                                         doc.get("desc").toString(),
                                         (Date) doc.get("date"),
                                         voteOptions,
-                                        (Map<String, String>) doc.get("users"));
+                                        (Map<String, String>) doc.get("users"),
+                                        (long) doc.get("messageId"));
                     }
 
                     if (fragment != null) {
@@ -129,7 +131,7 @@ public class ActionsPresenter {
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
             addAnnouncementToArchive((ActionAnnouncement) action);
         } else  {
-            addVoteToArchive((ActionVote) action);
+            addVoteToArchive((ActionPoll) action);
         }
     }
 
@@ -154,7 +156,7 @@ public class ActionsPresenter {
     }
 
     @SuppressWarnings("unchecked")
-    private void addVoteToArchive(ActionVote vote) {
+    private void addVoteToArchive(ActionPoll vote) {
         FirebaseFirestore.getInstance().collection("votes")
                 .document(vote.getId())
                 .get()
@@ -177,7 +179,7 @@ public class ActionsPresenter {
         if (type == ActionsFragment.TYPE_ANNOUNCEMENTS) {
             restoreAnnouncementFromArchive((ActionAnnouncement) action);
         } else {
-            restoreVoteFromArchive((ActionVote) action);
+            restoreVoteFromArchive((ActionPoll) action);
         }
     }
 
@@ -198,7 +200,7 @@ public class ActionsPresenter {
     }
 
     @SuppressWarnings("unchecked")
-    private void restoreVoteFromArchive(ActionVote vote) {
+    private void restoreVoteFromArchive(ActionPoll vote) {
         FirebaseFirestore.getInstance().collection("votes")
                 .document(vote.getId())
                 .get()

@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
-public class ActionVote extends Action {
+public class ActionPoll extends Action {
     private ArrayList<String> options = new ArrayList<>();
 
-    public ActionVote(String id, String group, String groupName, String author, String authorName, String desc, Date date, ArrayList<VoteOption> options, Map<String, String> users) {
-        super(id, group, groupName, author, authorName, desc, date, users);
+    public ActionPoll(String id, String group, String groupName, String author, String authorName, String desc, Date date, ArrayList<VoteOption> options, Map<String, String> users, long messageId) {
+        super(id, group, groupName, author, authorName, desc, date, users, messageId);
 
         for (VoteOption option : options){
             this.options.add(option.getText());

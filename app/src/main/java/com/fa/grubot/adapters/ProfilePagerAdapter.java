@@ -12,10 +12,10 @@ import com.fa.grubot.util.Consts;
  * Created by ni.petrov on 03/04/2018.
  */
 
-public class PagerAdapter extends FragmentStatePagerAdapter {
+public class ProfilePagerAdapter extends FragmentStatePagerAdapter {
     private int mNumOfTabs;
 
-    public PagerAdapter(FragmentManager fm, int mNumOfTabs) {
+    public ProfilePagerAdapter(FragmentManager fm, int mNumOfTabs) {
         super(fm);
         this.mNumOfTabs = mNumOfTabs;
     }
