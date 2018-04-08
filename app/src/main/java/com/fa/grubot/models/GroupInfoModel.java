@@ -12,12 +12,15 @@ import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.tl.api.TLAbsChannelParticipant;
 import com.github.badoualy.telegram.tl.api.TLAbsChatFull;
 import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
+import com.github.badoualy.telegram.tl.api.TLAbsUpdates;
 import com.github.badoualy.telegram.tl.api.TLChannelFull;
 import com.github.badoualy.telegram.tl.api.TLInputChannel;
 import com.github.badoualy.telegram.tl.api.TLInputPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLInputPeerChat;
 import com.github.badoualy.telegram.tl.api.messages.TLAbsMessages;
 import com.github.badoualy.telegram.tl.api.request.TLRequestChannelsGetFullChannel;
+
+import java.util.Random;
 
 public class GroupInfoModel {
     public GroupInfoModel() {
@@ -77,5 +80,19 @@ public class GroupInfoModel {
         }
 
         return returnObject;
+    }
+
+    public boolean sendMessage(Chat chat, String message) {
+        boolean isSent = false;
+        TelegramClient client = App.INSTANCE.getNewDownloaderClient().getDownloaderClient();
+        try {
+            client.messagesSendMessage(chat.getInputPeer(), message, Math.abs(new Random().nextLong()));
+            isSent = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            client.close(false);
+        }
+        return isSent;
     }
 }

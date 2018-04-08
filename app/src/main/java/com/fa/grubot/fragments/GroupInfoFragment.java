@@ -76,6 +76,7 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
 
     @Nullable @BindView(R.id.fam) FloatingActionMenu fam;
     @Nullable @BindView(R.id.fab_add_announcement) FloatingActionButton announcementFab;
+    @Nullable @BindView(R.id.fab_add_article) FloatingActionButton articleFab;
     @Nullable @BindView(R.id.fab_add_vote) FloatingActionButton voteFab;
     @Nullable @BindView(R.id.retryBtn) Button retryBtn;
 
@@ -231,7 +232,6 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
     public void setupFab(){
         fam.setClosedOnTouchOutside(true);
         announcementFab.setOnClickListener(view -> {
-            //groupInfoAdapter.collapseAll(); //TODO не баг, а фича. Если убрать все сломается и мне сейчас лень это фиксить, когда можно просто написать эту строку. Если кто-то это прочитает, то ёбните меня.
             new MaterialDialog.Builder(getActivity())
                     .title("Объявление")
                     .customView(R.layout.dialog_add_announcement, false)
@@ -249,29 +249,39 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                                     .cancelable(false)
                                     .show();
 
-                            HashMap<String, Object> announcement = new HashMap<>();
-                            announcement.put("chat", chat.getId());
-                            announcement.put("groupName", chat.getName());
-                            announcement.put("author", App.INSTANCE.getCurrentUser().getTelegramUser().getId());
-                            announcement.put("authorName", App.INSTANCE.getCurrentUser().getTelegramUser().getFirstName() + " " + App.INSTANCE.getCurrentUser().getTelegramUser().getLastName());
-                            announcement.put("desc", desc.getText().toString());
-                            announcement.put("date", new Date());
-                            announcement.put("text", text.getText().toString());
-                            HashMap<String, String> users = new HashMap<>();
-                            for (Map.Entry<String, Boolean> user : chat.getUsers().entrySet())
-                                users.put(user.getKey(), "new");
-                            announcement.put("users", users);
+                            String announcementText = text.getText().toString();
+                            announcementText = announcementText.replace("\n", "").replace("\r", "").replace("!", "");
+                            String message = "!" + desc.getText().toString() + "!\n" + announcementText;
+                            presenter.sendTelegramMessage(progress, message);
+                        }
 
-                            FirebaseFirestore.getInstance().collection("announcements")
-                                    .add(announcement)
-                                    .addOnSuccessListener(aVoid -> {
-                                        progress.dismiss();
-                                        Toast.makeText(getActivity().getApplicationContext(), "Успешно добавлено", Toast.LENGTH_LONG).show();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        progress.dismiss();
-                                        Toast.makeText(getActivity().getApplicationContext(), "Ошибка добавления", Toast.LENGTH_LONG).show();
-                                    });
+                        fam.close(true);
+                    })
+                    .show();
+        });
+
+        articleFab.setOnClickListener(view -> {
+            new MaterialDialog.Builder(getActivity())
+                    .title("Статья")
+                    .customView(R.layout.dialog_add_article, false)
+                    .canceledOnTouchOutside(false)
+                    .positiveText(android.R.string.ok)
+                    .negativeText(android.R.string.cancel)
+                    .onPositive((dialog, which) -> {
+                        EditText desc = (EditText) dialog.findViewById(R.id.articleDesc);
+                        EditText text = (EditText) dialog.findViewById(R.id.articleText);
+
+                        if (!desc.toString().isEmpty() && !text.toString().isEmpty()) {
+                            MaterialDialog progress = new MaterialDialog.Builder(getActivity())
+                                    .content("Пожалуйста, подождите")
+                                    .progress(true, 0)
+                                    .cancelable(false)
+                                    .show();
+
+                            String articleText = text.getText().toString();
+                            articleText = articleText.replace("\n", "").replace("\r", "").replace("*", "");
+                            String message = "*" + desc.getText().toString() + "*\n" + articleText;
+                            presenter.sendTelegramMessage(progress, message);
                         }
 
                         fam.close(true);
@@ -280,8 +290,6 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
         });
 
         voteFab.setOnClickListener(view -> {
-            //groupInfoAdapter.collapseAll(); //TODO не баг, а фича. Если убрать все сломается и мне сейчас лень это фиксить, когда можно просто написать эту строку. Если кто-то это прочитает, то ёбните меня.
-
             MaterialDialog materialDialog = new MaterialDialog.Builder(getActivity())
                     .title("Голосование")
                     .customView(R.layout.dialog_add_vote, false)
@@ -333,36 +341,14 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                             .cancelable(false)
                             .show();
 
-                    HashMap<String, Object> vote = new HashMap<>();
-                    vote.put("chat", chat.getId());
-                    vote.put("groupName", chat.getName());
-                    vote.put("author", App.INSTANCE.getCurrentUser().getTelegramUser().getId());
-                    vote.put("authorName", App.INSTANCE.getCurrentUser().getTelegramUser().getFirstName() + " " + App.INSTANCE.getCurrentUser().getTelegramUser().getLastName());
-                    vote.put("desc", desc.getText().toString());
-                    vote.put("date", new Date());
-
-                    HashMap<String, String> users = new HashMap<>();
-                    for (Map.Entry<String, Boolean> user : chat.getUsers().entrySet())
-                        users.put(user.getKey(), "new");
-                    vote.put("users", users);
-
-                    HashMap<String, String> voteOptions = new HashMap<>();
+                    String message = "?" + desc.getText().toString() + "?";
+                    StringBuilder builder = new StringBuilder(message);
                     for (int i = 0; i < options.size(); i++) {
-                        voteOptions.put(String.valueOf(i), options.get(i).getText());
+                        builder.append("\n").append(i + 1).append(". ").append(options.get(i).getText().replace("?", ""));
                     }
-                    vote.put("voteOptions", voteOptions);
-
-                    FirebaseFirestore.getInstance().collection("votes")
-                            .add(vote)
-                            .addOnSuccessListener(aVoid -> {
-                                progress.dismiss();
-                                Toast.makeText(getActivity().getApplicationContext(), "Успешно добавлено", Toast.LENGTH_LONG).show();
-                            })
-                            .addOnFailureListener(e -> {
-                                progress.dismiss();
-                                Toast.makeText(getActivity().getApplicationContext(), "Ошибка добавления", Toast.LENGTH_LONG).show();
-                            });
-                    dialog.dismiss();
+                    message = builder.toString();
+                    materialDialog.dismiss();
+                    presenter.sendTelegramMessage(progress, message);
                     fam.close(true);
                 }
             };

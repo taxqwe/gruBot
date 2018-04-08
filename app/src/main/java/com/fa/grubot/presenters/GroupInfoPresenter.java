@@ -3,9 +3,10 @@ package com.fa.grubot.presenters;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.util.SparseArray;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.App;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.models.GroupInfoModel;
@@ -18,16 +19,12 @@ import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
 import com.fa.grubot.util.Globals;
 import com.github.badoualy.telegram.tl.exception.RpcErrorException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -113,6 +110,18 @@ public class GroupInfoPresenter {
             if (App.INSTANCE.getCurrentUser().hasTelegramUser())
                 getTelegramParticipants(isInList);
         });
+    }
+
+    public void sendTelegramMessage(MaterialDialog dialog, String message) {
+        Observable.defer(() -> Observable.just(model.sendMessage(chat, message)))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(isSent -> {
+                    dialog.dismiss();
+                    if (!isSent)
+                        Toast.makeText(context, "Ошибка отправки сообщения", Toast.LENGTH_LONG).show();
+                })
+                .subscribe();
     }
 
     @SuppressWarnings("unchecked")
