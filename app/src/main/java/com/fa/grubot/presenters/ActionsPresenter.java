@@ -86,16 +86,16 @@ public class ActionsPresenter {
                     Action action;
                     if (type == ActionsFragment.TYPE_ANNOUNCEMENTS || type == ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE) {
                         action = new ActionAnnouncement(
-                                        doc.getId(),
-                                        doc.get("group").toString(),
-                                        doc.get("groupName").toString(),
-                                        doc.get("author").toString(),
-                                        doc.get("authorName").toString(),
-                                        doc.get("desc").toString(),
-                                        (Date) doc.get("date"),
-                                        doc.get("text").toString(),
-                                        (Map<String, String>) doc.get("users"),
-                                        (long) doc.get("messageId"));
+                                doc.getId(),
+                                doc.get("group").toString(),
+                                doc.get("groupName").toString(),
+                                doc.get("author").toString(),
+                                doc.get("authorName").toString(),
+                                doc.get("desc").toString(),
+                                (Date) doc.get("date"),
+                                doc.get("text").toString(),
+                                (Map<String, String>) doc.get("users"),
+                                (long) doc.get("messageId"));
                     } else if (type == ActionsFragment.TYPE_ARTICLES) {
                         action = new ActionArticle(
                                 doc.getId(),
@@ -115,16 +115,16 @@ public class ActionsPresenter {
                             voteOptions.add(new VoteOption(option.getValue()));
 
                         action = new ActionPoll(
-                                        doc.getId(),
-                                        doc.get("group").toString(),
-                                        doc.get("groupName").toString(),
-                                        doc.get("author").toString(),
-                                        doc.get("authorName").toString(),
-                                        doc.get("desc").toString(),
-                                        (Date) doc.get("date"),
-                                        voteOptions,
-                                        (Map<String, String>) doc.get("users"),
-                                        (long) doc.get("messageId"));
+                                doc.getId(),
+                                doc.get("group").toString(),
+                                doc.get("groupName").toString(),
+                                doc.get("author").toString(),
+                                doc.get("authorName").toString(),
+                                doc.get("desc").toString(),
+                                (Date) doc.get("date"),
+                                voteOptions,
+                                (Map<String, String>) doc.get("users"),
+                                (long) doc.get("messageId"));
                     } else {
                         action = null;
                     }

@@ -428,6 +428,14 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
     }
 
     @Override
+    public void hideGroupActions(boolean isInList) {
+        announcementsBtn.setVisibility(isInList ? View.VISIBLE : View.GONE);
+        pollsBtn.setVisibility(isInList ? View.VISIBLE : View.GONE);
+        articlesBtn.setVisibility(isInList ? View.VISIBLE : View.GONE);
+        fam.setVisibility(isInList ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
     public void setupRetryButton() {
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
@@ -496,7 +504,6 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                 return null;
         }
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

@@ -14,5 +14,6 @@ public interface GroupInfoFragmentBase extends FragmentBase {
     void addParticipants(ArrayList<User> users);
     void setParticipantsCount(int count);
     void setupLayouts(boolean isNetworkAvailable);
+    void hideGroupActions(boolean isInList);
     boolean isOneOfTheAdaptersExists();
 }
