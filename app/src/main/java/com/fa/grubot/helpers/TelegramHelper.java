@@ -10,6 +10,7 @@ import com.fa.grubot.util.Consts;
 import com.github.badoualy.telegram.api.TelegramClient;
 import com.github.badoualy.telegram.api.utils.InputFileLocation;
 import com.github.badoualy.telegram.api.utils.TLMediaUtilsKt;
+import com.github.badoualy.telegram.tl.api.TLAbsChannelParticipant;
 import com.github.badoualy.telegram.tl.api.TLAbsChat;
 import com.github.badoualy.telegram.tl.api.TLAbsChatPhoto;
 import com.github.badoualy.telegram.tl.api.TLAbsFileLocation;
@@ -21,6 +22,11 @@ import com.github.badoualy.telegram.tl.api.TLAbsUser;
 import com.github.badoualy.telegram.tl.api.TLAbsUserProfilePhoto;
 import com.github.badoualy.telegram.tl.api.TLChannel;
 import com.github.badoualy.telegram.tl.api.TLChannelForbidden;
+import com.github.badoualy.telegram.tl.api.TLChannelParticipantCreator;
+import com.github.badoualy.telegram.tl.api.TLChannelParticipantEditor;
+import com.github.badoualy.telegram.tl.api.TLChannelParticipantKicked;
+import com.github.badoualy.telegram.tl.api.TLChannelParticipantModerator;
+import com.github.badoualy.telegram.tl.api.TLChannelParticipantSelf;
 import com.github.badoualy.telegram.tl.api.TLChat;
 import com.github.badoualy.telegram.tl.api.TLChatEmpty;
 import com.github.badoualy.telegram.tl.api.TLChatForbidden;
@@ -239,6 +245,23 @@ public class TelegramHelper {
                 return "";
         }
 
+        public static String extractParticipantRole(TLAbsChannelParticipant channelParticipant) {
+            if (channelParticipant instanceof TLChannelParticipantCreator) {
+                return "Создатель";
+            } else if (channelParticipant instanceof TLChannelParticipantModerator) {
+                return "Модератор";
+            } else if (channelParticipant instanceof TLChannelParticipantEditor) {
+                return "Редактор";
+            } else if (channelParticipant instanceof TLChannelParticipantKicked) {
+                return "Исключен";
+            } else if (channelParticipant instanceof TLChannelParticipantSelf) {
+                return "Вы";
+            } else if (channelParticipant instanceof com.github.badoualy.telegram.tl.api.TLChannelParticipant) {
+                return  "Участник";
+            }
+                return "";
+        }
+
         public static TLAbsChat getChat(TelegramClient telegramClient, int chatId) {
             TLIntVector tlIntVector = new TLIntVector();
             tlIntVector.add(chatId);
@@ -350,6 +373,7 @@ public class TelegramHelper {
                     imgUri = fullname;
 
                 User user = new User(String.valueOf(userId), Consts.Telegram, fullname, userName, imgUri);
+                user.setInputUser(new TLInputUser(tlUser.getId(), tlUser.getAccessHash()));
                 users.put(userId, user);
             }
 
@@ -402,7 +426,9 @@ public class TelegramHelper {
             if (imgUri == null)
                 imgUri = fullname;
 
-            return new User(String.valueOf(userId), Consts.Telegram, fullname, userName, imgUri);
+            User user = new User(String.valueOf(userId), Consts.Telegram, fullname, userName, imgUri);
+            user.setInputUser(new TLInputUser(tlUser.getId(), tlUser.getAccessHash()));
+            return user;
         }
 
         public static User getChatAsUser(TelegramClient client, int chatId, Context context) {

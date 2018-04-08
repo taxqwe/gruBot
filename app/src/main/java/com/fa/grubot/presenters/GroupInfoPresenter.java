@@ -1,15 +1,21 @@
 package com.fa.grubot.presenters;
 
 
-import android.util.Log;
+import android.content.Context;
+import android.os.Handler;
+import android.util.SparseArray;
 
+import com.fa.grubot.App;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.models.GroupInfoModel;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionPoll;
 import com.fa.grubot.objects.misc.VoteOption;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.util.Consts;
+import com.fa.grubot.util.Globals;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -20,9 +26,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 public class GroupInfoPresenter {
     private GroupInfoFragmentBase fragment;
     private GroupInfoModel model;
+
+    private Chat chat;
+    private Context context;
 
     private Query announcementsQuery;
     private Query pollsQuery;
@@ -30,8 +43,10 @@ public class GroupInfoPresenter {
     private ListenerRegistration announcementsRegistration;
     private ListenerRegistration pollsRegistration;
 
-    public GroupInfoPresenter(GroupInfoFragmentBase fragment) {
+    public GroupInfoPresenter(GroupInfoFragmentBase fragment, Context context, Chat chat) {
         this.fragment = fragment;
+        this.chat = chat;
+        this.context = context;
         this.model = new GroupInfoModel();
     }
 
@@ -41,11 +56,12 @@ public class GroupInfoPresenter {
         if (chat.getType().equals(Consts.Telegram))
             prefix = "-100";
 
-        Log.d("debug", prefix + chatId);
         announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("group", Long.valueOf(prefix + chatId));
         pollsQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("group", Long.valueOf(prefix + chatId));
 
-        setRegistration();
+        //setRegistration(); не знаю пока, убирать или нет
+        if (App.INSTANCE.getCurrentUser().hasTelegramUser())
+            getTelegramParticipants();
     }
 
     private void notifyViewCreated(int state){
@@ -56,10 +72,9 @@ public class GroupInfoPresenter {
                 fragment.setupButtonClickListeners();
                 fragment.setupToolbar();
                 fragment.setupFab();
-                fragment.setupRecyclerView(Consts.TYPE_ANNOUNCEMENT);
-                fragment.setupRecyclerView(Consts.TYPE_POLL);
-                fragment.setupRecyclerView(Consts.TYPE_ARTICLE);
-                fragment.setupRecyclerView(Consts.TYPE_USER);
+                fragment.setupActionsRecyclerView(Consts.TYPE_ANNOUNCEMENT);
+                fragment.setupActionsRecyclerView(Consts.TYPE_POLL);
+                fragment.setupActionsRecyclerView(Consts.TYPE_ARTICLE);
                 break;
             case Consts.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
@@ -148,6 +163,35 @@ public class GroupInfoPresenter {
                 }
             }
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    private void getTelegramParticipants() {
+        Observable.defer(() -> Observable.just(model.getChatParticipants(chat, context)))
+                .filter(users -> users != null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(returnObject -> {
+                    if (returnObject instanceof SparseArray<?>) {
+                        SparseArray<User> users = (SparseArray<User>) returnObject;
+                        ArrayList<User> participants = new ArrayList<>();
+                        for (int i = 0; i < users.size(); i++) {
+                            User user = users.valueAt(i);
+                            participants.add(user);
+                        }
+                        fragment.addParticipants(participants);
+                    } else if (returnObject instanceof Integer) {
+                        fragment.setParticipantsCount((int) returnObject);
+                    } else if (returnObject instanceof RpcErrorException && ((RpcErrorException) returnObject).getCode() == 420) {
+                        int floodTime = Globals.extractMillisFromRpcException((RpcErrorException) returnObject);
+                        (new Handler()).postDelayed(this::getTelegramParticipants, floodTime + 500);
+                    }
+
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                    setRegistration();
+                })
+                .subscribe();
     }
 
     public void removeRegistration() {

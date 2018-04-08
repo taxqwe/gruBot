@@ -19,6 +19,48 @@
             card_view:cardCornerRadius="0dp">
 
             <TextView
+                android:id="@+id/participantsBtn"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/waPrimary"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:elevation="6dp"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="Участники" />
+
+        </android.support.v7.widget.CardView>
+
+        <net.cachapa.expandablelayout.ExpandableLayout
+            android:id="@+id/participantsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:el_duration="500"
+            app:el_expanded="false"
+            app:el_parallax="0.5">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/participantsRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:scrollbars="vertical"
+                android:overScrollMode="never">
+            </android.support.v7.widget.RecyclerView>
+
+        </net.cachapa.expandablelayout.ExpandableLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            card_view:cardCornerRadius="0dp">
+
+            <TextView
                 android:id="@+id/announcementsBtn"
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="match_parent"
@@ -128,48 +170,6 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/articlesRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:scrollbars="vertical"
-                android:overScrollMode="never">
-            </android.support.v7.widget.RecyclerView>
-
-        </net.cachapa.expandablelayout.ExpandableLayout>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            card_view:cardCornerRadius="0dp">
-
-            <TextView
-                android:id="@+id/participantsBtn"
-                style="@style/TextAppearance.AppCompat.Medium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/waPrimary"
-                android:textColor="@color/white"
-                android:textAlignment="center"
-                android:textSize="24sp"
-                android:elevation="6dp"
-                android:gravity="center"
-                android:padding="16dp"
-                android:text="Участники" />
-
-        </android.support.v7.widget.CardView>
-
-        <net.cachapa.expandablelayout.ExpandableLayout
-            android:id="@+id/participantsLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:el_duration="500"
-            app:el_expanded="false"
-            app:el_parallax="0.5">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/participantsRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"

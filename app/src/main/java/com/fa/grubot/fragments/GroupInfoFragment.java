@@ -26,9 +26,11 @@ import com.fa.grubot.R;
 import com.fa.grubot.abstractions.GroupInfoFragmentBase;
 import com.fa.grubot.adapters.ActionsRecyclerAdapter;
 import com.fa.grubot.adapters.PollRecyclerAdapter;
+import com.fa.grubot.adapters.UsersRecyclerAdapter;
 import com.fa.grubot.objects.chat.Chat;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.misc.VoteOption;
+import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.GroupInfoPresenter;
 import com.fa.grubot.util.Consts;
 import com.fa.grubot.util.ImageLoader;
@@ -106,13 +108,14 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new GroupInfoPresenter(this);
         View v = inflater.inflate(R.layout.fragment_group_info, container, false);
         setHasOptionsMenu(true);
 
         chat = (Chat) this.getArguments().getSerializable("chat");
         instance = this.getArguments().getInt("instance");
         unbinder = ButterKnife.bind(this, v);
+
+        presenter = new GroupInfoPresenter(this, getActivity(), chat);
 
         return v;
     }
@@ -146,14 +149,13 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
 
     private void terminateRegistration() {
         presenter.removeRegistration();
+
         if (getAdapterByRecyclerType(Consts.TYPE_ANNOUNCEMENT) != null)
-            getAdapterByRecyclerType(Consts.TYPE_ANNOUNCEMENT).clearItems();
+            ((ActionsRecyclerAdapter) getAdapterByRecyclerType(Consts.TYPE_ANNOUNCEMENT)).clearItems();
         if (getAdapterByRecyclerType(Consts.TYPE_POLL) != null)
-            getAdapterByRecyclerType(Consts.TYPE_POLL).clearItems();
+            ((ActionsRecyclerAdapter)  getAdapterByRecyclerType(Consts.TYPE_POLL)).clearItems();
         if (getAdapterByRecyclerType(Consts.TYPE_ARTICLE) != null)
-            getAdapterByRecyclerType(Consts.TYPE_ARTICLE).clearItems();
-        if (getAdapterByRecyclerType(Consts.TYPE_USER) != null)
-            getAdapterByRecyclerType(Consts.TYPE_USER).clearItems();
+            ((ActionsRecyclerAdapter) getAdapterByRecyclerType(Consts.TYPE_ARTICLE)).clearItems();
     }
 
     @Override
@@ -210,19 +212,19 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
     @Override
     public void setupButtonClickListeners() {
         announcementsBtn.setOnClickListener(v -> {
-            performActionByType(Consts.TYPE_ANNOUNCEMENT);
+            performExpansionByType(Consts.TYPE_ANNOUNCEMENT);
         });
 
         pollsBtn.setOnClickListener(v -> {
-            performActionByType(Consts.TYPE_POLL);
+            performExpansionByType(Consts.TYPE_POLL);
         });
 
         articlesBtn.setOnClickListener(v -> {
-            performActionByType(Consts.TYPE_ARTICLE);
+            performExpansionByType(Consts.TYPE_ARTICLE);
         });
 
         participantsBtn.setOnClickListener(v -> {
-            performActionByType(Consts.TYPE_USER);
+            performExpansionByType(Consts.TYPE_USER);
         });
     }
 
@@ -371,7 +373,7 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
     }
 
     @Override
-    public void setupRecyclerView(String dataType) {
+    public void setupActionsRecyclerView(String dataType) {
         RecyclerView recyclerView = getRecyclerViewByType(dataType);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -386,9 +388,11 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
         recyclerView.setAdapter(new ActionsRecyclerAdapter(getActivity(), new ArrayList<>()));
     }
 
+
+
     @Override
     public void handleDataUpdate(String dataType, DocumentChange.Type type, int newIndex, int oldIndex, Action action) {
-        ActionsRecyclerAdapter adapter = getAdapterByRecyclerType(dataType);
+        ActionsRecyclerAdapter adapter = (ActionsRecyclerAdapter) getAdapterByRecyclerType(dataType);
         if (adapter != null) {
             switch (type) {
                 case ADDED:
@@ -405,7 +409,28 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
     }
 
     @Override
-    public void setupRetryButton(){
+    public void addParticipants(ArrayList<User> participants) {
+        RecyclerView recyclerView = getRecyclerViewByType(Consts.TYPE_USER);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        layoutManager.setAutoMeasureEnabled(true);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(false);
+        recyclerView.setNestedScrollingEnabled(false);
+
+        if (App.INSTANCE.areAnimationsEnabled())
+            recyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(getActivity(), R.anim.layout_animation_from_bottom));
+
+        recyclerView.setAdapter(new UsersRecyclerAdapter(getActivity(), participants));
+    }
+
+    @Override
+    public void setParticipantsCount(int count) {
+        participantsBtn.setText("Пользователей: " + count);
+    }
+
+    @Override
+    public void setupRetryButton() {
         retryBtn.setOnClickListener(view -> presenter.onRetryBtnClick());
     }
 
@@ -417,7 +442,7 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                 || getAdapterByRecyclerType(Consts.TYPE_USER) != null;
     }
 
-    public void performActionByType(String dataType) {
+    public void performExpansionByType(String dataType) {
         ExpandableLayout expandableLayout = getExpandableLayoutByType(dataType);
 
         if (expandableLayout != null) {
@@ -444,7 +469,7 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
         }
     }
 
-    private ActionsRecyclerAdapter getAdapterByRecyclerType(String dataType) {
+    private RecyclerView.Adapter<?> getAdapterByRecyclerType(String dataType) {
         switch (dataType) {
             case Consts.TYPE_ANNOUNCEMENT:
                 return (ActionsRecyclerAdapter) announcementsRecycler.getAdapter();
@@ -453,7 +478,7 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
             case Consts.TYPE_ARTICLE:
                 return (ActionsRecyclerAdapter) articlesRecycler.getAdapter();
             case Consts.TYPE_USER:
-                return (ActionsRecyclerAdapter) participantsRecycler.getAdapter();
+                return (UsersRecyclerAdapter) participantsRecycler.getAdapter();
             default:
                 return null;
         }

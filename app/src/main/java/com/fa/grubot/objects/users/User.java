@@ -1,5 +1,6 @@
 package com.fa.grubot.objects.users;
 
+import com.github.badoualy.telegram.tl.api.TLAbsInputUser;
 import com.stfalcon.chatkit.commons.models.IUser;
 
 import java.io.Serializable;
@@ -11,6 +12,8 @@ public class User implements Serializable, IUser {
     private String fullname;
     private String userName;
     private String imgUrl;
+    private String chatRole;
+    private TLAbsInputUser inputUser;
 
     public User(String userId, String userType, String fullname, String userName, String imgUrl) {
         this.userId = userId;
@@ -57,5 +60,21 @@ public class User implements Serializable, IUser {
 
     public String getPhoneNumber() {
         return "";
+    }
+
+    public String getChatRole() {
+        return chatRole;
+    }
+
+    public void setChatRole(String chatRole) {
+        this.chatRole = chatRole;
+    }
+
+    public TLAbsInputUser getInputUser() {
+        return inputUser;
+    }
+
+    public void setInputUser(TLAbsInputUser inputUser) {
+        this.inputUser = inputUser;
     }
 }
