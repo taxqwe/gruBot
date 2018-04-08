@@ -388,8 +388,6 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
         recyclerView.setAdapter(new ActionsRecyclerAdapter(getActivity(), new ArrayList<>()));
     }
 
-
-
     @Override
     public void handleDataUpdate(String dataType, DocumentChange.Type type, int newIndex, int oldIndex, Action action) {
         ActionsRecyclerAdapter adapter = (ActionsRecyclerAdapter) getAdapterByRecyclerType(dataType);
@@ -426,7 +424,7 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
 
     @Override
     public void setParticipantsCount(int count) {
-        participantsBtn.setText("Пользователей: " + count);
+        participantsBtn.setText("Участников: " + count);
     }
 
     @Override

@@ -29,6 +29,8 @@ import com.fa.grubot.objects.chat.MessagesListParcelable;
 import com.fa.grubot.presenters.ChatPresenter;
 import com.fa.grubot.util.Consts;
 import com.fa.grubot.util.ImageLoader;
+import com.github.badoualy.telegram.tl.api.TLInputPeerChannel;
+import com.github.badoualy.telegram.tl.api.TLInputPeerChat;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
@@ -223,13 +225,15 @@ public class ChatFragment extends Fragment
         toolbar.bringToFront();
 
         toolbar.setOnClickListener(v -> {
-            Fragment groupInfoFragment = GroupInfoFragment.newInstance(0, chat);
+            if (chat.getInputPeer() instanceof TLInputPeerChat || chat.getInputPeer() instanceof TLInputPeerChannel) {
+                Fragment groupInfoFragment = GroupInfoFragment.newInstance(0, chat);
 
-            FragmentManager fm = this.getActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = fm.beginTransaction();
-            transaction.addToBackStack(null);
-            transaction.add(R.id.content, groupInfoFragment);
-            transaction.commit();
+                FragmentManager fm = this.getActivity().getSupportFragmentManager();
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.addToBackStack(null);
+                transaction.add(R.id.content, groupInfoFragment);
+                transaction.commit();
+            }
         });
     }
 
