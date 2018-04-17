@@ -76,7 +76,7 @@ public class ProfileFragment extends Fragment {
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
     }
 
-    public static ProfileFragment getInstanse() {
+    public static ProfileFragment getInstance() {
         return new ProfileFragment();
     }
 

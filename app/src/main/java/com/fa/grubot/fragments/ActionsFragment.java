@@ -128,6 +128,14 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
+    private void animateViewAppearance(View view) {
+        view.setAlpha(0.0f);
+        view.animate()
+                .translationY(view.getHeight())
+                .alpha(1.0f)
+                .setListener(null);
+    }
+
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
         noInternet.setVisibility(View.GONE);
@@ -137,12 +145,15 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         switch (state) {
             case Consts.STATE_CONTENT:
                 content.setVisibility(View.VISIBLE);
+                animateViewAppearance(content);
                 break;
             case Consts.STATE_NO_INTERNET_CONNECTION:
                 noInternet.setVisibility(View.VISIBLE);
+                animateViewAppearance(noInternet);
                 break;
             case Consts.STATE_NO_DATA:
                 noData.setVisibility(View.VISIBLE);
+                animateViewAppearance(noData);
                 break;
         }
     }

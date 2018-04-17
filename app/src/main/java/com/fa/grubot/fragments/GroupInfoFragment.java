@@ -155,6 +155,14 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
             ((ActionsRecyclerAdapter) getAdapterByRecyclerType(Consts.TYPE_ARTICLE)).clearItems();
     }
 
+    private void animateViewAppearance(View view) {
+        view.setAlpha(0.0f);
+        view.animate()
+                .translationY(view.getHeight())
+                .alpha(1.0f)
+                .setListener(null);
+    }
+
     @Override
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
@@ -166,10 +174,16 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                 appBarLayout.setExpanded(true);
                 content.setVisibility(View.VISIBLE);
                 content_fam.setVisibility(View.VISIBLE);
+
+                animateViewAppearance(appBarLayout);
+                animateViewAppearance(content);
+                animateViewAppearance(content_fam);
                 break;
             case Consts.STATE_NO_INTERNET_CONNECTION:
                 appBarLayout.setExpanded(false);
                 noInternet.setVisibility(View.VISIBLE);
+                animateViewAppearance(appBarLayout);
+                animateViewAppearance(noInternet);
                 break;
         }
     }

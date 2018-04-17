@@ -148,6 +148,14 @@ public class ChatFragment extends Fragment
         return false;
     }
 
+    private void animateViewAppearance(View view) {
+        view.setAlpha(0.0f);
+        view.animate()
+                .translationY(view.getHeight())
+                .alpha(1.0f)
+                .setListener(null);
+    }
+
     @Override
     public void showRequiredViews() {
         progressBar.setVisibility(View.GONE);
@@ -158,12 +166,15 @@ public class ChatFragment extends Fragment
         switch (state) {
             case Consts.STATE_CONTENT:
                 content.setVisibility(View.VISIBLE);
+                animateViewAppearance(content);
                 break;
             case Consts.STATE_NO_INTERNET_CONNECTION:
                 noInternet.setVisibility(View.VISIBLE);
+                animateViewAppearance(noInternet);
                 break;
             case Consts.STATE_NO_DATA:
                 content.setVisibility(View.VISIBLE);
+                animateViewAppearance(content);
                 break;
         }
     }
