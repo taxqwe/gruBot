@@ -160,7 +160,7 @@ public class ProfileItemFragment extends Fragment implements ProfileItemFragment
         mNameEditTextLayout.setError("Имя пользователя");
 
         if (user.getUserName() != null) {
-            mUsernameEditText.setText("@" + user.getUserName());
+            mUsernameEditText.setText(user.getUserName());
             mUsernameEditTextLayout.setError("Логин");
         } else {
             mUsernameEditText.setVisibility(View.GONE);

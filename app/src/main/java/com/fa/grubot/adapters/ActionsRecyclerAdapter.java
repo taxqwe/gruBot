@@ -9,14 +9,19 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.objects.dashboard.Action;
 import com.fa.grubot.objects.dashboard.ActionAnnouncement;
 import com.fa.grubot.objects.dashboard.ActionArticle;
 import com.fa.grubot.objects.dashboard.ActionPoll;
+import com.fa.grubot.util.Consts;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,17 +83,22 @@ public class ActionsRecyclerAdapter extends RecyclerView.Adapter<ActionsRecycler
         } else if (action instanceof ActionPoll){
             holder.actionTypeText.setText("Голосование");
             holder.viewForeground.setOnClickListener(v -> {
+                int userId = action.getType().equals(Consts.Telegram) ? App.INSTANCE.getCurrentUser().getTelegramUser().getId() : App.INSTANCE.getCurrentUser().getVkUser().getId();
+                String value = String.valueOf(action.getUsers().get(String.valueOf(userId)));
+                int currentSelectedOption = value.equals("new") ? 0 : Integer.valueOf(value) - 1;
                 new MaterialDialog.Builder(context)
                         .title(action.getGroupName() + ": " + action.getDesc())
                         .items(((ActionPoll) action).getOptions())
-                        .itemsCallbackSingleChoice(-1, (MaterialDialog.ListCallbackSingleChoice) (dialog, view, which, text) -> {
-                            /**
-                             * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
-                             * returning false here won't allow the newly selected radio button to actually be selected.
-                             **/
-                            return true;
+                        .itemsCallbackSingleChoice(currentSelectedOption, (dialog, view, which, text) -> true)
+                        .onPositive((dialog, which) -> {
+                            int selectedOption = dialog.getSelectedIndex() + 1;
+                            HashMap<String, Object> update = new HashMap<>();
+                            update.put("users." + String.valueOf(userId), selectedOption);
+                            FirebaseFirestore.getInstance().collection("votes").document(action.getId()).update(update);
                         })
+                        .onNegative((dialog, which) -> dialog.dismiss())
                         .positiveText(android.R.string.ok)
+                        .negativeText(android.R.string.cancel)
                         .show();
             });
         } else if (action instanceof ActionArticle){

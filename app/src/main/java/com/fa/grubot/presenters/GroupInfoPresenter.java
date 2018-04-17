@@ -145,7 +145,8 @@ public class GroupInfoPresenter {
                                 (Date) doc.get("date"),
                                 doc.get("text").toString(),
                                 (Map<String, String>) doc.get("users"),
-                                (long) doc.get("messageId"));
+                                (long) doc.get("messageId"),
+                                doc.get("type").toString());
 
                     if (fragment != null) {
                         if (!fragment.isOneOfTheAdaptersExists()) {
@@ -187,7 +188,8 @@ public class GroupInfoPresenter {
                                 (Date) doc.get("date"),
                                 voteOptions,
                                 (Map<String, String>) doc.get("users"),
-                                (long) doc.get("messageId"));
+                                (long) doc.get("messageId"),
+                                doc.get("type").toString());
 
                     if (fragment != null) {
                         if (!fragment.isOneOfTheAdaptersExists()) {
@@ -225,7 +227,8 @@ public class GroupInfoPresenter {
                             (Date) doc.get("date"),
                             doc.get("text").toString(),
                             (Map<String, String>) doc.get("users"),
-                            (long) doc.get("messageId"));
+                            (long) doc.get("messageId"),
+                            doc.get("type").toString());
 
                     if (fragment != null) {
                         if (!fragment.isOneOfTheAdaptersExists()) {

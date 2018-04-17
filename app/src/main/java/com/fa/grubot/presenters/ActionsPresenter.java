@@ -84,58 +84,67 @@ public class ActionsPresenter {
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
                     Action action;
-                    if (type == ActionsFragment.TYPE_ANNOUNCEMENTS || type == ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE) {
-                        action = new ActionAnnouncement(
-                                doc.getId(),
-                                doc.get("group").toString(),
-                                doc.get("groupName").toString(),
-                                doc.get("author").toString(),
-                                doc.get("authorName").toString(),
-                                doc.get("desc").toString(),
-                                (Date) doc.get("date"),
-                                doc.get("text").toString(),
-                                (Map<String, String>) doc.get("users"),
-                                (long) doc.get("messageId"));
-                    } else if (type == ActionsFragment.TYPE_ARTICLES) {
-                        action = new ActionArticle(
-                                doc.getId(),
-                                doc.get("group").toString(),
-                                doc.get("groupName").toString(),
-                                doc.get("author").toString(),
-                                doc.get("authorName").toString(),
-                                doc.get("desc").toString(),
-                                (Date) doc.get("date"),
-                                doc.get("text").toString(),
-                                (Map<String, String>) doc.get("users"),
-                                (long) doc.get("messageId"));
+                    try {
+                        if (type == ActionsFragment.TYPE_ANNOUNCEMENTS || type == ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE) {
+                            action = new ActionAnnouncement(
+                                    doc.getId(),
+                                    doc.get("group").toString(),
+                                    doc.get("groupName").toString(),
+                                    doc.get("author").toString(),
+                                    doc.get("authorName").toString(),
+                                    doc.get("desc").toString(),
+                                    (Date) doc.get("date"),
+                                    doc.get("text").toString(),
+                                    (Map<String, String>) doc.get("users"),
+                                    (long) doc.get("messageId"),
+                                    doc.get("type").toString());
+                        } else if (type == ActionsFragment.TYPE_ARTICLES) {
+                            action = new ActionArticle(
+                                    doc.getId(),
+                                    doc.get("group").toString(),
+                                    doc.get("groupName").toString(),
+                                    doc.get("author").toString(),
+                                    doc.get("authorName").toString(),
+                                    doc.get("desc").toString(),
+                                    (Date) doc.get("date"),
+                                    doc.get("text").toString(),
+                                    (Map<String, String>) doc.get("users"),
+                                    (long) doc.get("messageId"),
+                                    doc.get("type").toString());
 
-                    } else if (type == ActionsFragment.TYPE_POLLS || type == ActionsFragment.TYPE_POLLS_ARCHIVE) {
-                        ArrayList<VoteOption> voteOptions = new ArrayList<>();
-                        for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
-                            voteOptions.add(new VoteOption(option.getValue()));
+                        } else if (type == ActionsFragment.TYPE_POLLS || type == ActionsFragment.TYPE_POLLS_ARCHIVE) {
+                            ArrayList<VoteOption> voteOptions = new ArrayList<>();
+                            for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
+                                voteOptions.add(new VoteOption(option.getValue()));
 
-                        action = new ActionPoll(
-                                doc.getId(),
-                                doc.get("group").toString(),
-                                doc.get("groupName").toString(),
-                                doc.get("author").toString(),
-                                doc.get("authorName").toString(),
-                                doc.get("desc").toString(),
-                                (Date) doc.get("date"),
-                                voteOptions,
-                                (Map<String, String>) doc.get("users"),
-                                (long) doc.get("messageId"));
-                    } else {
-                        action = null;
-                    }
-
-                    if (fragment != null) {
-                        if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
-                            fragment.setupLayouts(true, true);
-                            notifyViewCreated(Consts.STATE_CONTENT);
+                            action = new ActionPoll(
+                                    doc.getId(),
+                                    doc.get("group").toString(),
+                                    doc.get("groupName").toString(),
+                                    doc.get("author").toString(),
+                                    doc.get("authorName").toString(),
+                                    doc.get("desc").toString(),
+                                    (Date) doc.get("date"),
+                                    voteOptions,
+                                    (Map<String, String>) doc.get("users"),
+                                    (long) doc.get("messageId"),
+                                    doc.get("type").toString());
+                        } else {
+                            action = null;
                         }
 
-                        fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), action);
+
+                        if (fragment != null) {
+                            if (!fragment.isAdapterExists() && fragment.isListEmpty()) {
+                                fragment.setupLayouts(true, true);
+                                notifyViewCreated(Consts.STATE_CONTENT);
+                            }
+
+                            fragment.handleListUpdate(dc.getType(), dc.getNewIndex(), dc.getOldIndex(), action);
+                        }
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 }
 

@@ -15,6 +15,7 @@ public class Action implements Serializable {
     private Date date;
     private long messageId;
     private Map<String, String> users;
+    private String type;
 
     private String authorName;
     private String groupName;
@@ -23,7 +24,7 @@ public class Action implements Serializable {
 
     }
 
-    public Action(String id, String groupId, String groupName, String author, String authorName, String desc, Date date, Map<String, String> users, long messageId) {
+    public Action(String id, String groupId, String groupName, String author, String authorName, String desc, Date date, Map<String, String> users, long messageId, String type) {
         this.id = id;
         this.groupId = groupId;
         this.author = author;
@@ -33,6 +34,7 @@ public class Action implements Serializable {
         this.authorName = authorName;
         this.groupName = groupName;
         this.messageId = messageId;
+        this.type = type;
     }
 
     public String getId() {
@@ -74,5 +76,9 @@ public class Action implements Serializable {
 
     public long getMessageId() {
         return messageId;
+    }
+
+    public String getType() {
+        return type;
     }
 }

@@ -174,7 +174,7 @@ public class ActionsFragment extends Fragment implements ActionsFragmentBase, Re
         actionsView.setItemAnimator(new DefaultItemAnimator());
         actionsView.setHasFixedSize(false);
 
-        if (type == TYPE_ANNOUNCEMENTS || type == TYPE_POLLS) {
+        if (type == TYPE_ANNOUNCEMENTS) {
             ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
             new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(actionsView);
         }
