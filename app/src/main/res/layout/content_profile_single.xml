@@ -32,7 +32,7 @@
 
             <Button
                 android:id="@+id/btn_send_message"
-                android:text="Отправить сообщение"
+                android:text="Открыть чат"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/buttonshape"
                 android:textColor="@color/white"

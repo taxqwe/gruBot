@@ -1,5 +1,6 @@
 package com.fa.grubot.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,8 +20,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.fa.grubot.App;
+import com.fa.grubot.ChatActivity;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ProfileItemFragmentBase;
+import com.fa.grubot.helpers.TelegramHelper;
 import com.fa.grubot.objects.users.User;
 import com.fa.grubot.presenters.ProfilePresenter;
 import com.fa.grubot.util.Consts;
@@ -28,6 +31,9 @@ import com.fa.grubot.util.ImageLoader;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by ni.petrov on 03/04/2018.
@@ -177,6 +183,18 @@ public class ProfileItemFragment extends Fragment implements ProfileItemFragment
 
         if (fragmentMode == Consts.PROFILE_MODE_SINGLE)
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(user.getFullname());
+
+        mSendMessageButton.setOnClickListener(v -> {
+            Observable.defer(() -> Observable.just(TelegramHelper.Chats.getChat(App.INSTANCE.getNewTelegramClient(null), getActivity(), user, userId)))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(chat -> {
+                        Intent intent = new Intent(getActivity(), ChatActivity.class);
+                        intent.putExtra("chat", chat);
+                        getActivity().startActivity(intent);
+                    })
+                    .subscribe();
+        });
     }
 
     @Override

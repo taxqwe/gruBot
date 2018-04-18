@@ -21,6 +21,8 @@ import com.github.badoualy.telegram.tl.api.TLAbsInputPeer;
 import com.github.badoualy.telegram.tl.api.TLAbsMessage;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdate;
 import com.github.badoualy.telegram.tl.api.TLAbsUpdates;
+import com.github.badoualy.telegram.tl.api.TLInputPeerUser;
+import com.github.badoualy.telegram.tl.api.TLInputUser;
 import com.github.badoualy.telegram.tl.api.TLMessage;
 import com.github.badoualy.telegram.tl.api.TLPeerChannel;
 import com.github.badoualy.telegram.tl.api.TLUpdateNewChannelMessage;
