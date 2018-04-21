@@ -175,14 +175,12 @@ public class GroupInfoFragment extends BaseFragment implements GroupInfoFragment
                 content.setVisibility(View.VISIBLE);
                 content_fam.setVisibility(View.VISIBLE);
 
-                animateViewAppearance(appBarLayout);
                 animateViewAppearance(content);
                 animateViewAppearance(content_fam);
                 break;
             case Consts.STATE_NO_INTERNET_CONNECTION:
                 appBarLayout.setExpanded(false);
                 noInternet.setVisibility(View.VISIBLE);
-                animateViewAppearance(appBarLayout);
                 animateViewAppearance(noInternet);
                 break;
         }
