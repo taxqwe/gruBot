@@ -19,7 +19,10 @@ import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class ActionsPresenter {
     private ActionsFragmentBase fragment;
@@ -114,8 +117,12 @@ public class ActionsPresenter {
 
                         } else if (type == ActionsFragment.TYPE_POLLS || type == ActionsFragment.TYPE_POLLS_ARCHIVE) {
                             ArrayList<VoteOption> voteOptions = new ArrayList<>();
-                            for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
-                                voteOptions.add(new VoteOption(option.getValue()));
+                            HashMap<String, String> options = (HashMap<String, String>) doc.get("voteOptions");
+                            SortedSet<String> keys = new TreeSet<>(options.keySet());
+
+                            for (String key : keys) {
+                                voteOptions.add(new VoteOption(options.get(key)));
+                            }
 
                             action = new ActionPoll(
                                     doc.getId(),

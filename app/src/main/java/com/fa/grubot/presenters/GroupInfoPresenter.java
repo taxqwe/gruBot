@@ -28,7 +28,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -174,22 +177,26 @@ public class GroupInfoPresenter {
 
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     DocumentSnapshot doc = dc.getDocument();
-                        ArrayList<VoteOption> voteOptions = new ArrayList<>();
-                        for (Map.Entry<String, String> option : ((Map<String, String>) doc.get("voteOptions")).entrySet())
-                            voteOptions.add(new VoteOption(option.getValue()));
+                    ArrayList<VoteOption> voteOptions = new ArrayList<>();
+                    HashMap<String, String> options = (HashMap<String, String>) doc.get("voteOptions");
+                    SortedSet<String> keys = new TreeSet<>(options.keySet());
 
-                        ActionPoll poll = new ActionPoll(
-                                doc.getId(),
-                                doc.get("group").toString(),
-                                doc.get("groupName").toString(),
-                                doc.get("author").toString(),
-                                doc.get("authorName").toString(),
-                                doc.get("desc").toString(),
-                                (Date) doc.get("date"),
-                                voteOptions,
-                                (Map<String, String>) doc.get("users"),
-                                (long) doc.get("messageId"),
-                                doc.get("type").toString());
+                    for (String key : keys) {
+                        voteOptions.add(new VoteOption(options.get(key)));
+                    }
+
+                    ActionPoll poll = new ActionPoll(
+                            doc.getId(),
+                            doc.get("group").toString(),
+                            doc.get("groupName").toString(),
+                            doc.get("author").toString(),
+                            doc.get("authorName").toString(),
+                            doc.get("desc").toString(),
+                            (Date) doc.get("date"),
+                            voteOptions,
+                            (Map<String, String>) doc.get("users"),
+                            (long) doc.get("messageId"),
+                            doc.get("type").toString());
 
                     if (fragment != null) {
                         if (!fragment.isOneOfTheAdaptersExists()) {
