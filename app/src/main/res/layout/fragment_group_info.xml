@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_material_light"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
@@ -25,7 +26,7 @@
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/groupImage"
+                android:id="@+id/chatImage"
                 android:scaleType="centerCrop"
                 android:adjustViewBounds="true"
                 app:layout_collapseMode="parallax"
@@ -33,14 +34,14 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
                 android:background="@drawable/shape_scrim"
                 android:layout_gravity="bottom"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/collapsingToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>

@@ -8,7 +8,7 @@ import com.fa.grubot.models.DashboardModel;
 import com.fa.grubot.objects.dashboard.DashboardAnnouncement;
 import com.fa.grubot.objects.dashboard.DashboardItem;
 import com.fa.grubot.objects.dashboard.DashboardVote;
-import com.fa.grubot.util.Globals;
+import com.fa.grubot.util.Consts;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -21,11 +21,20 @@ public class DashboardPresenter {
     private DashboardFragmentBase fragment;
     private DashboardModel model;
 
-    private Query announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
-    private Query archiveAnnouncementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
+    private Query archiveAnnouncementsQuery;
+    private Query announcementsQuery;
+    private Query votesQuery;
+    private Query archiveVotesQuery;
 
-    private Query votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "new");
-    private Query archiveVotesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getId(), "archive");
+    private Query announcementsQueryVk;
+    private Query archiveAnnouncementsQueryVk;
+    private Query votesQueryVk;
+    private Query archiveVotesQueryVk;
+
+    private ListenerRegistration announcementsRegistrationVk;
+    private ListenerRegistration archiveAnnouncementsRegistrationVk;
+    private ListenerRegistration votesRegistrationVk;
+    private ListenerRegistration archiveVotesRegistrationVk;
 
     private ListenerRegistration announcementsRegistration;
     private ListenerRegistration archiveAnnouncementsRegistration;
@@ -35,25 +44,50 @@ public class DashboardPresenter {
     public DashboardPresenter(DashboardFragmentBase fragment){
         this.fragment = fragment;
         this.model = new DashboardModel();
+
+        initializeQueriesAndListeners();
+    }
+
+    private void initializeQueriesAndListeners() {
+        if (App.INSTANCE.getCurrentUser().hasTelegramUser()) {
+            archiveAnnouncementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "archive");
+            announcementsQuery = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "new");
+            votesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "new");
+            archiveVotesQuery = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getTelegramUser().getId(), "archive");
+        }
+
+        if (App.INSTANCE.getCurrentUser().hasVkUser()) {
+            announcementsQueryVk = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getVkUser().getId(), "new");
+            archiveAnnouncementsQueryVk = FirebaseFirestore.getInstance().collection("announcements").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getVkUser().getId(), "archive");
+            votesQueryVk = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getVkUser().getId(), "new");
+            archiveVotesQueryVk = FirebaseFirestore.getInstance().collection("votes").whereEqualTo("users." + App.INSTANCE.getCurrentUser().getVkUser().getId(), "archive");
+        }
+
+
     }
 
     public void notifyFragmentStarted() {
         fragment.setupToolbar();
-        setRegistration();
+        if (App.INSTANCE.getCurrentUser().hasTelegramUser()) {
+            setRegistration();
+        }
+        if(App.INSTANCE.getCurrentUser().hasVkUser()){
+            setRegistrationVk();
+        }
     }
 
     private void notifyViewCreated(int state) {
         fragment.showRequiredViews();
 
         switch (state) {
-            case Globals.FragmentState.STATE_CONTENT:
+            case Consts.STATE_CONTENT:
                 ArrayList<DashboardItem> items = new ArrayList<>(Arrays.asList(
                         new DashboardAnnouncement(0, 0),
                         new DashboardVote(0, 0)));
 
                 fragment.setupRecyclerView(items);
                 break;
-            case Globals.FragmentState.STATE_NO_INTERNET_CONNECTION:
+            case Consts.STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
         }
@@ -63,6 +97,11 @@ public class DashboardPresenter {
     public void setRegistration() {
         announcementsRegistration = announcementsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
 
@@ -78,7 +117,7 @@ public class DashboardPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
                             fragment.setupLayouts(true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(Consts.STATE_CONTENT);
                         }
 
                         fragment.handleListUpdate(count, ActionsFragment.TYPE_ANNOUNCEMENTS);
@@ -87,13 +126,18 @@ public class DashboardPresenter {
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
 
         archiveAnnouncementsRegistration = archiveAnnouncementsQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
 
@@ -109,7 +153,7 @@ public class DashboardPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
                             fragment.setupLayouts(true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(Consts.STATE_CONTENT);
                         }
 
                         fragment.handleListUpdate(count, ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE);
@@ -118,13 +162,18 @@ public class DashboardPresenter {
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
 
         votesRegistration = votesQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
 
@@ -140,7 +189,7 @@ public class DashboardPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
                             fragment.setupLayouts(true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(Consts.STATE_CONTENT);
                         }
 
                         fragment.handleListUpdate(count, ActionsFragment.TYPE_VOTES);
@@ -149,13 +198,18 @@ public class DashboardPresenter {
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
 
         archiveVotesRegistration = archiveVotesQuery.addSnapshotListener((documentSnapshots, e) -> {
             if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists())  {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     int count = 0;
 
@@ -171,7 +225,7 @@ public class DashboardPresenter {
                     if (fragment != null) {
                         if (!fragment.isAdapterExists()) {
                             fragment.setupLayouts(true);
-                            notifyViewCreated(Globals.FragmentState.STATE_CONTENT);
+                            notifyViewCreated(Consts.STATE_CONTENT);
                         }
 
                         fragment.handleListUpdate(count, ActionsFragment.TYPE_VOTES_ARCHIVE);
@@ -180,15 +234,161 @@ public class DashboardPresenter {
             } else {
                 if (fragment != null) {
                     fragment.setupLayouts(false);
-                    notifyViewCreated(Globals.FragmentState.STATE_NO_INTERNET_CONNECTION);
+                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
                 }
             }
         });
     }
 
+    private void setRegistrationVk() {
+        announcementsRegistrationVk = announcementsQueryVk.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists()) {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    int count = 0;
+
+                    switch (dc.getType()) {
+                        case ADDED:
+                            count++;
+                            break;
+                        case REMOVED:
+                            count--;
+                            break;
+                    }
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Consts.STATE_CONTENT);
+                        }
+
+                        fragment.handleListUpdate(count, ActionsFragment.TYPE_ANNOUNCEMENTS);
+                    }
+                }
+            } else {
+                if (fragment != null) {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
+                }
+            }
+        });
+
+        archiveAnnouncementsRegistrationVk = archiveAnnouncementsQueryVk.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists()) {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    int count = 0;
+
+                    switch (dc.getType()) {
+                        case ADDED:
+                            count++;
+                            break;
+                        case REMOVED:
+                            count--;
+                            break;
+                    }
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Consts.STATE_CONTENT);
+                        }
+
+                        fragment.handleListUpdate(count, ActionsFragment.TYPE_ANNOUNCEMENTS_ARCHIVE);
+                    }
+                }
+            } else {
+                if (fragment != null) {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
+                }
+            }
+        });
+
+        votesRegistrationVk = votesQueryVk.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists()) {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    int count = 0;
+
+                    switch (dc.getType()) {
+                        case ADDED:
+                            count++;
+                            break;
+                        case REMOVED:
+                            count--;
+                            break;
+                    }
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Consts.STATE_CONTENT);
+                        }
+
+                        fragment.handleListUpdate(count, ActionsFragment.TYPE_VOTES);
+                    }
+                }
+            } else {
+                if (fragment != null) {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
+                }
+            }
+        });
+
+        archiveVotesRegistrationVk = archiveVotesQueryVk.addSnapshotListener((documentSnapshots, e) -> {
+            if (e == null) {
+                if (fragment != null && documentSnapshots.isEmpty() && !fragment.isAdapterExists()) {
+                    fragment.setupLayouts(true);
+                    notifyViewCreated(Consts.STATE_CONTENT);
+                }
+
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    int count = 0;
+
+                    switch (dc.getType()) {
+                        case ADDED:
+                            count++;
+                            break;
+                        case REMOVED:
+                            count--;
+                            break;
+                    }
+
+                    if (fragment != null) {
+                        if (!fragment.isAdapterExists()) {
+                            fragment.setupLayouts(true);
+                            notifyViewCreated(Consts.STATE_CONTENT);
+                        }
+
+                        fragment.handleListUpdate(count, ActionsFragment.TYPE_VOTES_ARCHIVE);
+                    }
+                }
+            } else {
+                if (fragment != null) {
+                    fragment.setupLayouts(false);
+                    notifyViewCreated(Consts.STATE_NO_INTERNET_CONNECTION);
+                }
+            }
+        });
+    }
 
     public void onRetryBtnClick() {
         setRegistration();
+        setRegistrationVk();
     }
 
     public void removeRegistration() {
@@ -200,6 +400,14 @@ public class DashboardPresenter {
             votesRegistration.remove();
         if (archiveVotesRegistration != null)
             archiveVotesRegistration.remove();
+        if (announcementsRegistrationVk != null)
+            announcementsRegistrationVk.remove();
+        if (archiveAnnouncementsRegistrationVk != null)
+            archiveAnnouncementsRegistrationVk.remove();
+        if (votesRegistrationVk != null)
+            votesRegistrationVk.remove();
+        if (archiveVotesRegistrationVk != null)
+            archiveVotesRegistrationVk.remove();
     }
 
     public void destroy() {

@@ -2,7 +2,8 @@
 <item android:drawable="@android:color/white"/>
 <item>
     <bitmap
-        android:src="@mipmap/ic_launcher"
-        android:gravity="center"/>
+        android:src="@drawable/ic_launcher"
+        android:gravity="clip_vertical"
+        />
 </item>
 </layer-list>
