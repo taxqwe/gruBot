@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_light">
+
+    <com.fa.grubot.objects.chat.MessagesListParcelable
+        android:id="@+id/messagesList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:incomingBubbleDrawable="@drawable/bg_custom_incoming_message"
+        app:outcomingBubbleDrawable="@drawable/bg_custom_outcoming_message"
+        android:layout_above="@+id/input" />
+
+    <com.stfalcon.chatkit.messages.MessageInput
+        android:id="@+id/input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        app:inputHint="@string/hint_enter_a_message" />
+
+</RelativeLayout>

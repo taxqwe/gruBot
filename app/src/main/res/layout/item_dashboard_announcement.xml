@@ -22,7 +22,7 @@
             android:background="@color/colorAnnouncement">
 
             <ImageView
-                android:id="@+id/announcementIcon"
+                android:id="@+id/articleIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_announcement_black_36dp"
@@ -32,8 +32,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/announcementIcon"
-                android:layout_toRightOf="@id/announcementIcon"
+                android:layout_toEndOf="@id/articleIcon"
+                android:layout_toRightOf="@id/articleIcon"
                 android:paddingLeft="10dp"
                 android:textColor="@color/black"
                 android:textSize="28sp"

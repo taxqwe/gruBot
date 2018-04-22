@@ -5,8 +5,10 @@ import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.github.badoualy.telegram.tl.exception.RpcErrorException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -16,9 +18,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class Globals {
+
+    public static int extractMillisFromRpcException(RpcErrorException e) {
+        String tag = e.getTag();
+        return Integer.valueOf(tag.substring(tag.lastIndexOf('_') + 1));
+    }
+
     public static class ImageMethods {
         /**
-         * Метод, создающий круглую картинку первой
+         * Метод, создающий круглую картинку
          * @param context Контекст Activity.
          * @param name Отображаемое имя.
          * @return Возвращает картинку (класс TextDrawable) с первой буквой по центру.
@@ -27,19 +35,24 @@ public class Globals {
             ColorGenerator generator = ColorGenerator.MATERIAL;
             int color = generator.getColor(name);
 
-            TextDrawable drawable = TextDrawable.builder()
+            return TextDrawable.builder()
                     .beginConfig()
                     .useFont(Typeface.createFromAsset(context.getAssets(), "OpenSans-Light.ttf"))
                     .bold()
                     .withBorder(2)
+                    .width(100)
+                    .height(100)
                     .endConfig()
                     .buildRound(String.valueOf(name.charAt(0)).toUpperCase(), color);
-            return drawable;
+        }
+
+        public static boolean isValidUri(String uri) {
+            return (uri.startsWith("file://") || uri.startsWith("http://") || uri.startsWith("https://"));
         }
     }
 
     public static class InternetMethods {
-        private static boolean isNetworkAvailable(Context context) {
+        public static boolean isNetworkAvailable(Context context) {
             Runtime runtime = Runtime.getRuntime();
             int exitValue = -1;
 
@@ -62,11 +75,14 @@ public class Globals {
                     .timeout(15, TimeUnit.SECONDS)
                     .observeOn(AndroidSchedulers.mainThread());
         }
-     }
+    }
 
-    public static class FragmentState {
-        public static final int STATE_NO_INTERNET_CONNECTION = 61;
-        public static final int STATE_NO_DATA = 52;
-        public static final int STATE_CONTENT = 44;
+    public static MaterialDialog getLoadingDialog(Context context) {
+        return new MaterialDialog.Builder(context)
+                .content("Загрузка...")
+                .progress(true, 0)
+                .progressIndeterminateStyle(false)
+                .cancelable(false)
+                .build();
     }
 }
