@@ -29,8 +29,8 @@ public class App extends Application {
     private TelegramClient telegramClient;
     private CurrentUser currentUser;
 
-    private static final int API_ID = 120834;
-    private static final String API_HASH = "eab845c3dc214c5cfd4122f3863f5445";
+    private static final int API_ID =;
+    private static final String API_HASH =;
 
     private static final String APP_VERSION = "1.0";
     private static final String MODEL = "Dev";

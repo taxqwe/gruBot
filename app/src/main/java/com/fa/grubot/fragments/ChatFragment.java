@@ -101,6 +101,8 @@ public class ChatFragment extends Fragment
         presenter.notifyFragmentStarted(chat);
         if (chat.getType().equals(Consts.Telegram)) {
             presenter.setUpdateCallback();
+        } else if (chat.getType().equals(Consts.VK) && false){
+            presenter.setupPollingVk();
         }
         if (App.INSTANCE.getResendingMessage() != null){
             presenter.sendMessage(App.INSTANCE.getResendingMessage());
