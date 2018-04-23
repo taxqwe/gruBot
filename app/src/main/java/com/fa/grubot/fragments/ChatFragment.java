@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatFragmentBase;
@@ -100,6 +101,10 @@ public class ChatFragment extends Fragment
         presenter.notifyFragmentStarted(chat);
         if (chat.getType().equals(Consts.Telegram)) {
             presenter.setUpdateCallback();
+        }
+        if (App.INSTANCE.getResendingMessage() != null){
+            presenter.sendMessage(App.INSTANCE.getResendingMessage());
+            App.INSTANCE.resetResendingMessage();
         }
         super.onResume();
     }
@@ -238,8 +243,29 @@ public class ChatFragment extends Fragment
         messagesListAdapter.registerViewClickListener(R.id.messageUserAvatar, (view, message) -> showUserProfile((User) message.getUser()));
         messagesListAdapter.addToEnd(messages, false);
         messagesListAdapter.setLoadMoreListener(this);
+        messagesListAdapter.setOnMessageLongClickListener(message ->{
+            new MaterialDialog.Builder(this.getContext())
+                    .items("Переслать...", "Отмена")
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            if (which == 0){
+                                resendMessage(message.getText());
+                            }
+                        }
+                    })
+                    .show();
+        });
         messagesList.setAdapter(messagesListAdapter);
         messageInput.setInputListener(this);
+    }
+
+    private void resendMessage(CharSequence text) {
+        App.INSTANCE.setResendingMessage(text.toString());
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(((ViewGroup)getView().getParent()).getId(), ChatsListFragment.newInstance(1));
+        ft.commitAllowingStateLoss();
     }
 
     private void showUserProfile(User user) {
