@@ -92,4 +92,19 @@ public class User implements Serializable, IUser {
     public void setAbsUser(TLAbsUser absUser) {
         this.absUser = absUser;
     }
+
+    public User setFullname(String fullname) {
+        this.fullname = fullname;
+        return this;
+    }
+
+    public User setUserName(String userName) {
+        this.userName = userName;
+        return this;
+    }
+
+    public User setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+        return this;
+    }
 }

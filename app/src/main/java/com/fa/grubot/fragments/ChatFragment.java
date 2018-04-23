@@ -16,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fa.grubot.App;
 import com.fa.grubot.R;
 import com.fa.grubot.abstractions.ChatFragmentBase;
@@ -35,6 +37,7 @@ import com.github.badoualy.telegram.tl.api.TLInputPeerChat;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
+import com.vk.sdk.VKAccessToken;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -96,7 +99,15 @@ public class ChatFragment extends Fragment
     @Override
     public void onResume() {
         presenter.notifyFragmentStarted(chat);
-        presenter.setUpdateCallback();
+        if (chat.getType().equals(Consts.Telegram)) {
+            presenter.setUpdateCallback();
+        } else if (chat.getType().equals(Consts.VK) && false){
+            presenter.setupPollingVk();
+        }
+        if (App.INSTANCE.getResendingMessage() != null){
+            presenter.sendMessage(App.INSTANCE.getResendingMessage());
+            App.INSTANCE.resetResendingMessage();
+        }
         super.onResume();
     }
 
@@ -136,7 +147,11 @@ public class ChatFragment extends Fragment
 
     @Override
     public void onLoadMore(int page, int totalItemsCount) {
-        presenter.loadMoreMessages(totalItemsCount);
+        if (chat.getType().equals(Consts.Telegram)) {
+            presenter.loadMoreMessages(totalItemsCount);
+        } else if (chat.getType().equals(Consts.Telegram)){
+            presenter.loadmoreVkMessages();
+        }
     }
 
     @Override
@@ -206,7 +221,7 @@ public class ChatFragment extends Fragment
     }
 
     @Override
-    public void setupRecyclerView(ArrayList<ChatMessage> messages) {
+    public void setupRecyclerView(ArrayList<ChatMessage> messages, String type) {
         MessageHolders holdersConfig = new MessageHolders()
                 .setIncomingTextLayout(R.layout.item_incoming_text_message)
                 .setOutcomingTextLayout(R.layout.item_outcoming_text_message)
@@ -219,12 +234,40 @@ public class ChatFragment extends Fragment
 
         ImageLoader imageLoader = new ImageLoader(this);
 
-        messagesListAdapter = new MessagesListAdapter<>(String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId()), holdersConfig, imageLoader);
+        String userId = "-1";
+        if (type.equals(Consts.VK)){
+            userId = VKAccessToken.currentToken().userId;
+        } else if (type.equals(Consts.Telegram)){
+            userId = String.valueOf(App.INSTANCE.getCurrentUser().getTelegramUser().getId());
+        }
+
+        messagesListAdapter = new MessagesListAdapter<>(userId, holdersConfig, imageLoader);
         messagesListAdapter.registerViewClickListener(R.id.messageUserAvatar, (view, message) -> showUserProfile((User) message.getUser()));
         messagesListAdapter.addToEnd(messages, false);
         messagesListAdapter.setLoadMoreListener(this);
+        messagesListAdapter.setOnMessageLongClickListener(message ->{
+            new MaterialDialog.Builder(this.getContext())
+                    .items("Переслать...", "Отмена")
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                            if (which == 0){
+                                resendMessage(message.getText());
+                            }
+                        }
+                    })
+                    .show();
+        });
         messagesList.setAdapter(messagesListAdapter);
         messageInput.setInputListener(this);
+    }
+
+    private void resendMessage(CharSequence text) {
+        App.INSTANCE.setResendingMessage(text.toString());
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(((ViewGroup)getView().getParent()).getId(), ChatsListFragment.newInstance(1));
+        ft.commitAllowingStateLoss();
     }
 
     private void showUserProfile(User user) {

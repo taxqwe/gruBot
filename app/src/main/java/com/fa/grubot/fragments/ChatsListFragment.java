@@ -156,12 +156,14 @@ public class ChatsListFragment extends BaseFragment implements ChatsListFragment
 
     public void setupToolbar() {
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
-        toolbar.setVisibility(View.VISIBLE);
-        toolbar.setTitle("Чаты");
+        if (toolbar != null) {
+            toolbar.setVisibility(View.VISIBLE);
+            toolbar.setTitle("Чаты");
 
-        ((MainActivity)getActivity()).setSupportActionBar(toolbar);
-        ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        ((MainActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
+            ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+            ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(false);
+        }
     }
 
     public void setupRecyclerView(ArrayList<Chat> chats) {
