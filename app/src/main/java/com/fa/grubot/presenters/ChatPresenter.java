@@ -55,17 +55,23 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
         this.chat = chat;
 
         if (Globals.InternetMethods.isNetworkAvailable(context)) {
-            if (chat.getType().equals(Consts.Telegram))
+            if (chat.getType().equals(Consts.Telegram)) {
                 model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_FIRST_MESSAGES, 0, users);
-            //else
-            //model.sendVkMessagesRequest(this);
+            } else if (chat.getType().equals(Consts.VK)) {
+                model.sendVkMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_FIRST_MESSAGES, 0, users);
+            }
         } else {
             notifyViewCreated(STATE_NO_INTERNET_CONNECTION);
         }
     }
 
     public void sendMessage(String message) {
-        model.sendMessage(context, chat, presenter, message);
+        if (chat.getType().equals(Consts.Telegram)) {
+            model.sendMessage(context, chat, presenter, message);
+        } else if (chat.getType().equals(Consts.VK)) {
+            model.sendVkMessage(context, chat, presenter, message);
+        }
+
     }
 
     @Override
@@ -117,13 +123,13 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
 
         switch (state) {
             case Consts.STATE_CONTENT:
-                fragment.setupRecyclerView(messages);
+                fragment.setupRecyclerView(messages, chat.getType());
                 break;
             case STATE_NO_INTERNET_CONNECTION:
                 fragment.setupRetryButton();
                 break;
             case Consts.STATE_NO_DATA:
-                fragment.setupRecyclerView(messages);
+                fragment.setupRecyclerView(messages, chat.getType());
                 break;
         }
     }
@@ -186,11 +192,19 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
 
     public void onRetryBtnClick() {
         if (Globals.InternetMethods.isNetworkAvailable(context))
-            model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_FIRST_MESSAGES, 0, users);
+            if (chat.getType().equals(Consts.Telegram)) {
+                model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_FIRST_MESSAGES, 0, users);
+            } else if (chat.getType().equals(Consts.VK)) {
+                model.sendVkMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_FIRST_MESSAGES, 0, users);
+            }
     }
 
     public void retryLoad(Chat chat, int flag, int totalMessages, SparseArray<User> users) {
-        model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_NEW_MESSAGES, totalMessages, users);
+        if (chat.getType().equals(Consts.Telegram)) {
+            model.sendTelegramMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_NEW_MESSAGES, totalMessages, users);
+        } else if (chat.getType().equals(Consts.VK)) {
+            model.sendVkMessagesRequest(context, presenter, chat, Consts.FLAG_LOAD_NEW_MESSAGES, 0, users);
+        }
     }
 
     private boolean messageAlreadyAdded(ChatMessage chatMessage) {
@@ -207,5 +221,8 @@ public class ChatPresenter implements MessagesListRequestResponse, ChatMessageSe
             client.close(false);
         fragment = null;
         model = null;
+    }
+
+    public void loadmoreVkMessages() {
     }
 }
